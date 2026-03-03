@@ -1,0 +1,23 @@
+interface MiddleProps {
+  movieName: string;
+  movieDescription: string;
+  movieInfo: string;
+}
+
+const Middle = ({ movieName, movieDescription, movieInfo }: MiddleProps) => {
+  return (
+    <div className="text-white ml-30">
+      <div className="text-[80px]">{movieName}</div>
+      <div className="text-2xl opacity-70">{movieInfo}</div>
+      <div className="mt-10 text-2xl  w-200">{movieDescription}</div>
+      <button
+        className="mt-10 bg-purple-500 p-2 pl-6 cursor-pointer pr-6  duration-200
+      text-[20px] rounded-[10px] text-black font-semibold hover:text-white hover:bg-purple-600 transition-all"
+      >
+        Create Review
+      </button>
+    </div>
+  );
+};
+
+export default Middle;
