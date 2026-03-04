@@ -38,16 +38,13 @@ const Header = ({ setMovies }: HeaderProps) => {
       const allMovies = data.slice(0, 10);
 
       const convMovies = allMovies.map((c: Movie) => {
-        const convPoster = `https://image.tmdb.org/t/p/w500${c.poster_path}`;
-        const convBanner = `https://image.tmdb.org/t/p/original${c.backdrop_path}`;
-
         return {
           original_title: c.original_title,
-          poster_path: convPoster,
+          poster_path: c.poster_path,
           overview: c.overview,
           release_date: c.release_date,
           id: c.id,
-          backdrop_path: convBanner,
+          backdrop_path: c.backdrop_path,
         };
       });
 

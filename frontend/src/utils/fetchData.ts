@@ -14,7 +14,7 @@ export const fetchMovies = async () => {
   }
 };
 
-export const searchMovies = async (name) => {
+export const searchMovies = async (name: string) => {
   try {
     const res = await fetch(
       `https://api.themoviedb.org/3/search/movie?api_key=${tmdbKey}&query=${name}`,

@@ -22,8 +22,9 @@ const Layout = () => {
 
   useEffect(() => {
     if (movies.length > 0) {
+      const convBanner = `https://image.tmdb.org/t/p/original${movies[0].backdrop_path}`;
       setMovieName(movies[0].original_title);
-      setMovieImage(movies[0].backdrop_path);
+      setMovieImage(convBanner);
       setMovieDescription(movies[0].overview);
       setMovieRelease(movies[0].release_date);
     }

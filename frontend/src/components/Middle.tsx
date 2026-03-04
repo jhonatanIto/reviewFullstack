@@ -7,7 +7,7 @@ interface MiddleProps {
 const Middle = ({ movieName, movieDescription, movieRelease }: MiddleProps) => {
   return (
     <div className="text-white ml-[7%]">
-      <div className="text-[80px]">{movieName}</div>
+      <div className="text-[65px]">{movieName}</div>
       <div className="text-2xl opacity-70">{movieRelease}</div>
       <div className="mt-10 max-h-47.5   overflow-scroll  no-scrollbar text-2xl  w-200">
         {movieDescription}
