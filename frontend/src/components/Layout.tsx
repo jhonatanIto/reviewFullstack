@@ -1,44 +1,52 @@
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
-import spider from "../images/spider.jpg";
+import Login from "./Login";
 
 export interface Movie {
-  Poster: string;
-  Title: string;
-  Type: string;
-  Year: string;
-  imdbID: string;
+  original_title: string;
+  overview: string;
+  poster_path: string;
+  backdrop_path: string;
+  release_date: string;
+  id: number;
 }
 
 const Layout = () => {
-  const [movieName, setMovieName] = useState("Spider man 2");
-  const [movieImage, setMovieImage] = useState(spider);
-  const [movieInfo, setMovieInfo] = useState(
-    "2004 | 1hour 55 minutes | Sci-fi",
-  );
-  const [movieDescription, setMovieDescription] = useState(
-    "Peter Parker is beset with troubles in his failing personal life as he battles a former brilliant scientist named Otto Octavius",
-  );
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [movieName, setMovieName] = useState<string>();
+  const [movieImage, setMovieImage] = useState<string>();
+  const [movieRelease, setMovieRelease] = useState<string>();
+  const [movieDescription, setMovieDescription] = useState<string>();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (movies.length > 0) {
+      setMovieName(movies[0].original_title);
+      setMovieImage(movies[0].backdrop_path);
+      setMovieDescription(movies[0].overview);
+      setMovieRelease(movies[0].release_date);
+    }
+  }, [movies]);
 
   return (
-    <div className="w-full min-h-screen relative flex flex-col">
+    <div className="w-full min-h-screen relative flex flex-col bg-zinc-900 z-0">
       <Header setMovies={setMovies} />
 
       <Outlet
         context={{
           movieName,
           movieImage,
-          movieInfo,
+          movieRelease,
           movieDescription,
           setMovieName,
           setMovieImage,
-          setMovieInfo,
+          setMovieRelease,
           setMovieDescription,
           movies,
         }}
       />
+      {location.pathname === "/login" && <Login />}
     </div>
   );
 };

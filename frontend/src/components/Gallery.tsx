@@ -1,5 +1,5 @@
 const Gallery = () => {
-  return <div>Gallery</div>;
+  return <div className=" w-full min-h-screen">Gallery</div>;
 };
 
 export default Gallery;

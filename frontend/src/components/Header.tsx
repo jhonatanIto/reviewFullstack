@@ -1,7 +1,7 @@
 import { IoSearchOutline } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 import { useEffect, useRef, useState, type Dispatch } from "react";
-import { fetchMovies } from "../utils/fetchData";
+import { fetchMovies, searchMovies } from "../utils/fetchData";
 import type { Movie } from "./Layout";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -34,24 +34,62 @@ const Header = ({ setMovies }: HeaderProps) => {
     if (inputValue.length <= 1) return;
 
     const timeout = setTimeout(async () => {
-      const data = await fetchMovies(inputValue);
-      if (data?.Search) {
-        setMovies(data.Search);
-      }
-    }, 1000);
+      const data = await searchMovies(inputValue);
+      const allMovies = data.slice(0, 10);
+
+      const convMovies = allMovies.map((c: Movie) => {
+        const convPoster = `https://image.tmdb.org/t/p/w500${c.poster_path}`;
+        const convBanner = `https://image.tmdb.org/t/p/original${c.backdrop_path}`;
+
+        return {
+          original_title: c.original_title,
+          poster_path: convPoster,
+          overview: c.overview,
+          release_date: c.release_date,
+          id: c.id,
+          backdrop_path: convBanner,
+        };
+      });
+
+      setMovies(convMovies);
+    }, 500);
 
     return () => clearTimeout(timeout);
   }, [search]);
 
+  useEffect(() => {
+    const loadMovies = async () => {
+      const data = await fetchMovies();
+      const allMovies = data.slice(0, 10);
+
+      const convMovies = allMovies.map((c: Movie) => {
+        const convPoster = `https://image.tmdb.org/t/p/w500${c.poster_path}`;
+        const convBanner = `https://image.tmdb.org/t/p/original${c.backdrop_path}`;
+
+        return {
+          original_title: c.original_title,
+          poster_path: convPoster,
+          overview: c.overview,
+          release_date: c.release_date,
+          id: c.id,
+          backdrop_path: convBanner,
+        };
+      });
+      setMovies(convMovies);
+    };
+
+    loadMovies();
+  }, []);
+
   return (
     <div className="flex w-full justify-between text-white text-[26px] p-10 pl-0">
-      <div className="ml-30 w-37 justify-between items-center flex text-purple-500">
+      <div className="ml-[7%] w-37 justify-between items-center flex text-purple-500">
         <span className="bg-purple-500 rounded-[5px] w-12 flex items-center justify-center text-white">
           MY
         </span>{" "}
         REVIEW
       </div>
-      <div className=" flex justify-end mr-30 ">
+      <div className=" flex justify-end mr-[7%]">
         <ul
           className="flex items-center   [&>li]:select-none [&>li]:cursor-pointer [&>li]:pb-2 [&>li]:mr-15
         [&>li]:hover:text-purple-500 [&>li]:transition-all [&>li]:duration-200"
@@ -93,6 +131,7 @@ const Header = ({ setMovies }: HeaderProps) => {
             type="text"
             className="bg-white text-black text-[23px] outline-none pl-2 
             transition-all ease-in-out duration-400 "
+            placeholder="search"
           />
           <div className="flex justify-center items-center select-none">
             <div style={{ display: displayInput ? "none" : "flex" }}>|</div>
@@ -103,7 +142,11 @@ const Header = ({ setMovies }: HeaderProps) => {
               }}
               className="text-[30px] ml-5 cursor-pointer hover:text-purple-500 transition-all duration-200"
             />
-            <FaUser className="ml-5 cursor-pointer hover:text-purple-500 transition-all duration-200" />
+            <FaUser
+              className={`ml-5 cursor-pointer hover:text-purple-500 transition-all duration-200
+                 ${location.pathname === "/login" ? "text-purple-500" : ""}`}
+              onClick={() => navigate("/login")}
+            />
           </div>
         </ul>
       </div>

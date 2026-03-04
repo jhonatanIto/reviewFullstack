@@ -7,11 +7,11 @@ import type { Movie } from "./components/Layout";
 type LayoutContext = {
   movieName: string;
   movieImage: string;
-  movieInfo: string;
+  movieRelease: string;
   movieDescription: string;
   setMovieName: React.Dispatch<React.SetStateAction<string>>;
   setMovieImage: React.Dispatch<React.SetStateAction<string>>;
-  setMovieInfo: React.Dispatch<React.SetStateAction<string>>;
+  setMovieRelease: React.Dispatch<React.SetStateAction<string>>;
   setMovieDescription: React.Dispatch<React.SetStateAction<string>>;
   movies: Movie[];
 };
@@ -20,11 +20,11 @@ const App = () => {
   const {
     movieName,
     movieImage,
-    movieInfo,
+    movieRelease,
     movieDescription,
     setMovieName,
     setMovieImage,
-    setMovieInfo,
+    setMovieRelease,
     setMovieDescription,
     movies,
   } = useOutletContext<LayoutContext>();
@@ -35,12 +35,12 @@ const App = () => {
       <Middle
         movieName={movieName}
         movieDescription={movieDescription}
-        movieInfo={movieInfo}
+        movieRelease={movieRelease}
       />
       <Carousel
         setMovieName={setMovieName}
         setMovieImage={setMovieImage}
-        setMovieInfo={setMovieInfo}
+        setMovieRelease={setMovieRelease}
         setMovieDescription={setMovieDescription}
         movies={movies}
       />
