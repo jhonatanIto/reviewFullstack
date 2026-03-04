@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type Dispatch } from "react";
 import { fetchMovies, searchMovies } from "../utils/fetchData";
 import type { Movie } from "./Layout";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useUser } from "../context/useUser";
 
 interface HeaderProps {
   setMovies: Dispatch<React.SetStateAction<Movie[]>>;
@@ -15,6 +16,8 @@ const Header = ({ setMovies }: HeaderProps) => {
   const [search, setSearch] = useState<string>("");
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { user } = useUser();
 
   useEffect(() => {
     const closeInput = (e: MouseEvent) => {
@@ -49,6 +52,7 @@ const Header = ({ setMovies }: HeaderProps) => {
       });
 
       setMovies(convMovies);
+      navigate("/");
     }, 500);
 
     return () => clearTimeout(timeout);
@@ -141,8 +145,14 @@ const Header = ({ setMovies }: HeaderProps) => {
             />
             <FaUser
               className={`ml-5 cursor-pointer hover:text-purple-500 transition-all duration-200
-                 ${location.pathname === "/login" ? "text-purple-500" : ""}`}
-              onClick={() => navigate("/login")}
+                 ${location.pathname === "/login" || location.pathname === "/profile" ? "text-purple-500" : ""}`}
+              onClick={() => {
+                if (!user) {
+                  navigate("/login");
+                } else {
+                  navigate("/profile");
+                }
+              }}
             />
           </div>
         </ul>

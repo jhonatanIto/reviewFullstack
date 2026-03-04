@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/useUser";
 
 const Login = () => {
   const boxRef = useRef<HTMLFormElement>(null);
@@ -10,6 +11,8 @@ const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+  const { login } = useUser();
 
   useEffect(() => {
     const closeModal = (e: MouseEvent) => {
@@ -47,13 +50,19 @@ const Login = () => {
 
       const data = await res.json();
 
+      if (!res.ok) {
+        alert(data?.message);
+        throw new Error(data?.message);
+      }
+
+      login(data.user, data.token);
+
       setName("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
 
       navigate("/");
-      console.log(data);
     } catch (error) {
       console.error(error);
     }

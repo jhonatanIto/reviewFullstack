@@ -4,6 +4,7 @@ import App from "../App";
 import Gallery from "../components/Gallery";
 import Friends from "../components/Friends";
 import Login from "../components/Login";
+import Profile from "../components/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -13,6 +14,7 @@ export const router = createBrowserRouter([
       { index: true, element: <App /> },
       { path: "gallery", element: <Gallery /> },
       { path: "friends", element: <Friends /> },
+      { path: "profile", element: <Profile /> },
       {
         path: "login",
         element: <App />,
