@@ -38,9 +38,8 @@ const Header = ({ setMovies }: HeaderProps) => {
 
     const timeout = setTimeout(async () => {
       const data = await searchMovies(inputValue);
-      const allMovies = data.slice(0, 10);
 
-      const convMovies = allMovies.map((c: Movie) => {
+      const convMovies = data.map((c: Movie) => {
         return {
           original_title: c.original_title,
           poster_path: c.poster_path,
@@ -61,9 +60,8 @@ const Header = ({ setMovies }: HeaderProps) => {
   useEffect(() => {
     const loadMovies = async () => {
       const data = await fetchMovies();
-      const allMovies = data.slice(0, 10);
 
-      const convMovies = allMovies.map((c: Movie) => {
+      const convMovies = data.map((c: Movie) => {
         const convPoster = `https://image.tmdb.org/t/p/w500${c.poster_path}`;
         const convBanner = `https://image.tmdb.org/t/p/original${c.backdrop_path}`;
 
@@ -101,7 +99,7 @@ const Header = ({ setMovies }: HeaderProps) => {
           <li
             className={`relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0
                after:bg-purple-500 after:transition-all after:duration-300
-              ${location.pathname === "/" ? "after:w-full" : ""}`}
+              ${location.pathname === "/" ? "after:w-full text-purple-500" : ""}`}
             onClick={() => navigate("/")}
           >
             Home
@@ -109,15 +107,15 @@ const Header = ({ setMovies }: HeaderProps) => {
           <li
             className={`relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0
                after:bg-purple-500 after:transition-all after:duration-300
-              ${location.pathname === "/gallery" ? "after:w-full" : ""}`}
+              ${location.pathname === "/gallery" ? "after:w-full text-purple-500" : ""}`}
             onClick={() => navigate("/gallery")}
           >
             Gallery
           </li>
           <li
             className={`relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0
-               after:bg-purple-500 after:transition-all after:duration-300
-              ${location.pathname === "/friends" ? "after:w-full" : ""}`}
+               after:bg-purple-500 after:transition-all after:duration-300 
+              ${location.pathname === "/friends" ? "after:w-full text-purple-500" : ""}`}
             onClick={() => navigate("/friends")}
           >
             Friends

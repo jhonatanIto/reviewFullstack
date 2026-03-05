@@ -78,11 +78,13 @@ const Modal = ({
   return (
     <div
       style={{ opacity: modal ? 1 : 0, pointerEvents: modal ? "auto" : "none" }}
-      className=" flex justify-center items-center w-full h-screen fixed m-0 bg-black/65 top-0 left-0 z-50 backdrop-blur-[2px]"
+      className={` flex justify-center items-center w-full h-screen fixed m-0 bg-black/65 top-0 left-0 z-50 
+         transition-all duration-300 backdrop-blur-[2px] `}
     >
       <div
         ref={boxRef}
-        className="flex  items-center bg-white/20 relative rounded-2xl overflow-hidden shadow-black shadow-lg"
+        className={`flex  items-center bg-white/20 relative rounded-2xl overflow-hidden shadow-black shadow-lg
+         transition-all duration-300  ease-in-out  ${modal ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-24"}`}
       >
         <img src={moviePoster} />
 
@@ -92,11 +94,11 @@ const Modal = ({
             value={review}
             spellCheck={false}
             placeholder="Write your review"
-            className="w-100 h-100 text-2xl  outline-none bg-white rounded-2xl p-3 flex text-center"
+            className="w-100 h-100 text-2xl  outline-none bg-white rounded-2xl p-3 flex text-center shadow-black/30 shadow-lg"
             onChange={(e) => setReview(e.target.value)}
           />
           <button
-            className="text-white bg-purple-600 text-2xl pl-9 pr-9 transition-all duration-200
+            className="text-white bg-purple-600 text-2xl pl-9 pr-9 transition-all duration-200 shadow-zinc-800/80 shadow-md
           rounded-[10px] flex p-1 mt-10 absolute bottom-23 cursor-pointer hover:bg-purple-700"
             onClick={postCard}
           >

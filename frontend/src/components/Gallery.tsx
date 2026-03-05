@@ -14,11 +14,11 @@ const Gallery = () => {
             <Link to={`/gallery/${c.id}`}>
               <div
                 key={c.id}
-                className="w-60  ml-2 mr-2 overflow-hidden relative  group cursor-pointer "
+                className="w-60  ml-2 mr-2 overflow-hidden relative  group cursor-pointer select-none"
               >
                 <div
                   className="opacity-0 w-full group-hover:opacity-100 transition-opacity
-               duration-200 absolute inset-0 bg-black/70 z-10 flex justify-center "
+               duration-200 absolute inset-0 bg-black/70 z-10 flex justify-center backdrop-blur-[3px] "
                 >
                   <Stars rate={c.rate} top={15} setRate={setRate} size={25} />
                   <div className="text-white text-[20px] mt-[18%] text-center">

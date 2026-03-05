@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
 import { cards } from "../db/schema.js";
-import { eq, type InferInsertModel } from "drizzle-orm";
+import { and, eq, type InferInsertModel } from "drizzle-orm";
 type NewCard = InferInsertModel<typeof cards>;
 
 export const postCard = async (req: Request, res: Response) => {
@@ -47,6 +47,57 @@ export const getCards = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "cards not found" });
 
     res.status(200).json(userCards);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateCard = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const { cardId } = req.params;
+
+    if (!userId) return;
+    if (!cardId) return;
+
+    const updates: any = {};
+
+    if (req.body.rate !== undefined) updates.rate = req.body.rate;
+    if (req.body.review !== undefined) updates.review = req.body.review;
+
+    const [updatedCard] = await db
+      .update(cards)
+      .set(updates)
+      .where(and(eq(cards.user_id, userId), eq(cards.id, Number(cardId))))
+      .returning();
+
+    if (!updatedCard)
+      return res.status(404).json({ message: "Card not found" });
+
+    res.status(200).json({ message: "Card updated" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+export const deleteCard = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const { cardId } = req.params;
+
+    if (!userId) return;
+    if (!cardId) return;
+
+    const [deletedCard] = await db
+      .delete(cards)
+      .where(and(eq(cards.user_id, userId), eq(cards.id, Number(cardId))))
+      .returning();
+
+    if (!deletedCard)
+      return res.status(404).json({ message: "Card not found" });
+
+    res.status(200).json({ message: "Card deleted" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
