@@ -40,7 +40,7 @@ const Login = () => {
     const body = signUp ? { name, email, password } : { email, password };
 
     try {
-      const res = await fetch(`http://localhost:3000/auth/${url}`, {
+      const res = await fetch(`http://localhost:3000/api/auth/${url}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -2,9 +2,15 @@ interface MiddleProps {
   movieName: string;
   movieDescription: string;
   movieRelease: string;
+  setModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Middle = ({ movieName, movieDescription, movieRelease }: MiddleProps) => {
+const Middle = ({
+  movieName,
+  movieDescription,
+  movieRelease,
+  setModal,
+}: MiddleProps) => {
   return (
     <div className="text-white ml-[7%]">
       <div className="text-[65px]">{movieName}</div>
@@ -15,6 +21,7 @@ const Middle = ({ movieName, movieDescription, movieRelease }: MiddleProps) => {
       <button
         className="mt-10 bg-purple-500 p-2 pl-6 cursor-pointer pr-6  duration-200
       text-[20px] rounded-[10px] text-black font-semibold hover:text-white hover:bg-purple-600 transition-all"
+        onClick={() => setModal(true)}
       >
         Create Review
       </button>

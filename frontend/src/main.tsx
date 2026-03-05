@@ -6,6 +6,6 @@ import UserProvider from "./context/UserProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <UserProvider>
-    <RouterProvider router={router} />,
+    <RouterProvider router={router} />
   </UserProvider>,
 );

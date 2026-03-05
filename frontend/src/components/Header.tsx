@@ -84,7 +84,10 @@ const Header = ({ setMovies }: HeaderProps) => {
 
   return (
     <div className="flex w-full justify-between text-white text-[26px] p-10 pl-0">
-      <div className="ml-[7%] w-37 justify-between items-center flex text-purple-500">
+      <div
+        className="ml-[7%] w-37 justify-between items-center flex text-purple-500 cursor-pointer"
+        onClick={() => navigate("/")}
+      >
         <span className="bg-purple-500 rounded-[5px] w-12 flex items-center justify-center text-white">
           MY
         </span>{" "}

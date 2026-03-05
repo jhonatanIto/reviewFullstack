@@ -26,3 +26,25 @@ export const searchMovies = async (name: string) => {
     console.error(error);
   }
 };
+
+export const getCards = async (token: string | null) => {
+  try {
+    const res = await fetch("http://localhost:3000/api/cards", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error(data?.message);
+      return;
+    }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};

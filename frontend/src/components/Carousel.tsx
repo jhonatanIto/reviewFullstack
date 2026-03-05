@@ -5,6 +5,7 @@ import noImg from "../images/noImage.png";
 interface CarouselProps {
   setMovieName: Dispatch<React.SetStateAction<string>>;
   setMovieImage: Dispatch<React.SetStateAction<string>>;
+  setMoviePoster: Dispatch<React.SetStateAction<string>>;
   setMovieDescription: Dispatch<React.SetStateAction<string>>;
   setMovieRelease: Dispatch<React.SetStateAction<string>>;
   movies: Movie[];
@@ -13,6 +14,7 @@ interface CarouselProps {
 const Carousel = ({
   setMovieDescription,
   setMovieImage,
+  setMoviePoster,
   setMovieRelease,
   setMovieName,
   movies,
@@ -35,6 +37,7 @@ const Carousel = ({
                 alt={m.original_title}
                 onClick={() => {
                   setMovieImage(convBanner);
+                  setMoviePoster(convPoster);
                   setMovieName(m.original_title);
                   setMovieRelease(m.release_date);
                   setMovieDescription(m.overview);
