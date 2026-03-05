@@ -42,7 +42,7 @@ const Carousel = ({
         className="mt-10 flex relative [&>button]:absolute  [&>button]:text-[50px]  [&>button]:bg-zinc-800/40  [&>button]:h-full
        [&>button]:cursor-pointer  [&>button]:text-white [&>button]:z-10 [&>button]:hover:bg-zinc-200/40"
       >
-        <button className=" left-0 rounded-l-2xl ml-1.5" onClick={prev}>
+        <button className=" -left-0.5 rounded-l-2xl ml-1.5" onClick={prev}>
           <IoIosArrowBack />
         </button>
         {visibleMovies.map((m, index) => {
@@ -69,7 +69,7 @@ const Carousel = ({
             </div>
           );
         })}
-        <button className=" right-0 rounded-r-2xl mr-1.5" onClick={next}>
+        <button className=" -right-0.5 rounded-r-2xl mr-1.5" onClick={next}>
           <IoIosArrowForward />
         </button>
       </div>
