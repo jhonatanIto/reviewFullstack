@@ -38,6 +38,7 @@ const UserProvider = ({ children }: Props) => {
   const loadCards = async () => {
     if (!token) return;
     const data = await getCards(token);
+    if (!data) return;
     setCards(data);
     localStorage.setItem("MyReview_cards", JSON.stringify(data));
   };

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Stars from "./Stars";
 import { useUser } from "../context/useUser";
 import useRate from "../hooks/useRate";
@@ -21,9 +21,8 @@ const Modal = ({
   movieRelease,
 }: ModalProps) => {
   const boxRef = useRef<HTMLDivElement>(null);
-  const [review, setReview] = useState<string>("");
   const { token, loadCards } = useUser();
-  const { rate, setRate } = useRate();
+  const { rate, setRate, setReview, review } = useRate();
 
   useEffect(() => {
     const closeModal = (e: MouseEvent) => {
@@ -79,16 +78,16 @@ const Modal = ({
   return (
     <div
       style={{ opacity: modal ? 1 : 0, pointerEvents: modal ? "auto" : "none" }}
-      className=" flex justify-center items-center w-full h-screen fixed m-0 bg-black/65 top-0 left-0 z-50 "
+      className=" flex justify-center items-center w-full h-screen fixed m-0 bg-black/65 top-0 left-0 z-50 backdrop-blur-[2px]"
     >
       <div
         ref={boxRef}
         className="flex  items-center bg-white/20 relative rounded-2xl overflow-hidden shadow-black shadow-lg"
       >
-        <img className="" src={moviePoster} />
+        <img src={moviePoster} />
 
         <div className="p-5 flex flex-col items-center justify-center">
-          <Stars rate={rate} setRate={setRate} top={100} size={35} />
+          <Stars rate={rate} setRate={setRate} top={100} size={38} />
           <textarea
             value={review}
             spellCheck={false}
