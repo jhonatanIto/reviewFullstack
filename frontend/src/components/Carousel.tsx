@@ -1,10 +1,12 @@
-import { useState, type Dispatch } from "react";
+import { type Dispatch } from "react";
 import type { Movie } from "./Layout";
 import noImg from "../images/noImage.png";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
 
 interface CarouselProps {
+  startIndex: number;
+  setStartIndex: Dispatch<React.SetStateAction<number>>;
   setMovieName: Dispatch<React.SetStateAction<string>>;
   setMovieImage: Dispatch<React.SetStateAction<string>>;
   setMoviePoster: Dispatch<React.SetStateAction<string>>;
@@ -19,9 +21,10 @@ const Carousel = ({
   setMoviePoster,
   setMovieRelease,
   setMovieName,
+  setStartIndex,
+  startIndex,
   movies,
 }: CarouselProps) => {
-  const [startIndex, setStartIndex] = useState(0);
   const visibleMovies = movies.slice(startIndex, startIndex + 10);
 
   const next = () => {

@@ -22,6 +22,7 @@ const Layout = () => {
   const [movieDescription, setMovieDescription] = useState<string>();
 
   const [modal, setModal] = useState<boolean>(false);
+  const [startIndex, setStartIndex] = useState(0);
   const location = useLocation();
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const Layout = () => {
 
   return (
     <div className="w-full min-h-screen relative flex flex-col bg-zinc-900 z-0">
-      <Header setMovies={setMovies} />
+      <Header setMovies={setMovies} setStartIndex={setStartIndex} />
 
       <Outlet
         context={{
@@ -47,12 +48,14 @@ const Layout = () => {
           movieImage,
           movieRelease,
           movieDescription,
+          startIndex,
           setMovieName,
           setMovieImage,
           setMoviePoster,
           setMovieRelease,
           setMovieDescription,
           setModal,
+          setStartIndex,
         }}
       />
       <Modal

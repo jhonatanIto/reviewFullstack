@@ -8,9 +8,10 @@ import { useUser } from "../context/useUser";
 
 interface HeaderProps {
   setMovies: Dispatch<React.SetStateAction<Movie[]>>;
+  setStartIndex: Dispatch<React.SetStateAction<number>>;
 }
 
-const Header = ({ setMovies }: HeaderProps) => {
+const Header = ({ setMovies, setStartIndex }: HeaderProps) => {
   const [displayInput, setDisplayInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState<string>("");
@@ -51,6 +52,7 @@ const Header = ({ setMovies }: HeaderProps) => {
       });
 
       setMovies(convMovies);
+      setStartIndex(0);
       navigate("/");
     }, 500);
 
