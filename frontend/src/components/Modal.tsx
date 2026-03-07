@@ -3,30 +3,23 @@ import Stars from "./Stars";
 import { useUser } from "../context/useUser";
 import useRate from "../hooks/useRate";
 import useNotification from "../hooks/useNotification";
+import { useMovie } from "../context/useMovie";
 
-interface ModalProps {
-  modal: boolean;
-  setModal: React.Dispatch<React.SetStateAction<boolean>>;
-  moviePoster: string | undefined;
-  movieImage: string | undefined;
-  movieName: string | undefined;
-  movieRelease: string | undefined;
-  movieDescription: string | undefined;
-}
-
-const Modal = ({
-  modal,
-  moviePoster,
-  movieImage,
-  setModal,
-  movieName,
-  movieDescription,
-  movieRelease,
-}: ModalProps) => {
+const Modal = () => {
   const boxRef = useRef<HTMLDivElement>(null);
   const { token, loadCards, setLoading, loading } = useUser();
   const { rate, setRate, setReview, review } = useRate();
   const { successNotification, errorNotification } = useNotification();
+
+  const {
+    setModal,
+    modal,
+    movieName,
+    movieRelease,
+    movieDescription,
+    moviePoster,
+    movieImage,
+  } = useMovie();
 
   useEffect(() => {
     const closeModal = (e: MouseEvent) => {

@@ -50,6 +50,7 @@ export const register = async (req: Request, res: Response) => {
         id: newUser?.id,
         name: newUser?.name,
         email: newUser?.email,
+        unique_id: newUser?.unique_id,
       },
     });
   } catch (error) {
@@ -94,6 +95,8 @@ export const login = async (req: Request, res: Response) => {
         email: user.email,
         picture: user.picture,
         unique_id: user.unique_id,
+        following: user.following,
+        followers: user.followers,
       },
     });
   } catch (error) {

@@ -1,8 +1,7 @@
-interface BackgroundProps {
-  movieImage: string;
-}
+import { useMovie } from "../context/useMovie";
 
-const BackgroundImg = ({ movieImage }: BackgroundProps) => {
+const BackgroundImg = () => {
+  const { movieImage } = useMovie();
   return (
     <div className="fixed inset-0 flex -z-10">
       <img

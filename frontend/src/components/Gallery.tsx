@@ -1,9 +1,9 @@
 import { Link, Outlet } from "react-router-dom";
 import { IoIosArrowDown } from "react-icons/io";
 import { useUser } from "../context/useUser";
-import useRate from "../hooks/useRate";
 import { IoStar } from "react-icons/io5";
 import { useEffect, useRef, useState } from "react";
+import { useMovie } from "../context/useMovie";
 
 type SortOption =
   | "Newest"
@@ -13,13 +13,22 @@ type SortOption =
   | "Release date";
 
 const Gallery = () => {
-  const { cards } = useUser();
-  const { setRate } = useRate();
+  const { cards, watchlist, showWatch } = useUser();
+
   const [sortBy, setSortBy] = useState<SortOption>(
     () => (localStorage.getItem("MyReview_sortBy") as SortOption) || "Newest",
   );
   const [displayFilter, setDisplayFilter] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
+
+  const {
+    setMovieName,
+    setMovieDescription,
+    setMovieImage,
+    setMovieRelease,
+    setModal,
+    setMoviePoster,
+  } = useMovie();
 
   useEffect(() => {
     const closeFilter = (e: MouseEvent) => {
@@ -37,7 +46,17 @@ const Gallery = () => {
     setSortBy(value);
   };
 
-  const sortedCards = [...(cards || [])].sort((a, b) => {
+  const currentArray = showWatch ? watchlist : cards;
+
+  const linkUrl = (id: number) => {
+    if (!showWatch) {
+      return `/gallery/${id}`;
+    } else {
+      return "/";
+    }
+  };
+
+  const sortedCards = [...(currentArray || [])].sort((a, b) => {
     switch (sortBy) {
       case "Newest":
         return (
@@ -48,9 +67,9 @@ const Gallery = () => {
           new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         );
       case "Highest rate":
-        return b.rate - a.rate;
+        return (b.rate ?? 0) - (a.rate ?? 0);
       case "Lowest rate":
-        return a.rate - b.rate;
+        return (a.rate ?? 0) - (b.rate ?? 0);
 
       case "Release date":
         return new Date(b.release).getTime() - new Date(a.release).getTime();
@@ -66,13 +85,15 @@ const Gallery = () => {
 
   return (
     <div className=" w-full ">
-      <div className="ml-[7%] mt-5 select-none" ref={filterRef}>
+      <div className="ml-[7%] mt-5 select-none  w-fit" ref={filterRef}>
         <div
           className="bg-zinc-200/90 w-fit text-black pl-2 pr-2 font-semibold rounded-[5px]
-        text-[18px] flex justify-center items-center cursor-pointer"
-          onClick={() => setDisplayFilter(true)}
+        text-[18px] flex justify-center items-center cursor-pointer "
+          onClick={() => {
+            setDisplayFilter((prev) => !prev);
+          }}
         >
-          {sortBy} <IoIosArrowDown className="ml-3" />
+          {sortBy} <IoIosArrowDown className="ml-3 " />
         </div>
         <ul
           className={`${displayFilter ? "flex" : "hidden"}  flex-col absolute z-50 bg-zinc-100 rounded-[5px] mt-1
@@ -80,31 +101,48 @@ const Gallery = () => {
         >
           <li onClick={() => selectFilter("Newest")}>Newest</li>
           <li onClick={() => selectFilter("Oldest")}>Oldest</li>
-          <li onClick={() => selectFilter("Highest rate")}>Highest rate</li>
-          <li onClick={() => selectFilter("Lowest rate")}>Lowest rate</li>
+          {!showWatch && (
+            <li onClick={() => selectFilter("Highest rate")}>Highest rate</li>
+          )}
+          {!showWatch && (
+            <li onClick={() => selectFilter("Lowest rate")}>Lowest rate</li>
+          )}
+
           <li onClick={() => selectFilter("Release date")}>Release date</li>
         </ul>
       </div>
       <div className="flex flex-wrap mx-auto max-w-[95%] justify-center">
         {sortedCards?.map((c) => {
           return (
-            <Link to={`/gallery/${c.id}`}>
+            <Link to={linkUrl(c.id)}>
               <div
                 key={c.id}
                 className="w-60 mt-5  ml-2 mr-2 overflow-hidden relative  group cursor-pointer select-none"
+                onClick={() => {
+                  if (showWatch) {
+                    setMovieDescription(c.description);
+                    setMovieRelease(c.release);
+                    setMovieName(c.title);
+                    setMoviePoster(c.poster);
+                    setModal(true);
+                    if (c.banner) setMovieImage(c.banner);
+                  }
+                }}
               >
-                <div
-                  className="opacity-0 w-full group-hover:opacity-100 transition-opacity 
+                {!showWatch && (
+                  <div
+                    className="opacity-0 w-full group-hover:opacity-100 transition-opacity 
                duration-200 absolute inset-0 bg-black/70 z-10 flex items-center flex-col backdrop-blur-[3px] "
-                >
-                  <div className="text-2xl text-center flex items-center justify-center mt-5 text-amber-600">
-                    <IoStar />
-                    <div className="ml-1">{c.rate}</div>
+                  >
+                    <div className="text-2xl text-center flex items-center justify-center mt-5 text-amber-600">
+                      <IoStar />
+                      <div className="ml-1">{c.rate}</div>
+                    </div>
+                    <div className="text-white text-[20px] mt-[7%] text-center">
+                      {c.review}
+                    </div>
                   </div>
-                  <div className="text-white text-[20px] mt-[7%] text-center">
-                    {c.review}
-                  </div>
-                </div>
+                )}
 
                 <img
                   className="group-hover:scale-110 transition-transform duration-200 "

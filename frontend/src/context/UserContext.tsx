@@ -14,10 +14,13 @@ interface UserContextType {
   login: (user: User, token: string) => void;
   logout: () => void;
   cards: Cards[];
+  watchlist: Cards[];
   setCards: React.Dispatch<React.SetStateAction<Cards[]>>;
   loadCards: () => void;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  showWatch: boolean;
+  setShowWatch: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface Cards {
@@ -26,8 +29,9 @@ export interface Cards {
   release: string;
   description: string;
   poster: string;
-  review: string;
-  rate: number;
+  review?: string;
+  rate?: number;
+  banner?: string;
   created_at: string;
 }
 

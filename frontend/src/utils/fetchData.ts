@@ -48,3 +48,25 @@ export const getCards = async (token: string | null) => {
     console.error(error);
   }
 };
+
+export const getWatchCards = async (token: string | null) => {
+  try {
+    const res = await fetch("http://localhost:3000/api/watchlist", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error(data?.message);
+      return;
+    }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};

@@ -1,4 +1,12 @@
-import { pgTable, serial, text, timestamp, integer } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  integer,
+  primaryKey,
+  index,
+} from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -29,3 +37,40 @@ export const cards = pgTable("cards", {
     .defaultNow()
     .notNull(),
 });
+
+export const watchlist = pgTable("watchlist", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  poster: text("poster").notNull(),
+  banner: text("banner"),
+  release: text("release").notNull(),
+  description: text("description").notNull(),
+  user_id: integer("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  created_at: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const follows = pgTable(
+  "follows",
+  {
+    follower_id: integer("follower_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+
+    following_id: integer("following_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+
+    created_at: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.follower_id, table.following_id] }),
+    index("follower_idx").on(table.follower_id),
+    index("following_idx").on(table.following_id),
+  ],
+);

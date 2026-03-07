@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { UserContext, type Cards, type User } from "./UserContext";
-import { getCards } from "../utils/fetchData";
+import { getCards, getWatchCards } from "../utils/fetchData";
 
 interface Props {
   children: ReactNode;
@@ -10,7 +10,9 @@ const UserProvider = ({ children }: Props) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [cards, setCards] = useState<Cards[]>([]);
+  const [watchlist, setWatchlist] = useState<Cards[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [showWatch, setShowWatch] = useState<boolean>(false);
 
   const login = (user: User, token: string) => {
     setUser(user);
@@ -32,18 +34,26 @@ const UserProvider = ({ children }: Props) => {
     const savedUser = localStorage.getItem("MyReview_user");
     const savedToken = localStorage.getItem("MyReview_token");
     const savedCards = localStorage.getItem("MyReview_cards");
+    const savedWatchlist = localStorage.getItem("MyReview_watchlist");
 
     if (savedToken) setToken(savedToken);
     if (savedUser) setUser(JSON.parse(savedUser));
     if (savedCards) setCards(JSON.parse(savedCards));
+    if (savedWatchlist) setWatchlist(JSON.parse(savedWatchlist));
   }, []);
 
   const loadCards = async () => {
     if (!token) return;
+
     const data = await getCards(token);
+    const watchData = await getWatchCards(token);
+
     if (!data) return;
+    if (!watchData) return;
     setCards(data);
+    setWatchlist(watchData);
     localStorage.setItem("MyReview_cards", JSON.stringify(data));
+    localStorage.setItem("MyReview_watchlist", JSON.stringify(watchData));
   };
 
   useEffect(() => {
@@ -58,10 +68,13 @@ const UserProvider = ({ children }: Props) => {
         login,
         logout,
         cards,
+        watchlist,
         setCards,
         loadCards,
         loading,
         setLoading,
+        showWatch,
+        setShowWatch,
       }}
     >
       {children}
