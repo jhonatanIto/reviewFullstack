@@ -10,6 +10,7 @@ const UserProvider = ({ children }: Props) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [cards, setCards] = useState<Cards[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const login = (user: User, token: string) => {
     setUser(user);
@@ -21,8 +22,10 @@ const UserProvider = ({ children }: Props) => {
   const logout = () => {
     setUser(null);
     setToken(null);
+    setCards([]);
     localStorage.removeItem("MyReview_user");
     localStorage.removeItem("MyReview_token");
+    localStorage.removeItem("MyReview_cards");
   };
 
   useEffect(() => {
@@ -47,10 +50,19 @@ const UserProvider = ({ children }: Props) => {
     loadCards();
   }, [token]);
 
-  console.log(cards);
   return (
     <UserContext.Provider
-      value={{ user, token, login, logout, cards, setCards, loadCards }}
+      value={{
+        user,
+        token,
+        login,
+        logout,
+        cards,
+        setCards,
+        loadCards,
+        loading,
+        setLoading,
+      }}
     >
       {children}
     </UserContext.Provider>

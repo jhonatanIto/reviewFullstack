@@ -4,6 +4,7 @@ import { users } from "../db/schema.js";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { nanoid } from "nanoid";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -26,7 +27,12 @@ export const register = async (req: Request, res: Response) => {
 
     const [newUser] = await db
       .insert(users)
-      .values({ name, email: lowerCaseEmail, password: hashedPassword })
+      .values({
+        name,
+        email: lowerCaseEmail,
+        password: hashedPassword,
+        unique_id: nanoid(10),
+      })
       .returning();
 
     const JWT_SECRET = process.env.JWT_SECRET;
@@ -87,6 +93,7 @@ export const login = async (req: Request, res: Response) => {
         name: user.name,
         email: user.email,
         picture: user.picture,
+        unique_id: user.unique_id,
       },
     });
   } catch (error) {

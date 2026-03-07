@@ -10,7 +10,7 @@ interface StarsProps {
 const Stars = ({ rate, setRate, top, size }: StarsProps) => {
   return (
     <div style={{ top: `${top}px` }} className={`flex  absolute gap-2 `}>
-      {[...Array(5)].map((star, index) => {
+      {[...Array(10)].map((star, index) => {
         const currentRate = index + 1;
         return (
           <div key={currentRate}>

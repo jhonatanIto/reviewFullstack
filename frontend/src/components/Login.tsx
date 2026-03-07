@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/useUser";
+import useNotification from "../hooks/useNotification";
 
 const Login = () => {
   const boxRef = useRef<HTMLFormElement>(null);
@@ -12,7 +13,8 @@ const Login = () => {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
 
-  const { login } = useUser();
+  const { login, setLoading } = useUser();
+  const { errorNotification, successNotification } = useNotification();
 
   useEffect(() => {
     const closeModal = (e: MouseEvent) => {
@@ -40,6 +42,7 @@ const Login = () => {
     const body = signUp ? { name, email, password } : { email, password };
 
     try {
+      setLoading(true);
       const res = await fetch(`http://localhost:3000/api/auth/${url}`, {
         method: "POST",
         headers: {
@@ -51,7 +54,7 @@ const Login = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data?.message);
+        errorNotification(data?.message);
         throw new Error(data?.message);
       }
 
@@ -63,8 +66,12 @@ const Login = () => {
       setConfirmPassword("");
 
       navigate("/");
+      if (signUp) successNotification("Account created !");
     } catch (error) {
       console.error(error);
+      errorNotification("Internal server error");
+    } finally {
+      setLoading(false);
     }
   };
 

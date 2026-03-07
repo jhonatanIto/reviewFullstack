@@ -83,7 +83,7 @@ const Header = ({ setMovies, setStartIndex }: HeaderProps) => {
   }, []);
 
   return (
-    <div className="flex w-full justify-between text-white text-[26px] p-10 pl-0">
+    <div className="flex w-full justify-between text-white text-[26px] pr-10 pt-10 pl-0">
       <div
         className="ml-[7%] w-37 justify-between items-center flex text-purple-500 cursor-pointer"
         onClick={() => navigate("/")}

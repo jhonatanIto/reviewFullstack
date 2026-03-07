@@ -3,6 +3,8 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import Login from "./Login";
 import Modal from "./Modal";
+import Loading from "./Loading";
+import { ToastContainer } from "react-toastify";
 
 export interface Movie {
   original_title: string;
@@ -62,11 +64,14 @@ const Layout = () => {
         modal={modal}
         setModal={setModal}
         moviePoster={moviePoster}
+        movieImage={movieImage}
         movieName={movieName}
         movieDescription={movieDescription}
         movieRelease={movieRelease}
       />
       {location.pathname === "/login" && <Login />}
+      <Loading />
+      <ToastContainer />
     </div>
   );
 };

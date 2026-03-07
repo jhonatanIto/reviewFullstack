@@ -40,7 +40,7 @@ const Carousel = ({
   };
 
   return (
-    <div className="absolute bottom-[5%] flex flex-col justify-center  mt-10">
+    <div className="absolute bottom-[5%] flex flex-col justify-center select-none mt-10">
       <div
         className="mt-10 flex relative [&>button]:absolute  [&>button]:text-[50px]  [&>button]:bg-zinc-800/40  [&>button]:h-full
        [&>button]:cursor-pointer  [&>button]:text-white [&>button]:z-10 [&>button]:hover:bg-zinc-200/40"

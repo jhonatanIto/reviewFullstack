@@ -5,6 +5,7 @@ export interface User {
   name: string;
   email: string;
   picture: string | null;
+  unique_id: string;
 }
 
 interface UserContextType {
@@ -15,6 +16,8 @@ interface UserContextType {
   cards: Cards[];
   setCards: React.Dispatch<React.SetStateAction<Cards[]>>;
   loadCards: () => void;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface Cards {

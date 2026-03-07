@@ -2,11 +2,13 @@ import { useEffect, useRef } from "react";
 import Stars from "./Stars";
 import { useUser } from "../context/useUser";
 import useRate from "../hooks/useRate";
+import useNotification from "../hooks/useNotification";
 
 interface ModalProps {
   modal: boolean;
   setModal: React.Dispatch<React.SetStateAction<boolean>>;
   moviePoster: string | undefined;
+  movieImage: string | undefined;
   movieName: string | undefined;
   movieRelease: string | undefined;
   movieDescription: string | undefined;
@@ -15,14 +17,16 @@ interface ModalProps {
 const Modal = ({
   modal,
   moviePoster,
+  movieImage,
   setModal,
   movieName,
   movieDescription,
   movieRelease,
 }: ModalProps) => {
   const boxRef = useRef<HTMLDivElement>(null);
-  const { token, loadCards } = useUser();
+  const { token, loadCards, setLoading, loading } = useUser();
   const { rate, setRate, setReview, review } = useRate();
+  const { successNotification, errorNotification } = useNotification();
 
   useEffect(() => {
     const closeModal = (e: MouseEvent) => {
@@ -44,6 +48,7 @@ const Modal = ({
       release: movieRelease,
       description: movieDescription,
       poster: moviePoster,
+      banner: movieImage,
       rate,
       review,
     };
@@ -51,6 +56,7 @@ const Modal = ({
     if (!rate) return;
     if (!token) return console.log("Create an account to save review");
     try {
+      setLoading(true);
       const res = await fetch("http://localhost:3000/api/cards", {
         method: "POST",
         headers: {
@@ -69,9 +75,13 @@ const Modal = ({
 
       loadCards();
       setModal(false);
+      successNotification("Review created!");
       console.log(data.message);
     } catch (error) {
       console.error(error);
+      errorNotification("Couldn't create Review");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,7 +99,13 @@ const Modal = ({
         <img src={moviePoster} />
 
         <div className="p-5 flex flex-col items-center justify-center">
-          <Stars rate={rate} setRate={setRate} top={100} size={38} />
+          <div
+            style={{ color: "oklch(82.8% 0.189 84.429)" }}
+            className="absolute top-10 text-[25px] "
+          >
+            Rate: {rate}/10
+          </div>
+          <Stars rate={rate} setRate={setRate} top={100} size={30} />
           <textarea
             value={review}
             spellCheck={false}
@@ -101,6 +117,7 @@ const Modal = ({
             className="text-white bg-purple-600 text-2xl pl-9 pr-9 transition-all duration-200 shadow-zinc-800/80 shadow-md
           rounded-[10px] flex p-1 mt-10 absolute bottom-23 cursor-pointer hover:bg-purple-700"
             onClick={postCard}
+            disabled={loading}
           >
             save
           </button>
