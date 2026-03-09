@@ -7,10 +7,18 @@ type NewCard = InferInsertModel<typeof cards>;
 export const postCard = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
-    const { title, release, description, poster, rate, review, banner } =
-      req.body;
+    const {
+      title,
+      release,
+      description,
+      poster,
+      rate,
+      review,
+      banner,
+      tmdb_id,
+    } = req.body;
 
-    if (!title || !rate || !poster || !release || !description) {
+    if (!title || !rate || !poster || !release || !description || !tmdb_id) {
       return res.status(400).json({ message: "Missing fields" });
     }
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -23,6 +31,7 @@ export const postCard = async (req: Request, res: Response) => {
       banner: banner ? banner : null,
       rate,
       review: review ? review : null,
+      tmdb_id,
       user_id: userId,
     };
 

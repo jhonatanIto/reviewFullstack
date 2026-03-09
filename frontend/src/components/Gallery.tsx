@@ -28,6 +28,7 @@ const Gallery = () => {
     setMovieRelease,
     setModal,
     setMoviePoster,
+    setMovieId,
   } = useMovie();
 
   useEffect(() => {
@@ -124,6 +125,7 @@ const Gallery = () => {
                     setMovieRelease(c.release);
                     setMovieName(c.title);
                     setMoviePoster(c.poster);
+                    setMovieId(c.tmdb_id);
                     setModal(true);
                     if (c.banner) setMovieImage(c.banner);
                   }

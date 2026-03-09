@@ -33,6 +33,7 @@ export interface Cards {
   rate?: number;
   banner?: string;
   created_at: string;
+  tmdb_id: number;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(

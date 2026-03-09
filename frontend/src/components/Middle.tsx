@@ -2,6 +2,8 @@ import { IoAddOutline } from "react-icons/io5";
 import { useUser } from "../context/useUser";
 import useNotification from "../hooks/useNotification";
 import { useMovie } from "../context/useMovie";
+import { PiTrashLight } from "react-icons/pi";
+import { deleteWatchCard } from "../utils/fetchData";
 
 const Middle = () => {
   const { token } = useUser();
@@ -12,8 +14,11 @@ const Middle = () => {
     movieDescription,
     moviePoster,
     movieImage,
+    movieId,
     setModal,
   } = useMovie();
+
+  const { watchlist, loadCards, setLoading } = useUser();
 
   const postWatchlist = async () => {
     if (!token) return errorNotification("Sign in to save movies");
@@ -24,6 +29,7 @@ const Middle = () => {
       description: movieDescription,
       poster: moviePoster,
       banner: movieImage,
+      tmdb_id: movieId,
     };
     try {
       const res = await fetch("http://localhost:3000/api/watchlist", {
@@ -49,6 +55,24 @@ const Middle = () => {
     }
   };
 
+  const inWatchlist = watchlist.some((w) => w.tmdb_id === movieId);
+
+  const removeWatchlist = async () => {
+    const currentCard = watchlist.find((w) => w.tmdb_id === movieId);
+    if (!currentCard?.id) return;
+    try {
+      setLoading(true);
+      deleteWatchCard(token, currentCard.id);
+      loadCards();
+      successNotification("Removed from watchlist");
+    } catch (error) {
+      console.error(error);
+      errorNotification("Couldn't remove");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="text-white ml-[7%] mt-10">
       <div className="text-[65px]">{movieName}</div>
@@ -67,10 +91,24 @@ const Middle = () => {
         <button
           className="flex text-zinc-500 hover:text-zinc-100 items-center border p-2 cursor-pointer pl-6 pr-6
          rounded-[10px] text-[20px] ml-5 transition-all duration-200"
-          onClick={postWatchlist}
+          onClick={() => {
+            if (!inWatchlist) {
+              postWatchlist();
+              loadCards();
+            } else {
+              removeWatchlist();
+            }
+          }}
         >
-          <IoAddOutline className="text-2xl" />
-          <span className="ml-3">watch list</span>
+          {inWatchlist ? (
+            <PiTrashLight />
+          ) : (
+            <IoAddOutline className="text-2xl" />
+          )}
+          <span className="ml-3">
+            {" "}
+            {inWatchlist ? "Remove from watchlist" : "Watch list"}{" "}
+          </span>
         </button>
       </div>
     </div>

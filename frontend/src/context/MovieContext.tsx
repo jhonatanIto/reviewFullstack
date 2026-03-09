@@ -17,6 +17,8 @@ interface MovieContextType {
   movieRelease: string;
   movieDescription: string;
   modal: boolean;
+  movieId: number;
+  setMovieId: React.Dispatch<React.SetStateAction<number>>;
   setMovies: React.Dispatch<React.SetStateAction<Movie[]>>;
   setMovieName: React.Dispatch<React.SetStateAction<string>>;
   setMovieImage: React.Dispatch<React.SetStateAction<string>>;

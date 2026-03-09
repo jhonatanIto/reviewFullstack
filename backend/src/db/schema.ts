@@ -30,6 +30,7 @@ export const cards = pgTable("cards", {
   description: text("description").notNull(),
   review: text("review"),
   rate: integer("rate").notNull(),
+  tmdb_id: integer("tmdb_id").notNull(),
   user_id: integer("user_id")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
@@ -45,6 +46,7 @@ export const watchlist = pgTable("watchlist", {
   banner: text("banner"),
   release: text("release").notNull(),
   description: text("description").notNull(),
+  tmdb_id: integer("tmdb_id").notNull(),
   user_id: integer("user_id")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),

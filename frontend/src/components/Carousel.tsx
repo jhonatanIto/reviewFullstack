@@ -18,6 +18,7 @@ const Carousel = ({ setStartIndex, startIndex }: CarouselProps) => {
     setMovieName,
     setMoviePoster,
     setMovieRelease,
+    setMovieId,
   } = useMovie();
 
   const visibleMovies = movies.slice(startIndex, startIndex + 10);
@@ -35,9 +36,9 @@ const Carousel = ({ setStartIndex, startIndex }: CarouselProps) => {
   };
 
   return (
-    <div className="absolute bottom-[5%] flex flex-col justify-center select-none mt-10">
+    <div className="absolute  w-full bottom-[5%] flex flex-col justify-center select-none mt-10">
       <div
-        className="mt-10 flex relative [&>button]:absolute  [&>button]:text-[50px]  [&>button]:bg-zinc-800/40  [&>button]:h-full
+        className="mt-10 flex justify-center relative [&>button]:absolute  [&>button]:text-[50px]  [&>button]:bg-zinc-800/40  [&>button]:h-full
        [&>button]:cursor-pointer  [&>button]:text-white [&>button]:z-10 [&>button]:hover:bg-zinc-200/40"
       >
         <button className=" -left-0.5 rounded-l-2xl ml-1.5" onClick={prev}>
@@ -50,7 +51,7 @@ const Carousel = ({ setStartIndex, startIndex }: CarouselProps) => {
           return (
             <div
               key={index}
-              className="w-[13%] ml-1 mr-1 overflow-hidden rounded-2xl flex items-center"
+              className="w-[10%] ml-1 mr-1 overflow-hidden rounded-2xl flex items-center"
             >
               <img
                 className="w-full cursor-pointer object-cover hover:scale-110 transition-transform duration-200 text-white"
@@ -62,6 +63,7 @@ const Carousel = ({ setStartIndex, startIndex }: CarouselProps) => {
                   setMovieName(m.original_title);
                   setMovieRelease(m.release_date);
                   setMovieDescription(m.overview);
+                  setMovieId(m.id);
                 }}
               />
             </div>

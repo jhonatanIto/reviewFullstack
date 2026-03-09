@@ -7,9 +7,9 @@ type NewCard = InferInsertModel<typeof watchlist>;
 export const postWatch = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
-    const { title, release, description, poster, banner } = req.body;
+    const { title, release, description, poster, banner, tmdb_id } = req.body;
 
-    if (!title || !poster || !release || !description) {
+    if (!title || !poster || !release || !description || !tmdb_id) {
       return res.status(400).json({ message: "Missing fields" });
     }
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -20,6 +20,7 @@ export const postWatch = async (req: Request, res: Response) => {
       description,
       poster,
       banner: banner ? banner : null,
+      tmdb_id,
       user_id: userId,
     };
 

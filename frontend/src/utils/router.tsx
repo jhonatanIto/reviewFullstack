@@ -6,6 +6,7 @@ import Friends from "../components/Friends";
 import Login from "../components/Login";
 import Profile from "../components/Profile";
 import CardPage from "../components/CardPage";
+import VisitorPov from "../components/VisitorPov";
 
 export const router = createBrowserRouter([
   {
@@ -14,7 +15,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <App /> },
       {
-        path: "gallery",
+        path: "reviews",
         element: <Gallery />,
         children: [{ path: ":id", element: <CardPage /> }],
       },
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
       },
       { path: "friends", element: <Friends /> },
       { path: "profile", element: <Profile /> },
+      { path: "profile/:unique", element: <VisitorPov /> },
       {
         path: "login",
         element: <App />,

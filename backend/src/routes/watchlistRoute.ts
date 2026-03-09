@@ -12,4 +12,4 @@ watchlistRouter.use(authMiddleware);
 
 watchlistRouter.post("/", postWatch);
 watchlistRouter.get("/", getWatch);
-watchlistRouter.delete("/", deleteWatch);
+watchlistRouter.delete("/:cardId", deleteWatch);

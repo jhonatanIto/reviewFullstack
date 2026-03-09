@@ -12,6 +12,7 @@ const MovieProvider = ({ children }: Props) => {
   const [moviePoster, setMoviePoster] = useState<string>("");
   const [movieRelease, setMovieRelease] = useState<string>("");
   const [movieDescription, setMovieDescription] = useState<string>("");
+  const [movieId, setMovieId] = useState<number>(0);
   const [modal, setModal] = useState<boolean>(false);
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const MovieProvider = ({ children }: Props) => {
       setMoviePoster(convPoster);
       setMovieDescription(movies[0].overview);
       setMovieRelease(movies[0].release_date);
+      setMovieId(movies[0].id);
     }
   }, [movies]);
 
@@ -36,6 +38,8 @@ const MovieProvider = ({ children }: Props) => {
         movieRelease,
         movieDescription,
         modal,
+        movieId,
+        setMovieId,
         setMovies,
         setMovieName,
         setMovieImage,

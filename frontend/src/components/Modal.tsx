@@ -19,6 +19,7 @@ const Modal = () => {
     movieDescription,
     moviePoster,
     movieImage,
+    movieId,
   } = useMovie();
 
   useEffect(() => {
@@ -44,6 +45,7 @@ const Modal = () => {
       banner: movieImage,
       rate,
       review,
+      tmdb_id: movieId,
     };
 
     if (!rate) return;
@@ -89,7 +91,7 @@ const Modal = () => {
         className={`flex  items-center bg-white/20 relative rounded-2xl overflow-hidden shadow-black shadow-lg
          transition-all duration-300  ease-in-out  ${modal ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-24"}`}
       >
-        <img src={moviePoster} />
+        <img src={moviePoster ? moviePoster : ""} />
 
         <div className="p-5 flex flex-col items-center justify-center">
           <div

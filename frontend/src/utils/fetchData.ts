@@ -70,3 +70,40 @@ export const getWatchCards = async (token: string | null) => {
     console.error(error);
   }
 };
+
+export const deleteWatchCard = async (
+  token: string | null,
+  id: number | null,
+) => {
+  try {
+    const res = await fetch(`http://localhost:3000/api/watchlist/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error(data?.message);
+      return;
+    }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const fetchProfile = async (unique: string) => {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/api/users/profile/${unique}`,
+    );
+    return res.json();
+  } catch (error) {
+    console.error(error);
+  }
+};

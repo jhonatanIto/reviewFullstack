@@ -10,11 +10,11 @@ import type { Movie } from "../context/MovieContext";
 interface HeaderProps {
   setStartIndex: Dispatch<React.SetStateAction<number>>;
 }
-type GalleryOption = "Watch list" | "Gallery";
+type GalleryOption = "Watch list" | "Reviews";
 
 const routes = {
   "Watch list": "watchlist",
-  Gallery: "gallery",
+  Reviews: "reviews",
 };
 
 const Header = ({ setStartIndex }: HeaderProps) => {
@@ -26,7 +26,7 @@ const Header = ({ setStartIndex }: HeaderProps) => {
 
   const [galleryList, setGalleryList] = useState<boolean>(false);
   const [selectedGallery, setSelectedGallery] =
-    useState<GalleryOption>("Gallery");
+    useState<GalleryOption>("Reviews");
   const galleryRef = useRef<HTMLLIElement>(null);
 
   const { user, setShowWatch } = useUser();
@@ -146,7 +146,7 @@ const Header = ({ setStartIndex }: HeaderProps) => {
             ref={galleryRef}
             className={`relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 
                after:bg-purple-500 after:transition-all after:duration-300  flex justify-center  
-              ${location.pathname === "/gallery" || location.pathname === "/watchlist" ? "after:w-full text-purple-500" : ""}`}
+              ${location.pathname === "/reviews" || location.pathname === "/watchlist" ? "after:w-full text-purple-500" : ""}`}
             onClick={() => {
               setGalleryList(false);
               navigate(`/${routes[selectedGallery]}`);
@@ -166,14 +166,14 @@ const Header = ({ setStartIndex }: HeaderProps) => {
               ${galleryList ? " translate-y-0 pointer-events-auto" : "-translate-y-10  opacity-0 pointer-events-none"}
                transition-all duration-200 ease-in-out [&>div]:hover:bg-purple-500/30 `}
             >
-              {selectedGallery !== "Gallery" && (
+              {selectedGallery !== "Reviews" && (
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleGalleryChange("Gallery");
+                    handleGalleryChange("Reviews");
                   }}
                 >
-                  Gallery
+                  Reviews
                 </div>
               )}
 
