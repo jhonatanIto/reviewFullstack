@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
 import { users, cards, follows } from "../db/schema.js";
-import { and, eq, ilike, sql } from "drizzle-orm";
+import { and, eq, ilike, inArray, sql } from "drizzle-orm";
 
 export const searchUsers = async (req: Request, res: Response) => {
   try {
@@ -139,4 +139,31 @@ export const toggleFollow = async (req: Request, res: Response) => {
     .onConflictDoNothing();
 
   res.json({ following: true });
+};
+
+export const getFollowing = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(400).json({ message: "Unauthorized" });
+
+    const following = await db
+      .select({
+        name: users.name,
+        unique_id: users.unique_id,
+        picture: users.picture,
+        reviews: sql<number>`
+        (SELECT COUNT(*)::int
+        FROM cards
+        WHERE user_id = ${users.id}
+        )`,
+      })
+      .from(follows)
+      .innerJoin(users, eq(users.id, follows.following_id))
+      .where(eq(follows.follower_id, userId));
+
+    res.status(200).json({ following });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };

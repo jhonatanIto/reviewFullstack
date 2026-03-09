@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
 import naruto from "../images/naruto.jpg";
 import { useNavigate } from "react-router-dom";
+import { getFollowing } from "../utils/fetchData";
+import { useUser } from "../context/useUser";
 
 interface User {
   name: string;
   unique_id: string;
   picture: string;
+  reviews: number;
 }
 
 const Friends = () => {
   const [searchType, setSearchType] = useState("name");
   const [name, setName] = useState("");
   const [users, setUsers] = useState<User[]>([]);
+  const [following, setFollowing] = useState<User[]>([]);
+  console.log(following);
+
+  const { token } = useUser();
 
   const navigate = useNavigate();
 
@@ -31,6 +38,18 @@ const Friends = () => {
 
     return () => clearTimeout(timeout);
   }, [name]);
+
+  useEffect(() => {
+    const followingList = async () => {
+      if (!token) return;
+      const data = await getFollowing(token);
+
+      if (!data) return;
+      setFollowing(data.following);
+    };
+
+    followingList();
+  }, [token]);
 
   const clickUser = (unique: string) => {
     navigate(`/profile/${unique}`);
@@ -110,14 +129,23 @@ const Friends = () => {
         </div>
       </div>
       <div className="w-full text-white mt-7">
-        <div className="name flex flex-col w-fit items-center ml-2 mr-2">
-          <img
-            src={naruto}
-            className="w-40 h-40 rounded-full object-cover cursor-pointer"
-          />
-          <div className="text-2xl">Jhonatan</div>
-          <div className="text-[20px]">Review: 32</div>
-        </div>
+        {following.map((f) => {
+          return (
+            <div
+              className="name flex flex-col w-fit items-center ml-2 mr-2"
+              onClick={() => {
+                navigate(`/profile/${f.unique_id}`);
+              }}
+            >
+              <img
+                src={naruto}
+                className="w-40 h-40 rounded-full object-cover cursor-pointer"
+              />
+              <div className="text-2xl">{f.name}</div>
+              <div className="text-[20px]">Review: {f.reviews}</div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

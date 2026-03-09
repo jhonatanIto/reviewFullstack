@@ -138,3 +138,24 @@ export const toggleFollow = async (unique: string, token: string) => {
     console.log(error);
   }
 };
+
+export const getFollowing = async (token: string) => {
+  try {
+    const res = await fetch(`http://localhost:3000/api/users/following`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.log(data?.message);
+      return;
+    }
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

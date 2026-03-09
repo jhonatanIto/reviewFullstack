@@ -49,7 +49,6 @@ const UserProvider = ({ children }: Props) => {
     if (data) {
       setCards(data);
       localStorage.setItem("MyReview_cards", JSON.stringify(data));
-      console.log("update dos cards");
     }
 
     const watchData = await getWatchCards(token);
