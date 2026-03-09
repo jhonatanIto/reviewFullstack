@@ -1,7 +1,18 @@
 import { Router } from "express";
-import { getProfile, searchUsers } from "../controllers/userController.js";
+import {
+  getProfile,
+  searchUsers,
+  toggleFollow,
+} from "../controllers/userController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 export const userRoute = Router();
 
 userRoute.get("/search", searchUsers);
+
+userRoute.use(authMiddleware);
 userRoute.get("/profile/:unique_id", getProfile);
+userRoute.post("/:unique_id/follow", toggleFollow);
+
+// userRoute.get("/:unique_id/followers");
+// userRoute.get("/:unique_id/following");

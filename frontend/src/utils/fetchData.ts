@@ -97,13 +97,44 @@ export const deleteWatchCard = async (
   }
 };
 
-export const fetchProfile = async (unique: string) => {
+export const fetchProfile = async (unique: string, token: string) => {
   try {
     const res = await fetch(
       `http://localhost:3000/api/users/profile/${unique}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
     );
     return res.json();
   } catch (error) {
     console.error(error);
+  }
+};
+
+export const toggleFollow = async (unique: string, token: string) => {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/api/users/${unique}/follow`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.log(data?.message);
+      return;
+    }
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.log(error);
   }
 };

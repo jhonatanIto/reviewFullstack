@@ -4,10 +4,20 @@ import { useEffect, useRef, useState } from "react";
 import useRate from "../hooks/useRate";
 import Stars from "./Stars";
 import useNotification from "../hooks/useNotification";
+import { useOutletContext } from "react-router-dom";
+import type { Cards } from "../context/UserContext";
+import { IoIosHeart } from "react-icons/io";
+import { IoIosHeartEmpty } from "react-icons/io";
+import { FaRegCommentDots } from "react-icons/fa";
+
+interface OutletContextType {
+  cards: Cards[];
+  owner: false;
+}
 
 const CardPage = () => {
-  const { id } = useParams();
-  const { cards, token, loadCards, setLoading, loading } = useUser();
+  const { id, unique } = useParams();
+  const { token, loadCards, setLoading, loading } = useUser();
   const boxRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [edit, setEdit] = useState(false);
@@ -16,7 +26,11 @@ const CardPage = () => {
   const { setRate, setReview, rate, review } = useRate();
   const { successNotification, errorNotification } = useNotification();
 
+  const { cards, owner } = useOutletContext<OutletContextType>();
+
   const currCard = cards.find((c) => c.id === Number(id));
+
+  const profileUrl = owner ? "reviews" : `profile/${unique}`;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,7 +42,7 @@ const CardPage = () => {
   useEffect(() => {
     const closeModal = (e: MouseEvent) => {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
-        navigate("/reviews");
+        navigate(`/${profileUrl}`);
       }
     };
 
@@ -91,7 +105,7 @@ const CardPage = () => {
       }
 
       loadCards();
-      navigate("/reviews");
+      navigate(`/${profileUrl}`);
       successNotification("Review deleted");
     } catch (error) {
       console.error(error);
@@ -158,20 +172,34 @@ const CardPage = () => {
                 Delete
               </button>
             )}
-            <button
-              className="text-white bg-purple-600 text-[20px] w-30 justify-center items-center transition-all duration-200
+            {owner && (
+              <button
+                className="text-white bg-purple-600 text-[20px] w-30 justify-center items-center transition-all duration-200
                           rounded-[10px] flex p-1 mt-10 ml-2 mr-2   bottom-23 cursor-pointer hover:bg-purple-800 shadow-zinc-800/80 shadow-md
                           hover:shadow-none select-none"
-              onClick={() => {
-                setEdit((prev) => !prev);
-                if (edit) {
-                  updateCard();
-                }
-              }}
-              disabled={loading}
-            >
-              {edit ? "Save" : "Edit"}
-            </button>
+                onClick={() => {
+                  setEdit((prev) => !prev);
+                  if (edit) {
+                    updateCard();
+                  }
+                }}
+                disabled={loading}
+              >
+                {edit ? "Save" : "Edit"}
+              </button>
+            )}
+            {!edit && (
+              <div className="flex  w-60 justify-around mt-10">
+                <div className=" flex items-center  justify-around cursor-pointer">
+                  <div className="text-[25px] text-white mr-1">29</div>
+                  <IoIosHeart className=" text-[35px]  text-red-500" />
+                </div>
+                <div className=" flex items-center  justify-around  text-white cursor-pointer">
+                  <div className="text-[25px] mr-1">69</div>
+                  <FaRegCommentDots className=" text-[31px]  " />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

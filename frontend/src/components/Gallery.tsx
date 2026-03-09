@@ -20,7 +20,7 @@ const Gallery = () => {
   );
   const [displayFilter, setDisplayFilter] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
-
+  const owner = true;
   const {
     setMovieName,
     setMovieDescription,
@@ -156,7 +156,7 @@ const Gallery = () => {
           );
         })}
       </div>
-      <Outlet />
+      <Outlet context={{ cards, owner }} />
     </div>
   );
 };
