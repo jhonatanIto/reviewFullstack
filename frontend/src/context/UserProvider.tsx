@@ -46,14 +46,17 @@ const UserProvider = ({ children }: Props) => {
     if (!token) return;
 
     const data = await getCards(token);
-    if (!data) return;
-    setCards(data);
-    localStorage.setItem("MyReview_cards", JSON.stringify(data));
+    if (data) {
+      setCards(data);
+      localStorage.setItem("MyReview_cards", JSON.stringify(data));
+      console.log("update dos cards");
+    }
 
     const watchData = await getWatchCards(token);
-    if (!watchData) return;
-    localStorage.setItem("MyReview_watchlist", JSON.stringify(watchData));
-    setWatchlist(watchData);
+    if (watchData) {
+      localStorage.setItem("MyReview_watchlist", JSON.stringify(watchData));
+      setWatchlist(watchData);
+    }
   };
 
   useEffect(() => {

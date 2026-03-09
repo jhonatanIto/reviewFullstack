@@ -28,7 +28,7 @@ const CardPage = () => {
   useEffect(() => {
     const closeModal = (e: MouseEvent) => {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
-        navigate("/gallery");
+        navigate("/reviews");
       }
     };
 
@@ -62,7 +62,6 @@ const CardPage = () => {
         return console.log(data?.message);
       }
 
-      console.log(data);
       loadCards();
       successNotification("Review updated");
     } catch (error) {
@@ -86,11 +85,13 @@ const CardPage = () => {
 
       const data = await res.json();
 
-      if (!res.ok) return console.log(data?.message);
+      if (!res.ok) {
+        errorNotification(data?.message);
+        return console.log(data?.message);
+      }
 
-      console.log(data);
       loadCards();
-      navigate("/gallery");
+      navigate("/reviews");
       successNotification("Review deleted");
     } catch (error) {
       console.error(error);

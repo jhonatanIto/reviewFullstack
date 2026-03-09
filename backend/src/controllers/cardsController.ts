@@ -54,9 +54,6 @@ export const getCards = async (req: Request, res: Response) => {
       .from(cards)
       .where(eq(cards.user_id, userId));
 
-    if (userCards.length === 0)
-      return res.status(404).json({ message: "cards not found" });
-
     res.status(200).json(userCards);
   } catch (error) {
     console.error(error);

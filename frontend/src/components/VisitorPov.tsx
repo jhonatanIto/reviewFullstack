@@ -70,7 +70,8 @@ const VisitorPov = () => {
           return (
             <div
               key={c.id}
-              className="w-60 mt-5  ml-2 mr-2 overflow-hidden relative  group cursor-pointer select-none"
+              className="w-60 mt-5  ml-5 mr-5 overflow-hidden relative  group cursor-pointer select-none
+                  shadow-black/60 shadow-[15px_0_15px_rgba(0,0,0,0.6)] "
             >
               <div
                 className="opacity-0 w-full group-hover:opacity-100 transition-opacity 

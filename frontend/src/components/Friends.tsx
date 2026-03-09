@@ -38,8 +38,9 @@ const Friends = () => {
 
   return (
     <div className="mt-10 pl-[8%] pr-[8%]">
-      <div className="flex flex-col items-end justify-end ">
-        <div className="flex flex-col relative">
+      <div className="flex  justify-between ">
+        <div className="text-white text-3xl">Following :</div>
+        <div className="flex flex-col relative ">
           <div className="flex text-white items-center ">
             <label className=" flex cursor-pointer items-center">
               <input
@@ -107,16 +108,15 @@ const Friends = () => {
             })}
           </div>
         </div>
-
-        <div className="w-full text-white mt-7">
-          <div className="name flex flex-col w-fit items-center ml-2 mr-2">
-            <img
-              src={naruto}
-              className="w-40 h-40 rounded-full object-cover cursor-pointer"
-            />
-            <div className="text-2xl">Jhonatan</div>
-            <div className="text-[20px]">Review: 32</div>
-          </div>
+      </div>
+      <div className="w-full text-white mt-7">
+        <div className="name flex flex-col w-fit items-center ml-2 mr-2">
+          <img
+            src={naruto}
+            className="w-40 h-40 rounded-full object-cover cursor-pointer"
+          />
+          <div className="text-2xl">Jhonatan</div>
+          <div className="text-[20px]">Review: 32</div>
         </div>
       </div>
     </div>

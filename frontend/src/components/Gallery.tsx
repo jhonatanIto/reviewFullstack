@@ -51,7 +51,7 @@ const Gallery = () => {
 
   const linkUrl = (id: number) => {
     if (!showWatch) {
-      return `/gallery/${id}`;
+      return `/reviews/${id}`;
     } else {
       return "/";
     }
@@ -118,7 +118,8 @@ const Gallery = () => {
             <Link to={linkUrl(c.id)}>
               <div
                 key={c.id}
-                className="w-60 mt-5  ml-2 mr-2 overflow-hidden relative  group cursor-pointer select-none"
+                className="w-60 mt-5  ml-5 mr-5 overflow-hidden relative  group cursor-pointer select-none
+                  shadow-black/60 shadow-[15px_0_15px_rgba(0,0,0,0.6)] "
                 onClick={() => {
                   if (showWatch) {
                     setMovieDescription(c.description);

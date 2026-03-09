@@ -43,9 +43,6 @@ export const getWatch = async (req: Request, res: Response) => {
       .from(watchlist)
       .where(eq(watchlist.user_id, userId));
 
-    if (userCards.length === 0)
-      return res.status(404).json({ message: "cards not found" });
-
     res.status(200).json(userCards);
   } catch (error) {
     console.error(error);
