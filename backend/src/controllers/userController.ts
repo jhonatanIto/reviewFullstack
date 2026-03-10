@@ -1,13 +1,18 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
-import { users, cards, follows } from "../db/schema.js";
-import { and, eq, ilike, inArray, sql } from "drizzle-orm";
+import { users, cards, follows, likes, comments } from "../db/schema.js";
+import { and, desc, eq, ilike, sql, count } from "drizzle-orm";
 
 export const searchUsers = async (req: Request, res: Response) => {
   try {
-    const { q } = req.query;
+    const q = req.query.q as string;
+    const type = req.query.type as string;
 
-    if (!q) return res.json([]);
+    if (!q || q.length < 2 || (type !== "name" && type !== "id")) {
+      return res.json([]);
+    }
+
+    const column = type === "name" ? users.name : users.unique_id;
 
     const userSearch = await db
       .select({
@@ -16,7 +21,7 @@ export const searchUsers = async (req: Request, res: Response) => {
         picture: users.picture,
       })
       .from(users)
-      .where(ilike(users.name, `%${q}%`))
+      .where(ilike(column, `%${q}%`))
       .limit(10);
 
     res.json(userSearch);
@@ -70,9 +75,32 @@ export const getProfile = async (req: Request, res: Response) => {
     if (!profile) return res.status(404).json({ message: "User not found" });
 
     const profileCards = await db
-      .select()
+      .select({
+        id: cards.id,
+        title: cards.title,
+        poster: cards.poster,
+        description: cards.description,
+        created_at: cards.created_at,
+        rate: cards.rate,
+        review: cards.review,
+
+        likes_count: count(sql`distinct ${likes.id}`),
+        comments_count: count(sql`distinct ${comments.id}`),
+
+        liked_by_user: sql<boolean>`
+        EXISTS( 
+          SELECT 1
+          FROM likes
+          WHERE likes.card_id = ${cards.id}
+          AND likes.user_id = ${userId}
+        )`,
+      })
       .from(cards)
-      .where(eq(cards.user_id, profile.id));
+      .leftJoin(likes, eq(likes.card_id, cards.id))
+      .leftJoin(comments, eq(comments.card_id, cards.id))
+      .where(eq(cards.user_id, profile.id))
+      .groupBy(cards.id)
+      .orderBy(desc(cards.created_at));
 
     res.status(200).json({
       user: {

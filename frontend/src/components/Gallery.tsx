@@ -5,7 +5,7 @@ import { IoStar } from "react-icons/io5";
 import { useEffect, useRef, useState } from "react";
 import { useMovie } from "../context/useMovie";
 
-type SortOption =
+export type SortOption =
   | "Newest"
   | "Oldest"
   | "Highest rate"
@@ -13,7 +13,7 @@ type SortOption =
   | "Release date";
 
 const Gallery = () => {
-  const { cards, watchlist, showWatch } = useUser();
+  const { cards, watchlist, showWatch, search } = useUser();
 
   const [sortBy, setSortBy] = useState<SortOption>(
     () => (localStorage.getItem("MyReview_sortBy") as SortOption) || "Newest",
@@ -21,6 +21,9 @@ const Gallery = () => {
   const [displayFilter, setDisplayFilter] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const owner = true;
+
+  console.log(cards);
+
   const {
     setMovieName,
     setMovieDescription,
@@ -49,6 +52,10 @@ const Gallery = () => {
 
   const currentArray = showWatch ? watchlist : cards;
 
+  const filteredCards = currentArray.filter((c) =>
+    c.title.toLocaleLowerCase().includes(search.toLowerCase()),
+  );
+
   const linkUrl = (id: number) => {
     if (!showWatch) {
       return `/reviews/${id}`;
@@ -57,7 +64,7 @@ const Gallery = () => {
     }
   };
 
-  const sortedCards = [...(currentArray || [])].sort((a, b) => {
+  const sortedCards = [...(filteredCards || [])].sort((a, b) => {
     switch (sortBy) {
       case "Newest":
         return (
@@ -98,7 +105,7 @@ const Gallery = () => {
         </div>
         <ul
           className={`${displayFilter ? "flex" : "hidden"}  flex-col absolute z-50 bg-zinc-100 rounded-[5px] mt-1
-          w-50 text-[18px] [&>li]:p-2 [&>li]:hover:bg-zinc-200 [&>li]:cursor-pointer [&>li]:pl-4 [&>li]:hover:text-purple-900`}
+         w-32 text-[18px] [&>li]:p-2 [&>li]:hover:bg-zinc-200 [&>li]:cursor-pointer [&>li]:pl-4 [&>li]:font-semibold [&>li]:hover:text-purple-500`}
         >
           <li onClick={() => selectFilter("Newest")}>Newest</li>
           <li onClick={() => selectFilter("Oldest")}>Oldest</li>

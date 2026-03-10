@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
-import { users } from "../db/schema.js";
-import { eq } from "drizzle-orm";
+import { follows, users } from "../db/schema.js";
+import { count, eq, inArray } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { nanoid } from "nanoid";
@@ -80,6 +80,16 @@ export const login = async (req: Request, res: Response) => {
     if (!authorized)
       return res.status(401).json({ message: "Invalid credentials" });
 
+    const [followingCount] = await db
+      .select({ total: count() })
+      .from(follows)
+      .where(eq(follows.follower_id, user.id));
+
+    const [followersCount] = await db
+      .select({ total: count() })
+      .from(follows)
+      .where(eq(follows.following_id, user.id));
+
     const JWT_SECRET = process.env.JWT_SECRET;
     if (!JWT_SECRET) throw new Error("JWT_SECRET not defined");
 
@@ -95,8 +105,8 @@ export const login = async (req: Request, res: Response) => {
         email: user.email,
         picture: user.picture,
         unique_id: user.unique_id,
-        following: user.following,
-        followers: user.followers,
+        following: followingCount?.total ?? 0,
+        followers: followersCount?.total ?? 0,
       },
     });
   } catch (error) {

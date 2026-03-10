@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
 import { fetchProfile, toggleFollow } from "../utils/fetchData";
 import naruto from "../images/naruto.jpg";
 import { IoStar } from "react-icons/io5";
 import type { Cards } from "../context/UserContext";
 import { useUser } from "../context/useUser";
+import type { SortOption } from "./Gallery";
+import { IoIosArrowDown } from "react-icons/io";
 
 const VisitorPov = () => {
   const [name, setName] = useState("");
@@ -17,6 +19,26 @@ const VisitorPov = () => {
   const [cards, setCards] = useState<Cards[]>([]);
   const unique_id = useParams().unique as string;
   const { token } = useUser();
+
+  const [displayFilter, setDisplayFilter] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+  const [sortBy, setSortBy] = useState<SortOption>(
+    () => (localStorage.getItem("MyReview_sortBy") as SortOption) || "Newest",
+  );
+  const selectFilter = (value: string) => {
+    setDisplayFilter(false);
+    setSortBy(value);
+  };
+  useEffect(() => {
+    const closeFilter = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setDisplayFilter(false);
+      }
+    };
+
+    window.addEventListener("mousedown", closeFilter);
+    return () => window.removeEventListener("mousedown", closeFilter);
+  }, []);
 
   const getProfile = async () => {
     if (!unique_id || !token) return;
@@ -37,6 +59,29 @@ const VisitorPov = () => {
   useEffect(() => {
     getProfile();
   }, [unique_id, token]);
+
+  const sortedCards = [...(cards || [])].sort((a, b) => {
+    switch (sortBy) {
+      case "Newest":
+        return (
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+      case "Oldest":
+        return (
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+      case "Highest rate":
+        return (b.rate ?? 0) - (a.rate ?? 0);
+      case "Lowest rate":
+        return (a.rate ?? 0) - (b.rate ?? 0);
+
+      case "Release date":
+        return new Date(b.release).getTime() - new Date(a.release).getTime();
+
+      default:
+        return 0;
+    }
+  });
 
   return (
     <div className="mt-10 ">
@@ -61,31 +106,60 @@ const VisitorPov = () => {
             </div>
           </div>
         </div>
-        <div
-          className="[&>button]:text-[14px] [&>button]:bg-blue-600  [&>button]:hover:bg-blue-900 [&>button]:transition-all [&>button]:duration-200
+        <div className="flex  mt-5 justify-between">
+          <div
+            className="[&>button]:text-[14px] [&>button]:bg-blue-600  [&>button]:hover:bg-blue-900 [&>button]:transition-all [&>button]:duration-200
                    [&>button]:cursor-pointer  [&>button]:pl-6 [&>button]:pr-6 [&>button]:p-1 [&>button]:h-fit [&>button]:rounded-[7px] [&>button]:font-semibold
-            [&>button]:text-white     mt-5  "
-        >
-          <button
-            onClick={async () => {
-              if (!token) return;
-
-              const res = await toggleFollow(unique_id, token);
-
-              if (!res) return;
-
-              setIsFollowing(res.following);
-              setFollowers((prev) => (res.following ? prev + 1 : prev - 1));
-            }}
-            className={`${isFollowing ? "!text-black !bg-zinc-100" : ""}`}
+            [&>button]:text-white  "
           >
-            {isFollowing ? "Following" : "Follow"}
-          </button>
-          <button className="ml-5">Send message</button>
+            <button
+              onClick={async () => {
+                if (!token) return;
+
+                const res = await toggleFollow(unique_id, token);
+
+                if (!res) return;
+
+                setIsFollowing(res.following);
+                setFollowers((prev) => (res.following ? prev + 1 : prev - 1));
+              }}
+              className={`${isFollowing ? "text-black! bg-zinc-100!" : ""}`}
+            >
+              {isFollowing ? "Following" : "Follow"}
+            </button>
+            <button className="ml-5">Send message</button>
+          </div>
+          <div
+            className="select-none  w-fit text-black border flex  relative "
+            ref={filterRef}
+          >
+            <div
+              className="bg-zinc-200/90 w-fit  pl-2 pr-2 font-semibold rounded-[5px]
+                  text-[18px] flex justify-center items-center cursor-pointer "
+              onClick={() => {
+                setDisplayFilter((prev) => !prev);
+              }}
+            >
+              {sortBy} <IoIosArrowDown className="ml-3 " />
+            </div>
+            <ul
+              className={`${displayFilter ? "flex" : "hidden"}  flex-col absolute z-50 bg-zinc-100 rounded-[5px] top-8 right-0 
+                    w-32 text-[18px] [&>li]:p-2 [&>li]:hover:bg-zinc-200 [&>li]:cursor-pointer [&>li]:font-semibold [&>li]:hover:text-purple-500`}
+            >
+              <li onClick={() => selectFilter("Newest")}>Newest</li>
+              <li onClick={() => selectFilter("Oldest")}>Oldest</li>
+
+              <li onClick={() => selectFilter("Highest rate")}>Highest rate</li>
+
+              <li onClick={() => selectFilter("Lowest rate")}>Lowest rate</li>
+
+              <li onClick={() => selectFilter("Release date")}>Release date</li>
+            </ul>
+          </div>
         </div>
       </div>
       <div className="flex flex-wrap mx-auto max-w-[95%] justify-start mt-5">
-        {cards?.map((c) => {
+        {sortedCards?.map((c) => {
           return (
             <Link to={`/profile/${unique_id}/${c.id}`}>
               <div

@@ -1,7 +1,8 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
-import { cards } from "../db/schema.js";
-import { and, eq, type InferInsertModel } from "drizzle-orm";
+import { cards, comments, likes } from "../db/schema.js";
+import { and, count, desc, eq, sql, type InferInsertModel } from "drizzle-orm";
+
 type NewCard = InferInsertModel<typeof cards>;
 
 export const postCard = async (req: Request, res: Response) => {
@@ -50,8 +51,31 @@ export const getCards = async (req: Request, res: Response) => {
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
     const userCards = await db
-      .select()
+      .select({
+        id: cards.id,
+        title: cards.title,
+        poster: cards.poster,
+        description: cards.description,
+        rate: cards.rate,
+        review: cards.review,
+        created_at: cards.created_at,
+
+        likes_count: count(sql`distinct ${likes.id}`),
+        comments_count: count(sql`distinct ${comments.id}`),
+        liked_by_user: sql<boolean>`
+        EXISTS (
+          SELECT 1 
+          FROM likes
+          WHERE likes.card_id = ${cards.id}
+          AND likes.user_id = ${userId}
+        )`,
+      })
       .from(cards)
+      .leftJoin(likes, eq(likes.card_id, cards.id))
+      .leftJoin(comments, eq(comments.card_id, cards.id))
+      .groupBy(cards.id)
+      .orderBy(desc(cards.created_at))
+      .limit(30)
       .where(eq(cards.user_id, userId));
 
     res.status(200).json(userCards);
@@ -108,6 +132,35 @@ export const deleteCard = async (req: Request, res: Response) => {
     res.status(200).json({ message: "Card deleted" });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const toggleLikeCard = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const cardId = Number(req.params.cardId);
+
+    if (!userId || !cardId)
+      return res.status(400).json({ message: "Missing id" });
+
+    const [liked] = await db
+      .select()
+      .from(likes)
+      .where(and(eq(likes.user_id, userId), eq(likes.card_id, cardId)));
+
+    if (liked) {
+      await db
+        .delete(likes)
+        .where(and(eq(likes.user_id, userId), eq(likes.card_id, cardId)));
+
+      return res.status(200).json({ liked: false });
+    }
+    await db.insert(likes).values({ user_id: userId, card_id: cardId });
+
+    return res.status(200).json({ liked: true });
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

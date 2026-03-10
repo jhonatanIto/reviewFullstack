@@ -11,6 +11,7 @@ const UserProvider = ({ children }: Props) => {
   const [token, setToken] = useState<string | null>(null);
   const [cards, setCards] = useState<Cards[]>([]);
   const [watchlist, setWatchlist] = useState<Cards[]>([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
   const [showWatch, setShowWatch] = useState<boolean>(false);
 
@@ -77,6 +78,8 @@ const UserProvider = ({ children }: Props) => {
         setLoading,
         showWatch,
         setShowWatch,
+        setSearch,
+        search,
       }}
     >
       {children}

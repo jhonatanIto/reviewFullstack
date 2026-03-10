@@ -3,6 +3,7 @@ import {
   deleteCard,
   getCards,
   postCard,
+  toggleLikeCard,
   updateCard,
 } from "../controllers/cardsController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
@@ -15,3 +16,5 @@ cardsRoute.post("/", postCard);
 cardsRoute.get("/", getCards);
 cardsRoute.patch("/:cardId", updateCard);
 cardsRoute.delete("/:cardId", deleteCard);
+
+cardsRoute.post("/:cardId/likes", toggleLikeCard);

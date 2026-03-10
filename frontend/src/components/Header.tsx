@@ -20,8 +20,8 @@ const routes = {
 const Header = ({ setStartIndex }: HeaderProps) => {
   const [displayInput, setDisplayInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [search, setSearch] = useState<string>("");
-  const location = useLocation();
+
+  const location = useLocation().pathname;
   const navigate = useNavigate();
 
   const [galleryList, setGalleryList] = useState<boolean>(false);
@@ -29,7 +29,7 @@ const Header = ({ setStartIndex }: HeaderProps) => {
     useState<GalleryOption>("Reviews");
   const galleryRef = useRef<HTMLLIElement>(null);
 
-  const { user, setShowWatch } = useUser();
+  const { user, setShowWatch, search, setSearch } = useUser();
   const { setMovies } = useMovie();
 
   useEffect(() => {
@@ -56,6 +56,7 @@ const Header = ({ setStartIndex }: HeaderProps) => {
   }, []);
 
   useEffect(() => {
+    if (location !== "/") return;
     const inputValue = search.trim();
     if (inputValue.length <= 1) return;
 
@@ -137,7 +138,7 @@ const Header = ({ setStartIndex }: HeaderProps) => {
           <li
             className={`relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0
                after:bg-purple-500 after:transition-all after:duration-300
-              ${location.pathname === "/" ? "after:w-full text-purple-500" : ""}`}
+              ${location === "/" ? "after:w-full text-purple-500" : ""}`}
             onClick={() => navigate("/")}
           >
             <div>Home</div>
@@ -146,10 +147,14 @@ const Header = ({ setStartIndex }: HeaderProps) => {
             ref={galleryRef}
             className={`relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 
                after:bg-purple-500 after:transition-all after:duration-300  flex justify-center  
-              ${location.pathname === "/reviews" || location.pathname === "/watchlist" ? "after:w-full text-purple-500" : ""}`}
+              ${location === "/reviews" || location === "/watchlist" ? "after:w-full text-purple-500" : ""}`}
             onClick={() => {
-              setGalleryList(false);
-              navigate(`/${routes[selectedGallery]}`);
+              if (user) {
+                setGalleryList(false);
+                navigate(`/${routes[selectedGallery]}`);
+              } else {
+                navigate("/login");
+              }
             }}
             onMouseEnter={() => setGalleryList(true)}
           >
@@ -169,6 +174,9 @@ const Header = ({ setStartIndex }: HeaderProps) => {
               {selectedGallery !== "Reviews" && (
                 <div
                   onClick={(e) => {
+                    if (!user) {
+                      return navigate("/login");
+                    }
                     e.stopPropagation();
                     handleGalleryChange("Reviews");
                   }}
@@ -180,6 +188,9 @@ const Header = ({ setStartIndex }: HeaderProps) => {
               {selectedGallery !== "Watch list" && (
                 <div
                   onClick={(e) => {
+                    if (!user) {
+                      return navigate("/login");
+                    }
                     e.stopPropagation();
                     handleGalleryChange("Watch list");
                   }}
@@ -192,13 +203,20 @@ const Header = ({ setStartIndex }: HeaderProps) => {
           <li
             className={`relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0
                after:bg-purple-500 after:transition-all after:duration-300 
-              ${location.pathname === "/friends" ? "after:w-full text-purple-500" : ""}`}
-            onClick={() => navigate("/friends")}
+              ${location === "/friends" ? "after:w-full text-purple-500" : ""}`}
+            onClick={() => {
+              if (!user) {
+                return navigate("/login");
+              }
+              navigate("/friends");
+            }}
           >
             <div>Friends</div>
           </li>
           <input
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
             value={search}
             ref={inputRef}
             style={{
@@ -208,9 +226,9 @@ const Header = ({ setStartIndex }: HeaderProps) => {
               minWidth: displayInput ? "320px" : "0px",
             }}
             type="text"
-            className="bg-white text-black text-[23px] outline-none pl-2 
+            className="bg-white text-black text-[20px] pt-1 pb-1 outline-none pl-2 
             transition-all ease-in-out duration-400 "
-            placeholder="Search"
+            placeholder={`Search ${location === "/" || location === "/watchlist" ? "movie" : location === "/reviews" ? "review" : "friend"}`}
           />
           <div className="flex justify-center items-center select-none">
             <div style={{ display: displayInput ? "none" : "flex" }}>|</div>
@@ -223,7 +241,7 @@ const Header = ({ setStartIndex }: HeaderProps) => {
             />
             <FaUser
               className={`ml-5 cursor-pointer hover:text-purple-500 transition-all duration-200
-                 ${location.pathname === "/login" || location.pathname === "/profile" ? "text-purple-500" : ""}`}
+                 ${location === "/login" || location === "/profile" ? "text-purple-500" : ""}`}
               onClick={() => {
                 if (!user) {
                   navigate("/login");

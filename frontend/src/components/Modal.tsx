@@ -4,12 +4,14 @@ import { useUser } from "../context/useUser";
 import useRate from "../hooks/useRate";
 import useNotification from "../hooks/useNotification";
 import { useMovie } from "../context/useMovie";
+import { useNavigate } from "react-router-dom";
 
 const Modal = () => {
   const boxRef = useRef<HTMLDivElement>(null);
-  const { token, loadCards, setLoading, loading } = useUser();
+  const { token, loadCards, setLoading, loading, user } = useUser();
   const { rate, setRate, setReview, review } = useRate();
   const { successNotification, errorNotification } = useNotification();
+  const navigate = useNavigate();
 
   const {
     setModal,
@@ -111,7 +113,14 @@ const Modal = () => {
           <button
             className="text-white bg-purple-600 text-2xl pl-9 pr-9 transition-all duration-200 shadow-zinc-800/80 shadow-md
           rounded-[10px] flex p-1 mt-10 absolute bottom-23 cursor-pointer hover:bg-purple-700"
-            onClick={postCard}
+            onClick={() => {
+              if (user) {
+                postCard();
+              } else {
+                setModal(false);
+                navigate("/login");
+              }
+            }}
             disabled={loading}
           >
             save

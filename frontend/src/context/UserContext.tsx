@@ -6,6 +6,8 @@ export interface User {
   email: string;
   picture: string | null;
   unique_id: string;
+  followers: string;
+  following: string;
 }
 
 interface UserContextType {
@@ -15,6 +17,8 @@ interface UserContextType {
   logout: () => void;
   cards: Cards[];
   watchlist: Cards[];
+  search: string;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
   setCards: React.Dispatch<React.SetStateAction<Cards[]>>;
   loadCards: () => void;
   loading: boolean;
@@ -34,6 +38,8 @@ export interface Cards {
   banner?: string;
   created_at: string;
   tmdb_id: number;
+  comments_count: number;
+  likes_count: number;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(

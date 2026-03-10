@@ -7,7 +7,7 @@ import useNotification from "../hooks/useNotification";
 import { useOutletContext } from "react-router-dom";
 import type { Cards } from "../context/UserContext";
 import { IoIosHeart } from "react-icons/io";
-import { IoIosHeartEmpty } from "react-icons/io";
+
 import { FaRegCommentDots } from "react-icons/fa";
 
 interface OutletContextType {
@@ -191,11 +191,15 @@ const CardPage = () => {
             {!edit && (
               <div className="flex  w-60 justify-around mt-10">
                 <div className=" flex items-center  justify-around cursor-pointer">
-                  <div className="text-[25px] text-white mr-1">29</div>
+                  <div className="text-[25px] text-white mr-1">
+                    {currCard?.likes_count}
+                  </div>
                   <IoIosHeart className=" text-[35px]  text-red-500" />
                 </div>
                 <div className=" flex items-center  justify-around  text-white cursor-pointer">
-                  <div className="text-[25px] mr-1">69</div>
+                  <div className="text-[25px] mr-1">
+                    {currCard?.comments_count}
+                  </div>
                   <FaRegCommentDots className=" text-[31px]  " />
                 </div>
               </div>

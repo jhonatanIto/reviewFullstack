@@ -3,11 +3,12 @@ import { useUser } from "../context/useUser";
 import naruto from "../images/naruto.jpg";
 import { CiLogout } from "react-icons/ci";
 import { GrNotes } from "react-icons/gr";
+import { FaUser } from "react-icons/fa";
 
 const Profile = () => {
   const { user, logout, cards } = useUser();
   const navigate = useNavigate();
-
+  console.log(user);
   return (
     <div className="flex justify-center flex-col items-center">
       <div className="bg-white w-275 rounded-2xl shadow-white/30 shadow-lg mt-10 p-5">
@@ -36,10 +37,18 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className="w-275 mt-10 select-none">
+      <div className="w-275 mt-10 select-none flex">
         <div className="flex text-white/50 text-2xl items-center w-fit">
           <GrNotes className="text-[50px] text-white/50" />
-          <div className="ml-3">Total Reviews: {cards.length}</div>
+          <div className="ml-3"> Reviews: {cards.length}</div>
+        </div>
+        <div className="flex text-white/50 text-2xl items-center ml-10 w-fit">
+          <FaUser className="text-[40px] text-white/50" />
+          <div className="ml-3">Following: {user?.following}</div>
+        </div>
+        <div className="flex text-white/50 text-2xl items-center ml-10 w-fit">
+          <FaUser className="text-[40px] text-white/50" />
+          <div className="ml-3">Followers: {user?.followers}</div>
         </div>
       </div>
     </div>

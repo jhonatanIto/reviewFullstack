@@ -16,7 +16,6 @@ const Friends = () => {
   const [name, setName] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [following, setFollowing] = useState<User[]>([]);
-  console.log(following);
 
   const { token } = useUser();
 
@@ -30,7 +29,7 @@ const Friends = () => {
       }
 
       fetch(
-        `http://localhost:3000/api/users/search?q=${encodeURIComponent(name)}`,
+        `http://localhost:3000/api/users/search?q=${encodeURIComponent(name)}&type=${searchType}`,
       )
         .then((res) => res.json())
         .then((data) => setUsers(data));
