@@ -23,13 +23,18 @@ export const router = createBrowserRouter([
         path: "watchlist",
         element: <Gallery />,
       },
-      { path: "friends", element: <Friends /> },
+      {
+        path: "friends",
+        element: <Friends />,
+        children: [{ path: ":unique/:id", element: <CardPage /> }],
+      },
       { path: "profile", element: <Profile /> },
       {
         path: "profile/:unique",
         element: <VisitorPov />,
         children: [{ path: ":id", element: <CardPage /> }],
       },
+
       {
         path: "login",
         element: <App />,

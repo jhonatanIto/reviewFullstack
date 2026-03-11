@@ -80,9 +80,11 @@ export const getProfile = async (req: Request, res: Response) => {
         title: cards.title,
         poster: cards.poster,
         description: cards.description,
+        release: cards.release,
         created_at: cards.created_at,
         rate: cards.rate,
         review: cards.review,
+        tmdb_id: cards.tmdb_id,
 
         likes_count: count(sql`distinct ${likes.id}`),
         comments_count: count(sql`distinct ${comments.id}`),

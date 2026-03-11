@@ -14,7 +14,7 @@ const VisitorPov = () => {
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
-  const owner = false;
+  const owner = "profile";
 
   const [cards, setCards] = useState<Cards[]>([]);
   const unique_id = useParams().unique as string;

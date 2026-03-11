@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import naruto from "../images/naruto.jpg";
-import { useNavigate } from "react-router-dom";
-import { getFollowing } from "../utils/fetchData";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { getFollowing, getFollowingCards } from "../utils/fetchData";
 import { useUser } from "../context/useUser";
+import { IoStar } from "react-icons/io5";
 
 interface User {
   name: string;
@@ -16,8 +17,9 @@ const Friends = () => {
   const [name, setName] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [following, setFollowing] = useState<User[]>([]);
-
-  const { token } = useUser();
+  const [followingCards, setFollowingCards] = useState([]);
+  const owner = "friends";
+  const { token, setLoading } = useUser();
 
   const navigate = useNavigate();
 
@@ -50,10 +52,29 @@ const Friends = () => {
     followingList();
   }, [token]);
 
+  useEffect(() => {
+    const getFollowCards = async () => {
+      if (!token) return;
+      try {
+        setLoading(true);
+        const fCards = await getFollowingCards(token);
+        if (!fCards) return;
+
+        setFollowingCards(fCards);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getFollowCards();
+  }, [token]);
+
   const clickUser = (unique: string) => {
     navigate(`/profile/${unique}`);
   };
-
+  console.log(followingCards);
   return (
     <div className="mt-10 pl-[8%] pr-[8%]">
       <div className="flex  justify-between ">
@@ -127,7 +148,7 @@ const Friends = () => {
           </div>
         </div>
       </div>
-      <div className="w-full text-white mt-7">
+      <div className="w-full text-white mt-7 ">
         {following.map((f) => {
           return (
             <div
@@ -146,6 +167,50 @@ const Friends = () => {
           );
         })}
       </div>
+      <div className=" text-white mt-7">
+        <div className="text-[23px]">Recent created</div>
+        <div className="flex mt-10">
+          {followingCards.map((c) => {
+            return (
+              <div>
+                <Link to={`/friends/${c.user_unique_id}/${c.id}`}>
+                  <img
+                    src={naruto}
+                    className="absolute w-20 h-20 rounded-full z-20 object-cover cursor-pointer"
+                  />
+                </Link>
+                <Link to={`/friends/${c.user_unique_id}/${c.id}`}>
+                  <div
+                    key={c.id}
+                    className="w-60 mt-5  ml-5 mr-5 overflow-hidden relative  group cursor-pointer select-none
+                                shadow-black/60 shadow-[15px_0_15px_rgba(0,0,0,0.6)] "
+                    onClick={() => {}}
+                  >
+                    <div
+                      className="opacity-0 w-full group-hover:opacity-100 transition-opacity 
+                             duration-200 absolute inset-0 bg-black/70 z-10 flex items-center flex-col backdrop-blur-[3px] "
+                    >
+                      <div className="text-2xl text-center flex items-center text-amber-600  justify-center mt-5 ">
+                        <IoStar />
+                        <div className="ml-1 ">{c.rate}</div>
+                      </div>
+                      <div className="text-white text-[20px] mt-[1%] text-center">
+                        {c.review}
+                      </div>
+                    </div>
+
+                    <img
+                      className="group-hover:scale-110 transition-transform duration-200 "
+                      src={c.poster}
+                    />
+                  </div>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <Outlet context={{ cards: followingCards, owner }} />
     </div>
   );
 };

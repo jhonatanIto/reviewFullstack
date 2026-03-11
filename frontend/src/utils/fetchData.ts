@@ -159,3 +159,46 @@ export const getFollowing = async (token: string) => {
     console.log(error);
   }
 };
+
+export const toggleLike = async (token: string, cardId: number) => {
+  try {
+    const res = await fetch(`http://localhost:3000/api/cards/${cardId}/likes`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.log(data?.message);
+      return;
+    }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getFollowingCards = async (token: string) => {
+  try {
+    const res = await fetch("http://localhost:3000/api/cards/following", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.log(data?.message);
+      return;
+    }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};

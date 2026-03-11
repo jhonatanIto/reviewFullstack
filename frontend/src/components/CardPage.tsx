@@ -9,10 +9,11 @@ import type { Cards } from "../context/UserContext";
 import { IoIosHeart } from "react-icons/io";
 
 import { FaRegCommentDots } from "react-icons/fa";
+import { toggleLike } from "../utils/fetchData";
 
 interface OutletContextType {
   cards: Cards[];
-  owner: false;
+  owner: string;
 }
 
 const CardPage = () => {
@@ -22,15 +23,34 @@ const CardPage = () => {
   const navigate = useNavigate();
   const [edit, setEdit] = useState(false);
   const [open, setOpen] = useState(false);
+  const [currCard, setCurrCard] = useState<Cards>();
 
   const { setRate, setReview, rate, review } = useRate();
   const { successNotification, errorNotification } = useNotification();
 
   const { cards, owner } = useOutletContext<OutletContextType>();
 
-  const currCard = cards.find((c) => c.id === Number(id));
+  let profileUrl = "";
 
-  const profileUrl = owner ? "reviews" : `profile/${unique}`;
+  switch (owner) {
+    case "reviews":
+      profileUrl = "reviews";
+      break;
+    case "profile":
+      profileUrl = `profile/${unique}`;
+      break;
+    case "friends":
+      profileUrl = `friends`;
+      break;
+    default:
+      profileUrl = "";
+  }
+
+  useEffect(() => {
+    setCurrCard(() => {
+      return cards.find((c) => c.id === Number(id));
+    });
+  }, [cards, id]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -118,7 +138,7 @@ const CardPage = () => {
   return (
     <div
       className={` flex justify-center items-center w-full h-screen fixed m-0   transition-opacity duration-200
-     bg-black/60 top-0 left-0 z-10 backdrop-blur-[5px] `}
+     bg-black/60 top-0 left-0 z-30 backdrop-blur-[5px] `}
     >
       <div
         ref={boxRef}
@@ -172,7 +192,7 @@ const CardPage = () => {
                 Delete
               </button>
             )}
-            {owner && (
+            {owner === "reviews" && (
               <button
                 className="text-white bg-purple-600 text-[20px] w-30 justify-center items-center transition-all duration-200
                           rounded-[10px] flex p-1 mt-10 ml-2 mr-2   bottom-23 cursor-pointer hover:bg-purple-800 shadow-zinc-800/80 shadow-md
@@ -190,11 +210,48 @@ const CardPage = () => {
             )}
             {!edit && (
               <div className="flex  w-60 justify-around mt-10">
-                <div className=" flex items-center  justify-around cursor-pointer">
+                <div className=" flex items-center  justify-around ">
                   <div className="text-[25px] text-white mr-1">
                     {currCard?.likes_count}
                   </div>
-                  <IoIosHeart className=" text-[35px]  text-red-500" />
+                  <IoIosHeart
+                    className={`text-[35px]  cursor-pointer ${currCard?.liked_by_user ? "text-red-500" : "text-white"}`}
+                    onClick={async () => {
+                      if (!token || !currCard?.id) return;
+
+                      const previousLiked = currCard.liked_by_user;
+
+                      setCurrCard((prev) => {
+                        if (!prev) return prev;
+                        const wasLiked = prev.liked_by_user;
+                        return {
+                          ...prev,
+                          liked_by_user: !wasLiked,
+                          likes_count: wasLiked
+                            ? prev.likes_count - 1
+                            : prev.likes_count + 1,
+                        };
+                      });
+
+                      const res = await toggleLike(token, currCard?.id);
+
+                      if (!res) {
+                        return setCurrCard((prev) => {
+                          return prev
+                            ? {
+                                ...prev,
+                                liked_by_user: previousLiked,
+                                likes_count: previousLiked
+                                  ? prev.likes_count + 1
+                                  : prev.likes_count - 1,
+                              }
+                            : prev;
+                        });
+                      }
+
+                      loadCards();
+                    }}
+                  />
                 </div>
                 <div className=" flex items-center  justify-around  text-white cursor-pointer">
                   <div className="text-[25px] mr-1">

@@ -40,6 +40,7 @@ export interface Cards {
   tmdb_id: number;
   comments_count: number;
   likes_count: number;
+  liked_by_user: boolean;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(

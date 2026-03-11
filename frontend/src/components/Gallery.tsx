@@ -14,15 +14,14 @@ export type SortOption =
 
 const Gallery = () => {
   const { cards, watchlist, showWatch, search } = useUser();
+  console.log(cards);
 
   const [sortBy, setSortBy] = useState<SortOption>(
     () => (localStorage.getItem("MyReview_sortBy") as SortOption) || "Newest",
   );
   const [displayFilter, setDisplayFilter] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
-  const owner = true;
-
-  console.log(cards);
+  const owner = "reviews";
 
   const {
     setMovieName,
@@ -144,11 +143,11 @@ const Gallery = () => {
                     className="opacity-0 w-full group-hover:opacity-100 transition-opacity 
                duration-200 absolute inset-0 bg-black/70 z-10 flex items-center flex-col backdrop-blur-[3px] "
                   >
-                    <div className="text-2xl text-center flex items-center justify-center mt-5 text-amber-600">
+                    <div className="text-2xl text-center flex items-center text-amber-600  justify-center mt-5 ">
                       <IoStar />
-                      <div className="ml-1">{c.rate}</div>
+                      <div className="ml-1 ">{c.rate}</div>
                     </div>
-                    <div className="text-white text-[20px] mt-[7%] text-center">
+                    <div className="text-white text-[20px] mt-[1%] text-center">
                       {c.review}
                     </div>
                   </div>

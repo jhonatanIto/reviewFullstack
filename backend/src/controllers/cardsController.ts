@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
-import { cards, comments, likes } from "../db/schema.js";
+import { cards, comments, follows, likes, users } from "../db/schema.js";
 import { and, count, desc, eq, sql, type InferInsertModel } from "drizzle-orm";
 
 type NewCard = InferInsertModel<typeof cards>;
@@ -58,8 +58,9 @@ export const getCards = async (req: Request, res: Response) => {
         description: cards.description,
         rate: cards.rate,
         review: cards.review,
+        tmdb_id: cards.tmdb_id,
         created_at: cards.created_at,
-
+        release: cards.release,
         likes_count: count(sql`distinct ${likes.id}`),
         comments_count: count(sql`distinct ${comments.id}`),
         liked_by_user: sql<boolean>`
@@ -161,6 +162,53 @@ export const toggleLikeCard = async (req: Request, res: Response) => {
     return res.status(200).json({ liked: true });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getFollowingCards = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(400).json({ message: "Unauthorized" });
+
+    const followingCards = await db
+      .select({
+        id: cards.id,
+        title: cards.title,
+        poster: cards.poster,
+        release: cards.release,
+        description: cards.description,
+        rate: cards.rate,
+        review: cards.review,
+        created_at: cards.created_at,
+        tmdb_id: cards.tmdb_id,
+
+        user_name: users.name,
+        user_unique_id: users.unique_id,
+        user_picture: users.picture,
+
+        likes_count: count(sql`distinct ${likes.id}`),
+        comments_count: count(sql`distinct ${comments.id}`),
+        liked_by_user: sql<boolean>`
+        EXISTS( 
+          SELECT 1
+          FROM likes
+          WHERE likes.card_id = ${cards.id}
+          AND likes.user_id = ${userId}
+        )`,
+      })
+      .from(follows)
+      .innerJoin(cards, eq(cards.user_id, follows.following_id))
+      .innerJoin(users, eq(users.id, cards.user_id))
+      .leftJoin(likes, eq(likes.card_id, cards.id))
+      .leftJoin(comments, eq(comments.card_id, cards.id))
+      .where(eq(follows.follower_id, userId))
+      .groupBy(cards.id, users.id)
+      .orderBy(desc(cards.created_at));
+
+    res.status(200).json(followingCards);
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

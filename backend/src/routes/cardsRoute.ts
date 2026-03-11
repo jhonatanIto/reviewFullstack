@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   deleteCard,
   getCards,
+  getFollowingCards,
   postCard,
   toggleLikeCard,
   updateCard,
@@ -18,3 +19,5 @@ cardsRoute.patch("/:cardId", updateCard);
 cardsRoute.delete("/:cardId", deleteCard);
 
 cardsRoute.post("/:cardId/likes", toggleLikeCard);
+
+cardsRoute.get("/following", getFollowingCards);
