@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/useUser";
-import naruto from "../images/naruto.jpg";
 import { CiLogout } from "react-icons/ci";
 import { GrNotes } from "react-icons/gr";
 import { FaUser } from "react-icons/fa";
@@ -14,7 +13,10 @@ const Profile = () => {
       <div className="bg-white w-275 rounded-2xl shadow-white/30 shadow-lg mt-10 p-5">
         <div className="flex justify-between">
           <div className="flex items-center">
-            <img src={naruto} className="w-50 h-50 rounded-full object-cover" />
+            <img
+              src={user?.picture ?? ""}
+              className="w-50 h-50 rounded-full object-cover"
+            />
             <div className="text-2xl ml-10">
               <div className="text-[40px]">{user?.name}</div>
               <div className="text-zinc-500">Email: {user?.email}</div>

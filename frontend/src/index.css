@@ -8,3 +8,24 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+/* scrollbar width */
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+/* background da barra */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* parte que desliza */
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 10px;
+}
+
+/* hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}

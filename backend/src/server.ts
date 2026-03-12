@@ -5,6 +5,7 @@ import { authRoute } from "./routes/authRoute.js";
 import { cardsRoute } from "./routes/cardsRoute.js";
 import { watchlistRouter } from "./routes/watchlistRoute.js";
 import { userRoute } from "./routes/usersRoute.js";
+import googleRoute from "./routes/googleRoute.js";
 
 const app = express();
 const port = 3000;
@@ -24,5 +25,6 @@ app.use("/api/auth", authRoute);
 app.use("/api/cards", cardsRoute);
 app.use("/api/watchlist", watchlistRouter);
 app.use("/api/users", userRoute);
+app.use("/api/googleAuth", googleRoute);
 
 app.listen(port, () => console.log("Server is running on port", port));

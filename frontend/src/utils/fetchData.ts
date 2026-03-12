@@ -153,7 +153,7 @@ export const getFollowing = async (token: string) => {
       console.log(data?.message);
       return;
     }
-    console.log(data);
+
     return data;
   } catch (error) {
     console.log(error);
@@ -196,6 +196,18 @@ export const getFollowingCards = async (token: string) => {
       console.log(data?.message);
       return;
     }
+
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const homePageCards = async () => {
+  try {
+    const res = await fetch("http://localhost:3000/api/cards/homepage");
+    const data = await res.json();
+    if (!res.ok) return console.log(data?.message);
 
     return data;
   } catch (error) {

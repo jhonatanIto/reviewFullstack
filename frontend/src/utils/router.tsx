@@ -13,7 +13,17 @@ export const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      { index: true, element: <App /> },
+      {
+        element: <App />,
+        children: [
+          { index: true, element: null },
+          {
+            path: ":unique/:id",
+            element: <CardPage />,
+          },
+        ],
+      },
+
       {
         path: "reviews",
         element: <Gallery />,
@@ -26,7 +36,7 @@ export const router = createBrowserRouter([
       {
         path: "friends",
         element: <Friends />,
-        children: [{ path: ":unique/:id", element: <CardPage /> }],
+        children: [{ path: ":id", element: <CardPage /> }],
       },
       { path: "profile", element: <Profile /> },
       {

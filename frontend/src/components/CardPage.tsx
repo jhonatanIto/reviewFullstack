@@ -10,29 +10,32 @@ import { IoIosHeart } from "react-icons/io";
 
 import { FaRegCommentDots } from "react-icons/fa";
 import { toggleLike } from "../utils/fetchData";
+import type { FollowingCards } from "./Friends";
 
 interface OutletContextType {
-  cards: Cards[];
-  owner: string;
+  tab: string;
+  getProfile: () => void;
+  setFollowingCards: React.Dispatch<React.SetStateAction<FollowingCards[]>>;
 }
 
 const CardPage = () => {
   const { id, unique } = useParams();
+  const [card, setCard] = useState<Cards>();
   const { token, loadCards, setLoading, loading } = useUser();
   const boxRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [edit, setEdit] = useState(false);
+  const [showComments, setShowComments] = useState(true);
   const [open, setOpen] = useState(false);
-  const [currCard, setCurrCard] = useState<Cards>();
 
   const { setRate, setReview, rate, review } = useRate();
   const { successNotification, errorNotification } = useNotification();
 
-  const { cards, owner } = useOutletContext<OutletContextType>();
+  const { tab } = useOutletContext<OutletContextType>();
 
   let profileUrl = "";
 
-  switch (owner) {
+  switch (tab) {
     case "reviews":
       profileUrl = "reviews";
       break;
@@ -43,21 +46,30 @@ const CardPage = () => {
       profileUrl = `friends`;
       break;
     default:
-      profileUrl = "";
+      profileUrl = "/";
   }
 
   useEffect(() => {
-    setCurrCard(() => {
-      return cards.find((c) => c.id === Number(id));
-    });
-  }, [cards, id]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setOpen(true);
-    }, 10);
-    return () => clearTimeout(timer);
-  }, []);
+    const fetchCard = async () => {
+      try {
+        setOpen(false);
+        if (!id || !token) return;
+        const res = await fetch(`http://localhost:3000/api/cards/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (!res.ok) return console.log(data?.message);
+        setCard(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setOpen(true);
+      }
+    };
+    fetchCard();
+  }, [id]);
 
   useEffect(() => {
     const closeModal = (e: MouseEvent) => {
@@ -72,10 +84,10 @@ const CardPage = () => {
   }, []);
 
   useEffect(() => {
-    if (!currCard) return;
-    setRate(Number(currCard?.rate));
-    setReview(String(currCard?.review));
-  }, [currCard]);
+    if (!card) return;
+    setRate(Number(card?.rate));
+    setReview(String(card?.review !== null ? card?.review : ""));
+  }, [card]);
 
   const updateCard = async () => {
     try {
@@ -137,7 +149,8 @@ const CardPage = () => {
 
   return (
     <div
-      className={` flex justify-center items-center w-full h-screen fixed m-0   transition-opacity duration-200
+      style={{ opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
+      className={` flex justify-center items-center w-full h-screen fixed m-0   transition-opacity duration-500
      bg-black/60 top-0 left-0 z-30 backdrop-blur-[5px] `}
     >
       <div
@@ -151,14 +164,14 @@ const CardPage = () => {
              p-8 text-center text-white text-[26px] inset-0 bg-black/70 z-10 flex items-center  backdrop-blur-[3px] "
           >
             <div className="max-text-[35px] text-purple-500 font-bold">
-              {currCard?.title}
+              {card?.title}
             </div>
-            <div className="mt-15">{currCard?.description}</div>
+            <div className="mt-15">{card?.description}</div>
             <div className="absolute bottom-10 flex   text-[20px]">
-              Release date: {currCard?.release}
+              Release date: {card?.release}
             </div>
           </div>
-          <img src={currCard?.poster} />
+          <img src={card?.poster} />
         </div>
 
         <div className="p-5 flex flex-col items-center justify-center">
@@ -178,7 +191,7 @@ const CardPage = () => {
             disabled={!edit}
             value={review}
             spellCheck={false}
-            placeholder="Write your review"
+            placeholder={`${edit ? "Write your review" : ""}`}
             className="w-100 h-100 text-2xl mt-15  outline-none bg-white rounded-2xl p-3 flex text-center shadow-black/30 shadow-lg"
             onChange={(e) => setReview(e.target.value)}
           />
@@ -192,7 +205,7 @@ const CardPage = () => {
                 Delete
               </button>
             )}
-            {owner === "reviews" && (
+            {tab === "reviews" && (
               <button
                 className="text-white bg-purple-600 text-[20px] w-30 justify-center items-center transition-all duration-200
                           rounded-[10px] flex p-1 mt-10 ml-2 mr-2   bottom-23 cursor-pointer hover:bg-purple-800 shadow-zinc-800/80 shadow-md
@@ -212,16 +225,16 @@ const CardPage = () => {
               <div className="flex  w-60 justify-around mt-10">
                 <div className=" flex items-center  justify-around ">
                   <div className="text-[25px] text-white mr-1">
-                    {currCard?.likes_count}
+                    {card?.likes_count}
                   </div>
                   <IoIosHeart
-                    className={`text-[35px]  cursor-pointer ${currCard?.liked_by_user ? "text-red-500" : "text-white"}`}
+                    className={`text-[35px]  cursor-pointer ${card?.liked_by_user ? "text-red-500" : "text-white"}`}
                     onClick={async () => {
-                      if (!token || !currCard?.id) return;
+                      if (!token || !card?.id) return;
 
-                      const previousLiked = currCard.liked_by_user;
+                      const previousLiked = card.liked_by_user;
 
-                      setCurrCard((prev) => {
+                      setCard((prev) => {
                         if (!prev) return prev;
                         const wasLiked = prev.liked_by_user;
                         return {
@@ -233,11 +246,11 @@ const CardPage = () => {
                         };
                       });
 
-                      const res = await toggleLike(token, currCard?.id);
+                      const res = await toggleLike(token, card.id);
 
                       if (!res) {
-                        return setCurrCard((prev) => {
-                          return prev
+                        setCard((prev) =>
+                          prev
                             ? {
                                 ...prev,
                                 liked_by_user: previousLiked,
@@ -245,24 +258,26 @@ const CardPage = () => {
                                   ? prev.likes_count + 1
                                   : prev.likes_count - 1,
                               }
-                            : prev;
-                        });
+                            : prev,
+                        );
                       }
-
-                      loadCards();
                     }}
                   />
                 </div>
                 <div className=" flex items-center  justify-around  text-white cursor-pointer">
-                  <div className="text-[25px] mr-1">
-                    {currCard?.comments_count}
-                  </div>
+                  <div className="text-[25px] mr-1">{card?.comments_count}</div>
                   <FaRegCommentDots className=" text-[31px]  " />
                 </div>
               </div>
             )}
           </div>
         </div>
+      </div>
+      <div
+        className={`flex  items-center bg-white/20 relative rounded-2xl overflow-hidden shadow-black shadow-lg 
+           ${showComments ? " translate-y-0 scale-100" : "translate-y-10 scale-70 opacity-0"} transition-all duration-200 ease-in-out`}
+      >
+        {/* alkusdhjff */}
       </div>
     </div>
   );

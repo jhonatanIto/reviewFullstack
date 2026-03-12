@@ -14,14 +14,13 @@ export type SortOption =
 
 const Gallery = () => {
   const { cards, watchlist, showWatch, search } = useUser();
-  console.log(cards);
 
   const [sortBy, setSortBy] = useState<SortOption>(
     () => (localStorage.getItem("MyReview_sortBy") as SortOption) || "Newest",
   );
   const [displayFilter, setDisplayFilter] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
-  const owner = "reviews";
+  const tab = "reviews";
 
   const {
     setMovieName,
@@ -44,7 +43,7 @@ const Gallery = () => {
     return () => window.removeEventListener("mousedown", closeFilter);
   }, []);
 
-  const selectFilter = (value: string) => {
+  const selectFilter = (value: SortOption) => {
     setDisplayFilter(false);
     setSortBy(value);
   };
@@ -162,7 +161,7 @@ const Gallery = () => {
           );
         })}
       </div>
-      <Outlet context={{ cards, owner }} />
+      <Outlet context={{ cards, tab }} />
     </div>
   );
 };

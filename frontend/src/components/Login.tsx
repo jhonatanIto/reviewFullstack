@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/useUser";
 import useNotification from "../hooks/useNotification";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const boxRef = useRef<HTMLFormElement>(null);
@@ -15,18 +16,6 @@ const Login = () => {
 
   const { login, setLoading } = useUser();
   const { errorNotification, successNotification } = useNotification();
-
-  useEffect(() => {
-    const closeModal = (e: MouseEvent) => {
-      if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
-        navigate("/");
-      }
-    };
-
-    window.addEventListener("mousedown", closeModal);
-
-    return () => window.removeEventListener("mousedown", closeModal);
-  }, [navigate]);
 
   const submitForm = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -75,14 +64,49 @@ const Login = () => {
     }
   };
 
+  const handleGoogleSuccess = async (credentialRes) => {
+    try {
+      const res = await fetch("http://localhost:3000/api/googleAuth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          googleToken: credentialRes.credential,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message);
+        return;
+      }
+      login(data.user, data.token);
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <div className="flex justify-center w-full h-full fixed m-0 bg-black/65 top-0 z-50">
+    <div
+      className="flex justify-center w-full h-full fixed m-0 bg-black/65 top-0 z-50"
+      onMouseDown={() => navigate("/")}
+    >
       <form
+        onMouseDown={(e) => e.stopPropagation()}
         onSubmit={submitForm}
         ref={boxRef}
         className="w-125 h-fit pb-16 mt-40 flex flex-col rounded-2xl items-center bg-white "
       >
         <div className="text-2xl mt-10">{signUp ? "Register" : "Login"}</div>
+        <div className="mt-6">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => console.log("Google login failed")}
+          />
+        </div>
         {signUp && (
           <input
             className="mt-5 text-[18px] border border-zinc-300 p-2 w-80"

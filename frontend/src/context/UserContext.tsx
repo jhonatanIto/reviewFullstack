@@ -28,16 +28,19 @@ interface UserContextType {
 }
 
 export interface Cards {
-  id: number;
-  title: string;
-  release: string;
-  description: string;
-  poster: string;
-  review?: string;
-  rate?: number;
-  banner?: string;
+  banner: string;
   created_at: string;
+  description: string;
+  id: number;
+  poster: string;
+  rate: number;
+  release: string;
+  review: string;
+  title: string;
   tmdb_id: number;
+  user_name: string;
+  user_picture: string;
+  user_unique_id: string;
   comments_count: number;
   likes_count: number;
   liked_by_user: boolean;

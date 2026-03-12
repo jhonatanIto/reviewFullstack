@@ -11,16 +11,33 @@ interface User {
   picture: string;
   reviews: number;
 }
+export interface FollowingCards {
+  comments_count: number;
+  created_at: string;
+  description: string;
+  id: number;
+  liked_by_user: boolean;
+  likes_count: number;
+  poster: string;
+  rate: number;
+  release: string;
+  review: string;
+  title: string;
+  tmdb_id: number;
+  user_name: string;
+  user_picture: string | null;
+  user_unique_id: string;
+}
 
 const Friends = () => {
   const [searchType, setSearchType] = useState("name");
   const [name, setName] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [following, setFollowing] = useState<User[]>([]);
-  const [followingCards, setFollowingCards] = useState([]);
-  const owner = "friends";
+  const [followingCards, setFollowingCards] = useState<FollowingCards[]>([]);
+  const tab = "friends";
   const { token, setLoading } = useUser();
-
+  const [addFriend, setAddFriend] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,33 +69,34 @@ const Friends = () => {
     followingList();
   }, [token]);
 
+  const getFollowCards = async () => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      const fCards = await getFollowingCards(token);
+      if (!fCards) return;
+
+      setFollowingCards(fCards);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const getFollowCards = async () => {
-      if (!token) return;
-      try {
-        setLoading(true);
-        const fCards = await getFollowingCards(token);
-        if (!fCards) return;
-
-        setFollowingCards(fCards);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     getFollowCards();
   }, [token]);
 
   const clickUser = (unique: string) => {
     navigate(`/profile/${unique}`);
   };
-  console.log(followingCards);
+
   return (
-    <div className="mt-10 pl-[8%] pr-[8%]">
-      <div className="flex  justify-between ">
+    <div className="mt-10 ">
+      <div className="flex  justify-between pl-[8%] pr-[8%]">
         <div className="text-white text-3xl">Following :</div>
+
         <div className="flex flex-col relative ">
           <div className="flex text-white items-center ">
             <label className=" flex cursor-pointer items-center">
@@ -148,7 +166,7 @@ const Friends = () => {
           </div>
         </div>
       </div>
-      <div className="w-full text-white mt-7 ">
+      <div className="w-full text-white mt-7  flex pl-[3%] pr-[3%]">
         {following.map((f) => {
           return (
             <div
@@ -167,50 +185,56 @@ const Friends = () => {
           );
         })}
       </div>
-      <div className=" text-white mt-7">
-        <div className="text-[23px]">Recent created</div>
-        <div className="flex mt-10">
-          {followingCards.map((c) => {
-            return (
-              <div>
-                <Link to={`/friends/${c.user_unique_id}/${c.id}`}>
-                  <img
-                    src={naruto}
-                    className="absolute w-20 h-20 rounded-full z-20 object-cover cursor-pointer"
-                  />
-                </Link>
-                <Link to={`/friends/${c.user_unique_id}/${c.id}`}>
-                  <div
-                    key={c.id}
-                    className="w-60 mt-5  ml-5 mr-5 overflow-hidden relative  group cursor-pointer select-none
-                                shadow-black/60 shadow-[15px_0_15px_rgba(0,0,0,0.6)] "
-                    onClick={() => {}}
-                  >
-                    <div
-                      className="opacity-0 w-full group-hover:opacity-100 transition-opacity 
-                             duration-200 absolute inset-0 bg-black/70 z-10 flex items-center flex-col backdrop-blur-[3px] "
-                    >
-                      <div className="text-2xl text-center flex items-center text-amber-600  justify-center mt-5 ">
-                        <IoStar />
-                        <div className="ml-1 ">{c.rate}</div>
-                      </div>
-                      <div className="text-white text-[20px] mt-[1%] text-center">
-                        {c.review}
-                      </div>
-                    </div>
-
+      {followingCards.length !== 0 && (
+        <div className="absolute w-full bottom-[5%] flex flex-col justify-center select-none mt-10  overflow-hidden pl-[1%]">
+          <div className="text-[23px] text-white">Recent reviews</div>
+          <div
+            className="flex mt-10 overflow-x-scroll no-scrollbar"
+            onWheel={(e) => {
+              e.currentTarget.scrollLeft += e.deltaY;
+            }}
+          >
+            {followingCards.map((c) => {
+              return (
+                <div className="relative w-[14%] shrink-0 ">
+                  <Link to={`/friends/${c.id}`}>
                     <img
-                      className="group-hover:scale-110 transition-transform duration-200 "
-                      src={c.poster}
+                      src={naruto}
+                      className="absolute w-20 h-20 rounded-full z-20 object-cover cursor-pointer  select-none"
                     />
-                  </div>
-                </Link>
-              </div>
-            );
-          })}
+                  </Link>
+                  <Link to={`/friends/${c.id}`}>
+                    <div
+                      key={c.id}
+                      className="mt-5  ml-5 mr-5 overflow-hidden relative  group cursor-pointer select-none
+                                shadow-black/60 shadow-[15px_0_15px_rgba(0,0,0,0.6)] "
+                    >
+                      <div
+                        className="opacity-0 w-full group-hover:opacity-100 transition-opacity 
+                             duration-200 absolute inset-0 bg-black/70 z-10 flex items-center flex-col backdrop-blur-[3px] "
+                      >
+                        <div className="text-2xl text-center flex items-center text-amber-600  justify-center mt-5 ">
+                          <IoStar />
+                          <div className="ml-1 ">{c.rate}</div>
+                        </div>
+                        <div className="text-white text-[20px] mt-[1%] text-center">
+                          {c.review}
+                        </div>
+                      </div>
+
+                      <img
+                        className="group-hover:scale-110 transition-transform duration-200 "
+                        src={c.poster}
+                      />
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
-      <Outlet context={{ cards: followingCards, owner }} />
+      )}
+      <Outlet context={{ cards: followingCards, tab, setFollowingCards }} />
     </div>
   );
 };

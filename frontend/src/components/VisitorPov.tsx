@@ -14,7 +14,7 @@ const VisitorPov = () => {
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
-  const owner = "profile";
+  const tab = "profile";
 
   const [cards, setCards] = useState<Cards[]>([]);
   const unique_id = useParams().unique as string;
@@ -84,8 +84,8 @@ const VisitorPov = () => {
   });
 
   return (
-    <div className="mt-10 ">
-      <div className="flex text-white flex-col pl-[8%] pr-[8%]">
+    <div className="mt-10 w-full ">
+      <div className="flex text-white flex-col pl-[8%]  pr-[8%]">
         <div className=" flex items-center  ">
           <img
             src={naruto}
@@ -158,7 +158,7 @@ const VisitorPov = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap mx-auto max-w-[95%] justify-start mt-5">
+      <div className="flex flex-wrap justify-start mt-5  w-[88%] ml-auto mr-auto">
         {sortedCards?.map((c) => {
           return (
             <Link to={`/profile/${unique_id}/${c.id}`}>
@@ -190,7 +190,7 @@ const VisitorPov = () => {
           );
         })}
       </div>
-      <Outlet context={{ cards, owner }} />
+      <Outlet context={{ cards, tab, getProfile }} />
     </div>
   );
 };

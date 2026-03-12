@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { db } from "../db/db.js";
 import { cards, comments, follows, likes, users } from "../db/schema.js";
 import { and, count, desc, eq, sql, type InferInsertModel } from "drizzle-orm";
+import { SQLiteNumericBuilder } from "drizzle-orm/sqlite-core";
 
 type NewCard = InferInsertModel<typeof cards>;
 
@@ -86,6 +87,62 @@ export const getCards = async (req: Request, res: Response) => {
   }
 };
 
+export const getCard = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const cardId = Number(req.params.cardId);
+
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (!cardId) return res.status(400).json({ message: "Card id required" });
+
+    const [card] = await db
+      .select({
+        id: cards.id,
+        title: cards.title,
+        poster: cards.poster,
+        description: cards.description,
+        rate: cards.rate,
+        review: cards.review,
+        tmdb_id: cards.tmdb_id,
+        created_at: cards.created_at,
+        release: cards.release,
+
+        user_name: users.name,
+        user_unique_id: users.unique_id,
+        user_picture: users.picture,
+
+        likes_count: sql<number>`
+        (
+          SELECT COUNT(*)::int
+          FROM likes
+          WHERE likes.card_id = ${cards.id}
+        )`,
+        comments_count: sql<number>`
+        (
+          SELECT COUNT(*)
+          FROM comments
+          WHERE comments.card_id = ${cards.id}
+        )`,
+        liked_by_user: sql<boolean>`
+        (
+          EXISTS (
+            SELECT 1
+            FROM likes
+            WHERE likes.card_id = ${cards.id}
+            AND likes.user_id = ${userId}
+          )
+        )`,
+      })
+      .from(cards)
+      .innerJoin(users, eq(users.id, cards.user_id))
+      .where(eq(cards.id, cardId));
+
+    res.status(200).json(card);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 export const updateCard = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
@@ -174,8 +231,35 @@ export const getFollowingCards = async (req: Request, res: Response) => {
     const followingCards = await db
       .select({
         id: cards.id,
+        poster: cards.poster,
+        rate: cards.rate,
+        review: cards.review,
+
+        user_name: users.name,
+        user_picture: users.picture,
+      })
+      .from(follows)
+      .innerJoin(cards, eq(cards.user_id, follows.following_id))
+      .innerJoin(users, eq(users.id, cards.user_id))
+      .where(eq(follows.follower_id, userId))
+      .orderBy(desc(cards.created_at))
+      .limit(30);
+
+    res.status(200).json(followingCards);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const homePageCards = async (req: Request, res: Response) => {
+  try {
+    const recentCards = await db
+      .select({
+        id: cards.id,
         title: cards.title,
         poster: cards.poster,
+        banner: cards.banner,
         release: cards.release,
         description: cards.description,
         rate: cards.rate,
@@ -186,27 +270,13 @@ export const getFollowingCards = async (req: Request, res: Response) => {
         user_name: users.name,
         user_unique_id: users.unique_id,
         user_picture: users.picture,
-
-        likes_count: count(sql`distinct ${likes.id}`),
-        comments_count: count(sql`distinct ${comments.id}`),
-        liked_by_user: sql<boolean>`
-        EXISTS( 
-          SELECT 1
-          FROM likes
-          WHERE likes.card_id = ${cards.id}
-          AND likes.user_id = ${userId}
-        )`,
       })
-      .from(follows)
-      .innerJoin(cards, eq(cards.user_id, follows.following_id))
+      .from(cards)
       .innerJoin(users, eq(users.id, cards.user_id))
-      .leftJoin(likes, eq(likes.card_id, cards.id))
-      .leftJoin(comments, eq(comments.card_id, cards.id))
-      .where(eq(follows.follower_id, userId))
-      .groupBy(cards.id, users.id)
-      .orderBy(desc(cards.created_at));
+      .orderBy(desc(cards.created_at))
+      .limit(20);
 
-    res.status(200).json(followingCards);
+    res.status(200).json(recentCards);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
