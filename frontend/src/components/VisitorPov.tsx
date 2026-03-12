@@ -1,16 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
-import { fetchProfile, toggleFollow } from "../utils/fetchData";
-import naruto from "../images/naruto.jpg";
+import {
+  fetchProfile,
+  fetchProfileLogged,
+  toggleFollow,
+} from "../utils/fetchData";
+
 import { IoStar } from "react-icons/io5";
 import type { Cards } from "../context/UserContext";
 import { useUser } from "../context/useUser";
 import type { SortOption } from "./Gallery";
 import { IoIosArrowDown } from "react-icons/io";
+import userpic from "../images/user.png";
 
 const VisitorPov = () => {
   const [name, setName] = useState("");
-  const [picture, setPicture] = useState("");
+  const [picture, setPicture] = useState(userpic);
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -41,12 +46,27 @@ const VisitorPov = () => {
   }, []);
 
   const getProfile = async () => {
-    if (!unique_id || !token) return;
+    if (!unique_id) return;
     try {
-      const data = await fetchProfile(unique_id, token);
+      const data = await fetchProfile(unique_id);
 
       setName(data.user.name);
-      setPicture(data.user.picture);
+      setPicture(data.user.picture || userpic);
+      setFollowers(data.stats.followers);
+      setFollowing(data.stats.following);
+      setCards(data.cards);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const getProfileLogged = async () => {
+    if (!unique_id || !token) return;
+    try {
+      const data = await fetchProfileLogged(unique_id, token);
+      console.log(data);
+
+      setName(data.user.name);
+      setPicture(data.user.picture || userpic);
       setFollowers(data.stats.followers);
       setFollowing(data.stats.following);
       setIsFollowing(data.isFollowing);
@@ -57,7 +77,11 @@ const VisitorPov = () => {
   };
 
   useEffect(() => {
-    getProfile();
+    if (!token) {
+      getProfile();
+    } else {
+      getProfileLogged();
+    }
   }, [unique_id, token]);
 
   const sortedCards = [...(cards || [])].sort((a, b) => {
@@ -88,7 +112,7 @@ const VisitorPov = () => {
       <div className="flex text-white flex-col pl-[8%]  pr-[8%]">
         <div className=" flex items-center  ">
           <img
-            src={naruto}
+            src={picture}
             className="w-35 h-35 rounded-full object-cover cursor-pointer"
           />
           <div className=" ml-6 flex flex-col ">
@@ -114,7 +138,7 @@ const VisitorPov = () => {
           >
             <button
               onClick={async () => {
-                if (!token) return;
+                if (!token) return alert("Log in to follow");
 
                 const res = await toggleFollow(unique_id, token);
 

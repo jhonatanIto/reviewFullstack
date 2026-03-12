@@ -1,8 +1,11 @@
 import { Router } from "express";
 import {
+  commentCard,
   deleteCard,
   getCard,
+  getCardLogged,
   getCards,
+  getComments,
   getFollowingCards,
   homePageCards,
   postCard,
@@ -14,12 +17,16 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 export const cardsRoute = Router();
 
 cardsRoute.get("/homePage", homePageCards);
-cardsRoute.use(authMiddleware);
+cardsRoute.get("/:cardId", getCard);
+cardsRoute.get("/comment/:cardId", getComments);
 
+cardsRoute.use(authMiddleware);
+cardsRoute.get("/protected/following", getFollowingCards);
+cardsRoute.get("/:cardId/logged", getCardLogged);
 cardsRoute.post("/", postCard);
 cardsRoute.get("/", getCards);
 cardsRoute.patch("/:cardId", updateCard);
 cardsRoute.delete("/:cardId", deleteCard);
 cardsRoute.post("/:cardId/likes", toggleLikeCard);
-cardsRoute.get("/following", getFollowingCards);
-cardsRoute.get("/:cardId", getCard);
+
+cardsRoute.post("/comment/:cardId", commentCard);

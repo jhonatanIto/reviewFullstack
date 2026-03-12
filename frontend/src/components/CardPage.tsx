@@ -11,11 +11,20 @@ import { IoIosHeart } from "react-icons/io";
 import { FaRegCommentDots } from "react-icons/fa";
 import { toggleLike } from "../utils/fetchData";
 import type { FollowingCards } from "./Friends";
+import Comments from "./Comments";
 
 interface OutletContextType {
   tab: string;
   getProfile: () => void;
   setFollowingCards: React.Dispatch<React.SetStateAction<FollowingCards[]>>;
+}
+
+export interface CommentSection {
+  id: number;
+  comment: string;
+  name: string;
+  unique_id: string;
+  picture: string;
 }
 
 const CardPage = () => {
@@ -25,7 +34,9 @@ const CardPage = () => {
   const boxRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [edit, setEdit] = useState(false);
-  const [showComments, setShowComments] = useState(true);
+  const [showComments, setShowComments] = useState(false);
+  const [commentSection, setCommentSection] = useState<CommentSection[]>([]);
+
   const [open, setOpen] = useState(false);
 
   const { setRate, setReview, rate, review } = useRate();
@@ -51,23 +62,36 @@ const CardPage = () => {
 
   useEffect(() => {
     const fetchCard = async () => {
+      setLoading(true);
       try {
         setOpen(false);
-        if (!id || !token) return;
-        const res = await fetch(`http://localhost:3000/api/cards/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
-        if (!res.ok) return console.log(data?.message);
-        setCard(data);
+        if (!id) return;
+        if (!token) {
+          const res = await fetch(`http://localhost:3000/api/cards/${id}`);
+          const data = await res.json();
+          if (!res.ok) return console.log(data?.message);
+          setCard(data);
+        } else {
+          const res = await fetch(
+            `http://localhost:3000/api/cards/${id}/logged`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+          const data = await res.json();
+          if (!res.ok) return console.log(data?.message);
+          setCard(data);
+        }
       } catch (error) {
         console.log(error);
       } finally {
         setOpen(true);
+        setLoading(false);
       }
     };
+
     fetchCard();
   }, [id]);
 
@@ -147,6 +171,24 @@ const CardPage = () => {
     }
   };
 
+  const fetchComments = async () => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/cards/comment/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      if (!res.ok) return console.log(data?.message);
+
+      setCommentSection(data.commentSection);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div
       style={{ opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
@@ -155,7 +197,7 @@ const CardPage = () => {
     >
       <div
         ref={boxRef}
-        className={`flex  items-center bg-white/20 relative rounded-2xl overflow-hidden shadow-black shadow-lg 
+        className={`flex  items-center bg-white/20 relative rounded-2xl   shadow-black shadow-lg 
            ${open ? " translate-y-0 scale-100" : "translate-y-10 scale-70 opacity-0"} transition-all duration-200 ease-in-out`}
       >
         <div className="relative">
@@ -171,7 +213,7 @@ const CardPage = () => {
               Release date: {card?.release}
             </div>
           </div>
-          <img src={card?.poster} />
+          <img src={card?.poster} className="rounded-l-2xl" />
         </div>
 
         <div className="p-5 flex flex-col items-center justify-center">
@@ -230,7 +272,8 @@ const CardPage = () => {
                   <IoIosHeart
                     className={`text-[35px]  cursor-pointer ${card?.liked_by_user ? "text-red-500" : "text-white"}`}
                     onClick={async () => {
-                      if (!token || !card?.id) return;
+                      if (!token) return alert("Log in to leave a like");
+                      if (!card?.id) return;
 
                       const previousLiked = card.liked_by_user;
 
@@ -264,7 +307,13 @@ const CardPage = () => {
                     }}
                   />
                 </div>
-                <div className=" flex items-center  justify-around  text-white cursor-pointer">
+                <div
+                  className=" flex items-center  justify-around  text-white cursor-pointer select-none"
+                  onClick={() => {
+                    fetchComments();
+                    setShowComments((prev) => !prev);
+                  }}
+                >
                   <div className="text-[25px] mr-1">{card?.comments_count}</div>
                   <FaRegCommentDots className=" text-[31px]  " />
                 </div>
@@ -272,12 +321,12 @@ const CardPage = () => {
             )}
           </div>
         </div>
-      </div>
-      <div
-        className={`flex  items-center bg-white/20 relative rounded-2xl overflow-hidden shadow-black shadow-lg 
-           ${showComments ? " translate-y-0 scale-100" : "translate-y-10 scale-70 opacity-0"} transition-all duration-200 ease-in-out`}
-      >
-        {/* alkusdhjff */}
+        <Comments
+          showComments={showComments}
+          id={id}
+          commentSection={commentSection}
+          fetchComments={fetchComments}
+        />
       </div>
     </div>
   );

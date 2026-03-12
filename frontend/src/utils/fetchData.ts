@@ -97,13 +97,23 @@ export const deleteWatchCard = async (
   }
 };
 
-export const fetchProfile = async (unique: string, token: string) => {
+export const fetchProfile = async (unique: string) => {
   try {
     const res = await fetch(
       `http://localhost:3000/api/users/profile/${unique}`,
+    );
+    return res.json();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const fetchProfileLogged = async (unique: string, token: string) => {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/api/users/profile/${unique}/logged`,
       {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       },
@@ -184,11 +194,14 @@ export const toggleLike = async (token: string, cardId: number) => {
 
 export const getFollowingCards = async (token: string) => {
   try {
-    const res = await fetch("http://localhost:3000/api/cards/following", {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const res = await fetch(
+      "http://localhost:3000/api/cards/protected/following",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     const data = await res.json();
 

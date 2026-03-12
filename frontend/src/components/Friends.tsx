@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import naruto from "../images/naruto.jpg";
+import userpic from "../images/user.png";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { getFollowing, getFollowingCards } from "../utils/fetchData";
 import { useUser } from "../context/useUser";
@@ -37,7 +37,6 @@ const Friends = () => {
   const [followingCards, setFollowingCards] = useState<FollowingCards[]>([]);
   const tab = "friends";
   const { token, setLoading } = useUser();
-  const [addFriend, setAddFriend] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -141,8 +140,8 @@ const Friends = () => {
                 transition-all duration-200"
                 >
                   <img
-                    src={naruto}
-                    className="w-15 h-15 rounded-full object-cover cursor-pointer"
+                    src={u.picture || userpic}
+                    className="w-15 h-15 rounded-full object-cover cursor-pointer bg-zinc-600"
                     onClick={() => clickUser(u.unique_id)}
                   />
                   <div className="flex flex-col justify-center ml-4 text-zinc-800">
@@ -176,8 +175,8 @@ const Friends = () => {
               }}
             >
               <img
-                src={naruto}
-                className="w-40 h-40 rounded-full object-cover cursor-pointer"
+                src={f.picture || userpic}
+                className="w-40 h-40 rounded-full object-cover cursor-pointer bg-zinc-600"
               />
               <div className="text-2xl">{f.name}</div>
               <div className="text-[20px]">Review: {f.reviews}</div>
@@ -197,10 +196,10 @@ const Friends = () => {
             {followingCards.map((c) => {
               return (
                 <div className="relative w-[14%] shrink-0 ">
-                  <Link to={`/friends/${c.id}`}>
+                  <Link className="" to={`/friends/${c.id}`}>
                     <img
-                      src={naruto}
-                      className="absolute w-20 h-20 rounded-full z-20 object-cover cursor-pointer  select-none"
+                      src={c.user_picture || userpic}
+                      className="absolute w-20 h-20 rounded-full z-20 object-cover cursor-pointer  select-none bg-zinc-600"
                     />
                   </Link>
                   <Link to={`/friends/${c.id}`}>
@@ -211,7 +210,7 @@ const Friends = () => {
                     >
                       <div
                         className="opacity-0 w-full group-hover:opacity-100 transition-opacity 
-                             duration-200 absolute inset-0 bg-black/70 z-10 flex items-center flex-col backdrop-blur-[3px] "
+                           p-2  duration-200 absolute inset-0 bg-black/70 z-10 flex items-center flex-col backdrop-blur-[3px] "
                       >
                         <div className="text-2xl text-center flex items-center text-amber-600  justify-center mt-5 ">
                           <IoStar />

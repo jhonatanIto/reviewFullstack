@@ -1,8 +1,15 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
 import { cards, comments, follows, likes, users } from "../db/schema.js";
-import { and, count, desc, eq, sql, type InferInsertModel } from "drizzle-orm";
-import { SQLiteNumericBuilder } from "drizzle-orm/sqlite-core";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  sql,
+  type InferInsertModel,
+} from "drizzle-orm";
 
 type NewCard = InferInsertModel<typeof cards>;
 
@@ -89,10 +96,8 @@ export const getCards = async (req: Request, res: Response) => {
 
 export const getCard = async (req: Request, res: Response) => {
   try {
-    const userId = req.userId;
     const cardId = Number(req.params.cardId);
 
-    if (!userId) return res.status(401).json({ message: "Unauthorized" });
     if (!cardId) return res.status(400).json({ message: "Card id required" });
 
     const [card] = await db
@@ -122,15 +127,6 @@ export const getCard = async (req: Request, res: Response) => {
           SELECT COUNT(*)
           FROM comments
           WHERE comments.card_id = ${cards.id}
-        )`,
-        liked_by_user: sql<boolean>`
-        (
-          EXISTS (
-            SELECT 1
-            FROM likes
-            WHERE likes.card_id = ${cards.id}
-            AND likes.user_id = ${userId}
-          )
         )`,
       })
       .from(cards)
@@ -277,6 +273,111 @@ export const homePageCards = async (req: Request, res: Response) => {
       .limit(20);
 
     res.status(200).json(recentCards);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+export const getCardLogged = async (req: Request, res: Response) => {
+  try {
+    const cardId = Number(req.params.cardId);
+    const userId = req.userId;
+
+    if (!cardId) return res.status(400).json({ message: "Card id required" });
+    if (!userId) return res.status(400).json({ message: "Unauthorized" });
+
+    const [card] = await db
+      .select({
+        id: cards.id,
+        title: cards.title,
+        poster: cards.poster,
+        description: cards.description,
+        rate: cards.rate,
+        review: cards.review,
+        tmdb_id: cards.tmdb_id,
+        created_at: cards.created_at,
+        release: cards.release,
+
+        user_name: users.name,
+        user_unique_id: users.unique_id,
+        user_picture: users.picture,
+
+        likes_count: sql<number>`
+        (
+          SELECT COUNT(*)::int
+          FROM likes
+          WHERE likes.card_id = ${cards.id}
+        )`,
+        comments_count: sql<number>`
+        (
+          SELECT COUNT(*)
+          FROM comments
+          WHERE comments.card_id = ${cards.id}
+        )`,
+        liked_by_user: sql<boolean>`
+        
+          EXISTS (
+            SELECT 1
+            FROM likes
+            WHERE likes.card_id = ${cards.id}
+            AND likes.user_id = ${userId}
+          )
+        `,
+      })
+      .from(cards)
+      .innerJoin(users, eq(users.id, cards.user_id))
+      .where(eq(cards.id, cardId));
+
+    res.status(200).json(card);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const commentCard = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const cardId = Number(req.params.cardId);
+    const { comment } = req.body;
+
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (!comment)
+      return res.status(400).json({ message: "No comment to insert" });
+    if (!cardId) return res.status(400).json({ message: "Card id missing" });
+
+    await db
+      .insert(comments)
+      .values({ user_id: userId, card_id: cardId, comment });
+
+    res.status(201).json({ message: "Comment posted" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getComments = async (req: Request, res: Response) => {
+  try {
+    const cardId = Number(req.params.cardId);
+
+    if (isNaN(cardId))
+      return res.status(400).json({ message: "Invalid card id" });
+
+    const commentSection = await db
+      .select({
+        id: comments.id,
+        comment: comments.comment,
+        name: users.name,
+        unique_id: users.unique_id,
+        picture: users.picture,
+      })
+      .from(comments)
+      .innerJoin(users, eq(users.id, comments.user_id))
+      .where(eq(comments.card_id, cardId))
+      .orderBy(asc(comments.id));
+
+    res.status(200).json({ commentSection });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

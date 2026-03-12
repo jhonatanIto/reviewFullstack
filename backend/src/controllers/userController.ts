@@ -33,12 +33,9 @@ export const searchUsers = async (req: Request, res: Response) => {
 
 export const getProfile = async (req: Request, res: Response) => {
   const unique_id = req.params.unique_id as string;
-  const userId = req.userId;
 
-  if (!unique_id || !userId)
-    return res
-      .status(400)
-      .json({ message: "Unique id or userId not provided" });
+  if (!unique_id)
+    return res.status(400).json({ message: "Unique id not provided" });
 
   try {
     const [profile] = await db
@@ -60,14 +57,6 @@ export const getProfile = async (req: Request, res: Response) => {
         WHERE follower_id = ${users.id}
         )
         `,
-
-        isFollowing: sql<boolean>`
-        EXISTS (
-          SELECT 1
-          FROM follows
-          WHERE follower_id = ${userId}
-          AND following_id = ${users.id}
-        )`,
       })
       .from(users)
       .where(eq(users.unique_id, unique_id));
@@ -88,14 +77,6 @@ export const getProfile = async (req: Request, res: Response) => {
 
         likes_count: count(sql`distinct ${likes.id}`),
         comments_count: count(sql`distinct ${comments.id}`),
-
-        liked_by_user: sql<boolean>`
-        EXISTS( 
-          SELECT 1
-          FROM likes
-          WHERE likes.card_id = ${cards.id}
-          AND likes.user_id = ${userId}
-        )`,
       })
       .from(cards)
       .leftJoin(likes, eq(likes.card_id, cards.id))
@@ -114,7 +95,7 @@ export const getProfile = async (req: Request, res: Response) => {
         followers: profile.followers,
         following: profile.following,
       },
-      isFollowing: profile.isFollowing,
+
       cards: profileCards,
     });
   } catch (error) {
@@ -192,6 +173,98 @@ export const getFollowing = async (req: Request, res: Response) => {
       .where(eq(follows.follower_id, userId));
 
     res.status(200).json({ following });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getProfileLogged = async (req: Request, res: Response) => {
+  const unique_id = req.params.unique_id as string;
+  const userId = req.userId;
+
+  if (!unique_id || !userId)
+    return res
+      .status(400)
+      .json({ message: "Unique id or userId not provided" });
+
+  try {
+    const [profile] = await db
+      .select({
+        name: users.name,
+        picture: users.picture,
+        unique_id: users.unique_id,
+        id: users.id,
+
+        followers: sql<number>`
+        (SELECT COUNT(*)::int
+        FROM follows
+        WHERE following_id = ${users.id}
+        )`,
+
+        following: sql<number>`
+        (SELECT COUNT(*)::int
+        FROM follows
+        WHERE follower_id = ${users.id}
+        )
+        `,
+        isFollowing: sql<boolean>`
+        
+          EXISTS(
+            SELECT 1
+            FROM follows
+            WHERE follower_id = ${userId}
+            AND following_id = ${users.id}
+          )
+        `,
+      })
+      .from(users)
+      .where(eq(users.unique_id, unique_id));
+
+    if (!profile) return res.status(404).json({ message: "User not found" });
+
+    const profileCards = await db
+      .select({
+        id: cards.id,
+        title: cards.title,
+        poster: cards.poster,
+        description: cards.description,
+        release: cards.release,
+        created_at: cards.created_at,
+        rate: cards.rate,
+        review: cards.review,
+        tmdb_id: cards.tmdb_id,
+
+        likes_count: count(sql`distinct ${likes.id}`),
+        comments_count: count(sql`distinct ${comments.id}`),
+        liked_by_user: sql<boolean>`
+        EXISTS(
+          SELECT 1
+          FROM likes
+          WHERE likes.card_id = ${cards.id}
+          AND likes.user_id = ${userId}
+        )`,
+      })
+      .from(cards)
+      .leftJoin(likes, eq(likes.card_id, cards.id))
+      .leftJoin(comments, eq(comments.card_id, cards.id))
+      .where(eq(cards.user_id, profile.id))
+      .groupBy(cards.id)
+      .orderBy(desc(cards.created_at));
+
+    res.status(200).json({
+      user: {
+        name: profile.name,
+        picture: profile.picture,
+        unique_id: profile.unique_id,
+      },
+      stats: {
+        followers: profile.followers,
+        following: profile.following,
+      },
+      isFollowing: profile.isFollowing,
+      cards: profileCards,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

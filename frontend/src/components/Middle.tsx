@@ -4,7 +4,7 @@ import useNotification from "../hooks/useNotification";
 import { useMovie } from "../context/useMovie";
 import { PiTrashLight } from "react-icons/pi";
 import { deleteWatchCard } from "../utils/fetchData";
-import naruto from "../images/naruto.jpg";
+import userpic from "../images/user.png";
 
 import { IoStar } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
@@ -130,7 +130,7 @@ const Middle = ({ feedCards }: Middle) => {
           </button>
         </div>
       </div>
-      <div className=" w-[37%] h-120 mt-4 mr-[1%] rounded-2xl p-1  overflow-scroll no-scrollbar">
+      <div className=" w-[37%] h-125 mt-4 mr-[1%] rounded-2xl p-1  overflow-scroll no-scrollbar">
         {feedCards.map((c) => {
           return (
             <div
@@ -144,8 +144,9 @@ const Middle = ({ feedCards }: Middle) => {
                 </div>
                 <div className="overflow-hidden rounded-full">
                   <img
-                    src={c.user_picture ?? naruto}
-                    className="w-18 h-18 rounded-full object-cover cursor-pointer group-hover:scale-110 duration-200 transition-all"
+                    src={c.user_picture ?? userpic}
+                    className="w-16 h-16 rounded-full object-cover cursor-pointer group-hover:scale-110 
+                   bg-zinc-600  duration-200 transition-all"
                     onClick={() => navigate(`/profile/${c.user_unique_id}`)}
                   />
                 </div>
