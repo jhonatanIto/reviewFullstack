@@ -6,17 +6,7 @@ import { useEffect, useState, type Dispatch } from "react";
 import type { Cards } from "./context/UserContext";
 import { homePageCards } from "./utils/fetchData";
 
-type LayoutContext = {
-  startIndex: number;
-  setStartIndex: Dispatch<React.SetStateAction<number>>;
-};
-
 const App = () => {
-  const {
-    startIndex,
-
-    setStartIndex,
-  } = useOutletContext<LayoutContext>();
   const [feedCards, setFeedCards] = useState<Cards[]>([]);
   const tab = "home";
 
@@ -32,7 +22,7 @@ const App = () => {
     <>
       <BackgroundImg />
       <Middle feedCards={feedCards} />
-      <Carousel setStartIndex={setStartIndex} startIndex={startIndex} />
+      <Carousel />
       <Outlet context={{ cards: feedCards, tab }} />
     </>
   );

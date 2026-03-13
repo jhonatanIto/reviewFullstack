@@ -1,6 +1,6 @@
 import { IoSearchOutline } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
-import { useEffect, useRef, useState, type Dispatch } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fetchMovies, searchMovies } from "../utils/fetchData";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/useUser";
@@ -8,9 +8,6 @@ import { useMovie } from "../context/useMovie";
 import type { Movie } from "../context/MovieContext";
 import userpic from "../images/user.png";
 
-interface HeaderProps {
-  setStartIndex: Dispatch<React.SetStateAction<number>>;
-}
 type GalleryOption = "Watch list" | "Reviews";
 
 const routes = {
@@ -18,7 +15,7 @@ const routes = {
   Reviews: "reviews",
 };
 
-const Header = ({ setStartIndex }: HeaderProps) => {
+const Header = () => {
   const [displayInput, setDisplayInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
 

@@ -30,7 +30,7 @@ const VisitorPov = () => {
   const [sortBy, setSortBy] = useState<SortOption>(
     () => (localStorage.getItem("MyReview_sortBy") as SortOption) || "Newest",
   );
-  const selectFilter = (value: string) => {
+  const selectFilter = (value: SortOption) => {
     setDisplayFilter(false);
     setSortBy(value);
   };
