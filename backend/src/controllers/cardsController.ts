@@ -456,6 +456,7 @@ export const getCommentsLogged = async (req: Request, res: Response) => {
         picture: users.picture,
         likes: sql<number>`COUNT(comment_likes.comment_id)::int`,
         isLiked: sql<boolean>`COALESCE(BOOL_OR(comment_likes.user_id = ${userId}), false)`,
+        isOwner: sql<boolean>`COALESCE(BOOL_OR(comments.user_id = ${userId}), false)`,
         created_at: comments.created_at,
       })
       .from(comments)

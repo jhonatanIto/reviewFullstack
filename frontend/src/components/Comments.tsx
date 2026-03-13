@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import userpic from "../images/user.png";
 import { timeAgo } from "../utils/calc";
 import { backend } from "../utils/fetchData";
+import { HiDotsHorizontal } from "react-icons/hi";
 
 interface CommentsProps {
   showComments: boolean;
@@ -82,11 +83,16 @@ const Comments = ({
               />
               <div className="  flex items-center w-full justify-between ml-3 ">
                 <div>
-                  <div className="flex  items-center">
+                  <div className="flex  items-center ">
                     <div className="font-bold">{c.name}</div>
                     <div className="text-zinc-600 text-[13px] ml-2">
                       {timeAgo(c.created_at)}
                     </div>
+                    {
+                      <div className="ml-2 text-zinc-600">
+                        <HiDotsHorizontal />
+                      </div>
+                    }
                   </div>
                   <div className="text-[15px] font-sans">
                     <div>{c.comment}</div>
