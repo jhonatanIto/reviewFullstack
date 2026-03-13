@@ -73,7 +73,6 @@ const Header = () => {
       });
 
       setMovies(convMovies);
-      setStartIndex(0);
       navigate("/");
     }, 500);
 

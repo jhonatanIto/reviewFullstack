@@ -1,8 +1,8 @@
-import { Outlet, useOutletContext } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import BackgroundImg from "./components/BackgroundImg";
 import Carousel from "./components/Carousel";
 import Middle from "./components/Middle";
-import { useEffect, useState, type Dispatch } from "react";
+import { useEffect, useState } from "react";
 import type { Cards } from "./context/UserContext";
 import { homePageCards } from "./utils/fetchData";
 
