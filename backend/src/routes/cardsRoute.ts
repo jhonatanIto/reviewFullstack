@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   commentCard,
   deleteCard,
+  deleteComment,
   getCard,
   getCardLogged,
   getCards,
@@ -34,3 +35,4 @@ cardsRoute.post("/:cardId/likes", toggleLikeCard);
 cardsRoute.post("/comment/:cardId", commentCard);
 cardsRoute.post("/commentLike/:commId", likeComment);
 cardsRoute.get("/commentLogged/:cardId", getCommentsLogged);
+cardsRoute.delete("/comment/:commentId", deleteComment);

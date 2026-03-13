@@ -10,6 +10,8 @@ import { HiDotsHorizontal } from "react-icons/hi";
 
 interface CommentsProps {
   showComments: boolean;
+  setDelModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setCommentId: React.Dispatch<React.SetStateAction<number>>;
   id: string | undefined;
   commentSection: CommentSection[];
   fetchCommentsLogged: () => void;
@@ -20,6 +22,8 @@ const Comments = ({
   id,
   commentSection,
   fetchCommentsLogged,
+  setDelModal,
+  setCommentId,
 }: CommentsProps) => {
   const [comment, setComment] = useState("");
   const { token, user } = useUser();
@@ -75,7 +79,7 @@ const Comments = ({
       <div className=" w-full h-full overflow-scroll">
         {commentSection.map((c) => {
           return (
-            <div className="flex justify-between p-2 mt-1">
+            <div className="flex justify-between p-2 mt-1 group">
               <img
                 src={c.picture ?? userpic}
                 className="w-13 h-13 rounded-full object-cover cursor-pointer bg-zinc-600 "
@@ -88,11 +92,17 @@ const Comments = ({
                     <div className="text-zinc-600 text-[13px] ml-2">
                       {timeAgo(c.created_at)}
                     </div>
-                    {
-                      <div className="ml-2 text-zinc-600">
+                    {c.isOwner && (
+                      <div
+                        className={`opacity-0 ml-2 text-zinc-600 group-hover:opacity-100 cursor-pointer`}
+                        onClick={() => {
+                          setDelModal(true);
+                          setCommentId(c.id);
+                        }}
+                      >
                         <HiDotsHorizontal />
                       </div>
-                    }
+                    )}
                   </div>
                   <div className="text-[15px] font-sans">
                     <div>{c.comment}</div>

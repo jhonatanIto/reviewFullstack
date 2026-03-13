@@ -472,3 +472,26 @@ export const getCommentsLogged = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const deleteComment = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const commentId = Number(req.params.commentId);
+
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (!commentId)
+      return res.status(400).json({ message: "comment id missing" });
+
+    const [deleted] = await db
+      .delete(comments)
+      .where(eq(comments.id, commentId))
+      .returning();
+
+    if (!deleted) return res.status(404).json({ message: "Comment not found" });
+
+    res.status(200).json({ message: "Comment deleted" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

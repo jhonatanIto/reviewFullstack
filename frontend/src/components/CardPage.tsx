@@ -28,6 +28,7 @@ export interface CommentSection {
   likes: number;
   isLiked: boolean;
   created_at: string;
+  isOwner: boolean;
 }
 
 const CardPage = () => {
@@ -41,6 +42,8 @@ const CardPage = () => {
   const [commentSection, setCommentSection] = useState<CommentSection[]>([]);
 
   const [open, setOpen] = useState(false);
+  const [delModal, setDelModal] = useState(false);
+  const [commentId, setCommentId] = useState();
 
   const { setRate, setReview, rate, review } = useRate();
   const { successNotification, errorNotification } = useNotification();
@@ -346,7 +349,27 @@ const CardPage = () => {
           id={id}
           commentSection={commentSection}
           fetchCommentsLogged={fetchCommentsLogged}
+          setDelModal={setDelModal}
+          setCommentId={setCommentId}
         />
+      </div>
+      <div
+        style={{ display: delModal ? "flex" : "none" }}
+        className=" flex items-center justify-center w-full h-screen fixed bg-black/60 top-0 left-0 z-30"
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          setDelModal(false);
+        }}
+      >
+        <div
+          onMouseDown={(e) => e.stopPropagation()}
+          className="bg-white [&>button]:p-3 [&>button]:pl-7 [&>button]:pr-7 flex flex-col w-80 rounded-3xl [&>button]:cursor-pointer"
+        >
+          <button className="text-red-500 border-b border-zinc-300">
+            Delete
+          </button>
+          <button>Cancel</button>
+        </div>
       </div>
     </div>
   );
