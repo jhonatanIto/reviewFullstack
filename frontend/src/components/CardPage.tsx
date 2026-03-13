@@ -43,7 +43,7 @@ const CardPage = () => {
 
   const [open, setOpen] = useState(false);
   const [delModal, setDelModal] = useState(false);
-  const [commentId, setCommentId] = useState();
+  const [commentId, setCommentId] = useState<number>();
 
   const { setRate, setReview, rate, review } = useRate();
   const { successNotification, errorNotification } = useNotification();
