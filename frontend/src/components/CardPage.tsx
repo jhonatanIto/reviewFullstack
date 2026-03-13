@@ -206,6 +206,29 @@ const CardPage = () => {
     }
   };
 
+  const deleteComment = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`${backend}/api/cards/comment/${commentId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) return console.log(data?.message);
+
+      setDelModal(false);
+      fetchCommentsLogged();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div
       style={{ opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
@@ -363,12 +386,15 @@ const CardPage = () => {
       >
         <div
           onMouseDown={(e) => e.stopPropagation()}
-          className="bg-white [&>button]:p-3 [&>button]:pl-7 [&>button]:pr-7 flex flex-col w-80 rounded-3xl [&>button]:cursor-pointer"
+          className="bg-white [&>button]:p-3 [&>button]:pl-7 [&>button]:pr-7 flex flex-col w-80 rounded-3xl overflow-hidden [&>button]:cursor-pointer"
         >
-          <button className="text-red-500 border-b border-zinc-300">
+          <button
+            className="text-red-500 border-b border-zinc-300"
+            onClick={deleteComment}
+          >
             Delete
           </button>
-          <button>Cancel</button>
+          <button onClick={() => setDelModal(false)}>Cancel</button>
         </div>
       </div>
     </div>
