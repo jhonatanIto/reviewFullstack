@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import userpic from "../images/user.png";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
+  backend,
   getFollowing,
   getFollowingCards,
   toggleFollow,
@@ -47,7 +48,7 @@ const Friends = () => {
 
   const searchUsers = () => {
     fetch(
-      `http://localhost:3000/api/users/search?q=${encodeURIComponent(name)}&type=${searchType}`,
+      `${backend}/api/users/search?q=${encodeURIComponent(name)}&type=${searchType}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

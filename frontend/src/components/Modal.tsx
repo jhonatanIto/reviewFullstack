@@ -5,6 +5,7 @@ import useRate from "../hooks/useRate";
 import useNotification from "../hooks/useNotification";
 import { useMovie } from "../context/useMovie";
 import { useNavigate } from "react-router-dom";
+import { backend } from "../utils/fetchData";
 
 const Modal = () => {
   const boxRef = useRef<HTMLDivElement>(null);
@@ -54,7 +55,7 @@ const Modal = () => {
     if (!token) return console.log("Create an account to save review");
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3000/api/cards", {
+      const res = await fetch(`${backend}/api/cards`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

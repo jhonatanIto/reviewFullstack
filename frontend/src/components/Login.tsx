@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/useUser";
 import useNotification from "../hooks/useNotification";
 import { GoogleLogin } from "@react-oauth/google";
+import { backend } from "../utils/fetchData";
+import type { CredentialResponse } from "@react-oauth/google";
 
 const Login = () => {
   const boxRef = useRef<HTMLFormElement>(null);
@@ -32,7 +34,7 @@ const Login = () => {
 
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:3000/api/auth/${url}`, {
+      const res = await fetch(`${backend}/api/auth/${url}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,9 +66,9 @@ const Login = () => {
     }
   };
 
-  const handleGoogleSuccess = async (credentialRes) => {
+  const handleGoogleSuccess = async (credentialRes: CredentialResponse) => {
     try {
-      const res = await fetch("http://localhost:3000/api/googleAuth", {
+      const res = await fetch(`${backend}/api/googleAuth`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

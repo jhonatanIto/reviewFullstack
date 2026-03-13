@@ -9,7 +9,7 @@ import type { Cards } from "../context/UserContext";
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
 
 import { FaRegCommentDots } from "react-icons/fa";
-import { toggleLike } from "../utils/fetchData";
+import { backend, toggleLike } from "../utils/fetchData";
 import type { FollowingCards } from "./Friends";
 import Comments from "./Comments";
 
@@ -70,19 +70,16 @@ const CardPage = () => {
         setOpen(false);
         if (!id) return;
         if (!token) {
-          const res = await fetch(`http://localhost:3000/api/cards/${id}`);
+          const res = await fetch(`${backend}/api/cards/${id}`);
           const data = await res.json();
           if (!res.ok) return console.log(data?.message);
           setCard(data);
         } else {
-          const res = await fetch(
-            `http://localhost:3000/api/cards/${id}/logged`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+          const res = await fetch(`${backend}/api/cards/${id}/logged`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
-          );
+          });
           const data = await res.json();
           if (!res.ok) return console.log(data?.message);
           setCard(data);
@@ -119,7 +116,7 @@ const CardPage = () => {
   const updateCard = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:3000/api/cards/${id}`, {
+      const res = await fetch(`${backend}/api/cards/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -148,7 +145,7 @@ const CardPage = () => {
   const deleteCard = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:3000/api/cards/${id}`, {
+      const res = await fetch(`${backend}/api/cards/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -176,7 +173,7 @@ const CardPage = () => {
 
   const fetchComments = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/api/cards/comment/${id}`);
+      const res = await fetch(`${backend}/api/cards/comment/${id}`);
 
       const data = await res.json();
       if (!res.ok) return console.log(data?.message);
@@ -190,14 +187,11 @@ const CardPage = () => {
 
   const fetchCommentsLogged = async () => {
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/cards/commentLogged/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await fetch(`${backend}/api/cards/commentLogged/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       const data = await res.json();
       if (!res.ok) return console.log(data?.message);

@@ -5,6 +5,7 @@ import type { CommentSection } from "./CardPage";
 import { useNavigate } from "react-router-dom";
 import userpic from "../images/user.png";
 import { timeAgo } from "../utils/calc";
+import { backend } from "../utils/fetchData";
 
 interface CommentsProps {
   showComments: boolean;
@@ -28,7 +29,7 @@ const Comments = ({
     if (comment.length < 1) return;
     try {
       setSending(true);
-      const res = await fetch(`http://localhost:3000/api/cards/comment/${id}`, {
+      const res = await fetch(`${backend}/api/cards/comment/${id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,15 +51,12 @@ const Comments = ({
 
   const postLike = async (commId: number) => {
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/cards/commentLike/${commId}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await fetch(`${backend}/api/cards/commentLike/${commId}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       const data = await res.json();
       if (!res.ok) return data?.message;
@@ -67,7 +65,6 @@ const Comments = ({
     }
   };
 
-  console.log(commentSection);
   return (
     <div
       className={`flex flex-col items-center bg-white/90  rounded-2xl overflow-hidden shadow-black shadow-lg absolute -right-95 h-full w-90

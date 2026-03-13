@@ -3,7 +3,7 @@ import { useUser } from "../context/useUser";
 import useNotification from "../hooks/useNotification";
 import { useMovie } from "../context/useMovie";
 import { PiTrashLight } from "react-icons/pi";
-import { deleteWatchCard } from "../utils/fetchData";
+import { backend, deleteWatchCard } from "../utils/fetchData";
 import userpic from "../images/user.png";
 
 import { IoStar } from "react-icons/io5";
@@ -47,7 +47,7 @@ const Middle = ({ feedCards }: Middle) => {
       tmdb_id: movieId,
     };
     try {
-      const res = await fetch("http://localhost:3000/api/watchlist", {
+      const res = await fetch(`${backend}/api/watchlist`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

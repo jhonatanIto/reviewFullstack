@@ -1,4 +1,5 @@
 const tmdbKey = import.meta.env.VITE_TMDB_API_KEY;
+export const backend = import.meta.env.VITE_BACKEND_API;
 
 export const fetchMovies = async () => {
   try {
@@ -29,7 +30,7 @@ export const searchMovies = async (name: string) => {
 
 export const getCards = async (token: string | null) => {
   try {
-    const res = await fetch("http://localhost:3000/api/cards", {
+    const res = await fetch(`${backend}/api/cards`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -51,7 +52,7 @@ export const getCards = async (token: string | null) => {
 
 export const getWatchCards = async (token: string | null) => {
   try {
-    const res = await fetch("http://localhost:3000/api/watchlist", {
+    const res = await fetch(`${backend}/api/watchlist`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -76,7 +77,7 @@ export const deleteWatchCard = async (
   id: number | null,
 ) => {
   try {
-    const res = await fetch(`http://localhost:3000/api/watchlist/${id}`, {
+    const res = await fetch(`${backend}/api/watchlist/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -99,9 +100,7 @@ export const deleteWatchCard = async (
 
 export const fetchProfile = async (unique: string) => {
   try {
-    const res = await fetch(
-      `http://localhost:3000/api/users/profile/${unique}`,
-    );
+    const res = await fetch(`${backend}/api/users/profile/${unique}`);
     return res.json();
   } catch (error) {
     console.error(error);
@@ -110,14 +109,11 @@ export const fetchProfile = async (unique: string) => {
 
 export const fetchProfileLogged = async (unique: string, token: string) => {
   try {
-    const res = await fetch(
-      `http://localhost:3000/api/users/profile/${unique}/logged`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const res = await fetch(`${backend}/api/users/profile/${unique}/logged`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
     return res.json();
   } catch (error) {
     console.error(error);
@@ -126,15 +122,12 @@ export const fetchProfileLogged = async (unique: string, token: string) => {
 
 export const toggleFollow = async (unique: string, token: string) => {
   try {
-    const res = await fetch(
-      `http://localhost:3000/api/users/${unique}/follow`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const res = await fetch(`${backend}/api/users/${unique}/follow`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
 
     const data = await res.json();
 
@@ -151,7 +144,7 @@ export const toggleFollow = async (unique: string, token: string) => {
 
 export const getFollowing = async (token: string) => {
   try {
-    const res = await fetch(`http://localhost:3000/api/users/following`, {
+    const res = await fetch(`${backend}/api/users/following`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -172,7 +165,7 @@ export const getFollowing = async (token: string) => {
 
 export const toggleLike = async (token: string, cardId: number) => {
   try {
-    const res = await fetch(`http://localhost:3000/api/cards/${cardId}/likes`, {
+    const res = await fetch(`${backend}/api/cards/${cardId}/likes`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -194,14 +187,11 @@ export const toggleLike = async (token: string, cardId: number) => {
 
 export const getFollowingCards = async (token: string) => {
   try {
-    const res = await fetch(
-      "http://localhost:3000/api/cards/protected/following",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const res = await fetch(`${backend}/api/cards/protected/following`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
 
     const data = await res.json();
 
@@ -218,7 +208,7 @@ export const getFollowingCards = async (token: string) => {
 
 export const homePageCards = async () => {
   try {
-    const res = await fetch("http://localhost:3000/api/cards/homepage");
+    const res = await fetch(`${backend}/api/cards/homepage`);
     const data = await res.json();
     if (!res.ok) return console.log(data?.message);
 
