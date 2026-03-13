@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import userpic from "../images/user.png";
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { getFollowing, getFollowingCards } from "../utils/fetchData";
+import {
+  getFollowing,
+  getFollowingCards,
+  toggleFollow,
+} from "../utils/fetchData";
 import { useUser } from "../context/useUser";
 import { IoStar } from "react-icons/io5";
 
@@ -10,6 +14,7 @@ interface User {
   unique_id: string;
   picture: string;
   reviews: number;
+  isFollowing: boolean;
 }
 export interface FollowingCards {
   comments_count: number;
@@ -38,6 +43,20 @@ const Friends = () => {
   const tab = "friends";
   const { token, setLoading } = useUser();
   const navigate = useNavigate();
+  const searchBoxRef = useRef<HTMLDivElement>(null);
+
+  const searchUsers = () => {
+    fetch(
+      `http://localhost:3000/api/users/search?q=${encodeURIComponent(name)}&type=${searchType}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+      .then((res) => res.json())
+      .then((data) => setUsers(data));
+  };
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -46,11 +65,7 @@ const Friends = () => {
         return;
       }
 
-      fetch(
-        `http://localhost:3000/api/users/search?q=${encodeURIComponent(name)}&type=${searchType}`,
-      )
-        .then((res) => res.json())
-        .then((data) => setUsers(data));
+      searchUsers();
     }, 300);
 
     return () => clearTimeout(timeout);
@@ -91,6 +106,20 @@ const Friends = () => {
     navigate(`/profile/${unique}`);
   };
 
+  useEffect(() => {
+    const closeSearch = (e: MouseEvent) => {
+      if (
+        searchBoxRef.current &&
+        !searchBoxRef.current.contains(e.target as Node)
+      ) {
+        setUsers([]);
+        setName("");
+      }
+    };
+    window.addEventListener("mousedown", closeSearch);
+    return () => window.removeEventListener("mousedown", closeSearch);
+  }, []);
+
   return (
     <div className="mt-10 ">
       <div className="flex  justify-between pl-[8%] pr-[8%]">
@@ -130,6 +159,7 @@ const Friends = () => {
             placeholder="Search name"
           />
           <div
+            ref={searchBoxRef}
             style={{ display: users.length > 0 ? "block" : "none" }}
             className="absolute top-18 right-0 bg-white pl-3 pr-3 pb-3 w-100"
           >
@@ -154,10 +184,16 @@ const Friends = () => {
                     <div>ID: {u.unique_id}</div>
                   </div>
                   <button
-                    className="bg-blue-600 text-[18px] hover:bg-blue-900 transition-all duration-200
-                   cursor-pointer text-white pl-6 pr-6 p-1 h-fit rounded-[10px] ml-auto"
+                    className={`bg-blue-600 text-[17px] hover:bg-blue-900 transition-all duration-200 font-semibold select-none
+                   cursor-pointer text-white pl-6 pr-6 p-1 h-fit rounded-[10px] ml-auto   ${u.isFollowing ? "text-black! bg-zinc-200! " : ""}`}
+                    onClick={async () => {
+                      if (!token) return alert("Log in to follow");
+
+                      await toggleFollow(u.unique_id, token);
+                      await searchUsers();
+                    }}
                   >
-                    Follow
+                    {u.isFollowing ? "Following" : "Follow"}
                   </button>
                 </div>
               );
@@ -168,15 +204,13 @@ const Friends = () => {
       <div className="w-full text-white mt-7  flex pl-[3%] pr-[3%]">
         {following.map((f) => {
           return (
-            <div
-              className="name flex flex-col w-fit items-center ml-2 mr-2"
-              onClick={() => {
-                navigate(`/profile/${f.unique_id}`);
-              }}
-            >
+            <div className="name flex flex-col w-fit items-center ml-2 mr-2">
               <img
                 src={f.picture || userpic}
                 className="w-40 h-40 rounded-full object-cover cursor-pointer bg-zinc-600"
+                onClick={() => {
+                  navigate(`/profile/${f.unique_id}`);
+                }}
               />
               <div className="text-2xl">{f.name}</div>
               <div className="text-[20px]">Review: {f.reviews}</div>

@@ -89,7 +89,7 @@ const Middle = ({ feedCards }: Middle) => {
   };
 
   const navigate = useNavigate();
-  console.log(feedCards);
+
   return (
     <div className="text-white ml-[7%] mt-10 flex justify-between">
       <div>

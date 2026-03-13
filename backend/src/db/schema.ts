@@ -133,3 +133,26 @@ export const comments = pgTable(
     index("comments_user_idx").on(table.user_id),
   ],
 );
+
+export const comment_likes = pgTable(
+  "comment_likes",
+  {
+    user_id: integer("user_id")
+      .references(() => users.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    comment_id: integer("comment_id")
+      .references(() => comments.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    created_at: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.user_id, table.comment_id] }),
+    index("comment_likes_comment_idx").on(table.comment_id),
+  ],
+);

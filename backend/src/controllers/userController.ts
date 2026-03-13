@@ -1,13 +1,15 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
 import { users, cards, follows, likes, comments } from "../db/schema.js";
-import { and, desc, eq, ilike, sql, count } from "drizzle-orm";
+import { and, desc, eq, ilike, sql, count, ne } from "drizzle-orm";
 
 export const searchUsers = async (req: Request, res: Response) => {
   try {
+    const userId = req.userId;
     const q = req.query.q as string;
     const type = req.query.type as string;
 
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
     if (!q || q.length < 2 || (type !== "name" && type !== "id")) {
       return res.json([]);
     }
@@ -19,9 +21,18 @@ export const searchUsers = async (req: Request, res: Response) => {
         unique_id: users.unique_id,
         name: users.name,
         picture: users.picture,
+        isFollowing: sql<boolean>`
+        (
+          EXISTS(
+            SELECT 1 
+            FROM follows
+            WHERE follows.follower_id = ${userId}
+            AND follows.following_id = ${users.id}
+          )
+        )`,
       })
       .from(users)
-      .where(ilike(column, `%${q}%`))
+      .where(and(ilike(column, `%${q}%`), ne(users.id, userId)))
       .limit(10);
 
     res.json(userSearch);

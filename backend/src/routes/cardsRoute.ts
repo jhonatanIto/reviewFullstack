@@ -6,8 +6,10 @@ import {
   getCardLogged,
   getCards,
   getComments,
+  getCommentsLogged,
   getFollowingCards,
   homePageCards,
+  likeComment,
   postCard,
   toggleLikeCard,
   updateCard,
@@ -30,3 +32,5 @@ cardsRoute.delete("/:cardId", deleteCard);
 cardsRoute.post("/:cardId/likes", toggleLikeCard);
 
 cardsRoute.post("/comment/:cardId", commentCard);
+cardsRoute.post("/commentLike/:commId", likeComment);
+cardsRoute.get("/commentLogged/:cardId", getCommentsLogged);

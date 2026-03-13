@@ -111,10 +111,7 @@ const VisitorPov = () => {
     <div className="mt-10 w-full ">
       <div className="flex text-white flex-col pl-[8%]  pr-[8%]">
         <div className=" flex items-center  ">
-          <img
-            src={picture}
-            className="w-35 h-35 rounded-full object-cover cursor-pointer"
-          />
+          <img src={picture} className="w-35 h-35 rounded-full object-cover " />
           <div className=" ml-6 flex flex-col ">
             <div className="text-5xl border-b pb-5 flex w-full pr-20">
               {name}

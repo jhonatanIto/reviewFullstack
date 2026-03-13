@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/useUser";
 import { useMovie } from "../context/useMovie";
 import type { Movie } from "../context/MovieContext";
+import userpic from "../images/user.png";
 
 interface HeaderProps {
   setStartIndex: Dispatch<React.SetStateAction<number>>;
@@ -239,8 +240,8 @@ const Header = ({ setStartIndex }: HeaderProps) => {
               }}
               className="text-[30px] ml-5 cursor-pointer hover:text-purple-500 transition-all duration-200"
             />
-            <FaUser
-              className={`ml-5 cursor-pointer hover:text-purple-500 transition-all duration-200
+            <div
+              className={`ml-5 cursor-pointer hover:text-purple-500 transition-all duration-200 
                  ${location === "/login" || location === "/profile" ? "text-purple-500" : ""}`}
               onClick={() => {
                 if (!user) {
@@ -249,7 +250,16 @@ const Header = ({ setStartIndex }: HeaderProps) => {
                   navigate("/profile");
                 }
               }}
-            />
+            >
+              {user ? (
+                <img
+                  src={user.picture || userpic}
+                  className="rounded-full w-12 h-12"
+                />
+              ) : (
+                <FaUser />
+              )}
+            </div>
           </div>
         </ul>
       </div>

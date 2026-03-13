@@ -6,7 +6,7 @@ import Stars from "./Stars";
 import useNotification from "../hooks/useNotification";
 import { useOutletContext } from "react-router-dom";
 import type { Cards } from "../context/UserContext";
-import { IoIosHeart } from "react-icons/io";
+import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
 
 import { FaRegCommentDots } from "react-icons/fa";
 import { toggleLike } from "../utils/fetchData";
@@ -25,6 +25,9 @@ export interface CommentSection {
   name: string;
   unique_id: string;
   picture: string;
+  likes: number;
+  isLiked: boolean;
+  created_at: string;
 }
 
 const CardPage = () => {
@@ -173,11 +176,28 @@ const CardPage = () => {
 
   const fetchComments = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/api/cards/comment/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(`http://localhost:3000/api/cards/comment/${id}`);
+
+      const data = await res.json();
+      if (!res.ok) return console.log(data?.message);
+
+      setCommentSection(data.commentSection);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchCommentsLogged = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/cards/commentLogged/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       const data = await res.json();
       if (!res.ok) return console.log(data?.message);
@@ -269,7 +289,7 @@ const CardPage = () => {
                   <div className="text-[25px] text-white mr-1">
                     {card?.likes_count}
                   </div>
-                  <IoIosHeart
+                  <div
                     className={`text-[35px]  cursor-pointer ${card?.liked_by_user ? "text-red-500" : "text-white"}`}
                     onClick={async () => {
                       if (!token) return alert("Log in to leave a like");
@@ -305,12 +325,18 @@ const CardPage = () => {
                         );
                       }
                     }}
-                  />
+                  >
+                    {card?.liked_by_user ? <IoIosHeart /> : <IoIosHeartEmpty />}
+                  </div>
                 </div>
                 <div
                   className=" flex items-center  justify-around  text-white cursor-pointer select-none"
                   onClick={() => {
-                    fetchComments();
+                    if (token) {
+                      fetchCommentsLogged();
+                    } else {
+                      fetchComments();
+                    }
                     setShowComments((prev) => !prev);
                   }}
                 >
@@ -325,7 +351,7 @@ const CardPage = () => {
           showComments={showComments}
           id={id}
           commentSection={commentSection}
-          fetchComments={fetchComments}
+          fetchCommentsLogged={fetchCommentsLogged}
         />
       </div>
     </div>

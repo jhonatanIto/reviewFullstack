@@ -1,28 +1,29 @@
 import { useState } from "react";
-import naruto from "../images/naruto.jpg";
-import { IoIosHeartEmpty } from "react-icons/io";
+import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
 import { useUser } from "../context/useUser";
 import type { CommentSection } from "./CardPage";
 import { useNavigate } from "react-router-dom";
 import userpic from "../images/user.png";
+import { timeAgo } from "../utils/calc";
 
 interface CommentsProps {
   showComments: boolean;
   id: string | undefined;
   commentSection: CommentSection[];
-  fetchComments: () => void;
+  fetchCommentsLogged: () => void;
 }
 
 const Comments = ({
   showComments,
   id,
   commentSection,
-  fetchComments,
+  fetchCommentsLogged,
 }: CommentsProps) => {
   const [comment, setComment] = useState("");
   const { token, user } = useUser();
   const [sending, setSending] = useState(false);
   const navigate = useNavigate();
+
   const postComment = async () => {
     if (comment.length < 1) return;
     try {
@@ -40,15 +41,33 @@ const Comments = ({
       if (!res.ok) return console.log(data?.message);
 
       setComment("");
-      console.log(data);
     } catch (error) {
       console.error(error);
     } finally {
       setSending(false);
     }
   };
-  console.log(commentSection);
 
+  const postLike = async (commId: number) => {
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/cards/commentLike/${commId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await res.json();
+      if (!res.ok) return data?.message;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  console.log(commentSection);
   return (
     <div
       className={`flex flex-col items-center bg-white/90  rounded-2xl overflow-hidden shadow-black shadow-lg absolute -right-95 h-full w-90
@@ -58,7 +77,7 @@ const Comments = ({
       <div className=" w-full h-full overflow-scroll">
         {commentSection.map((c) => {
           return (
-            <div className="flex justify-between p-2 ">
+            <div className="flex justify-between p-2 mt-1">
               <img
                 src={c.picture ?? userpic}
                 className="w-13 h-13 rounded-full object-cover cursor-pointer bg-zinc-600 "
@@ -66,14 +85,30 @@ const Comments = ({
               />
               <div className="  flex items-center w-full justify-between ml-3 ">
                 <div>
-                  <div className="font-bold">{c.name}</div>
+                  <div className="flex  items-center">
+                    <div className="font-bold">{c.name}</div>
+                    <div className="text-zinc-600 text-[13px] ml-2">
+                      {timeAgo(c.created_at)}
+                    </div>
+                  </div>
                   <div className="text-[15px] font-sans">
                     <div>{c.comment}</div>
-                    <div className="text-zinc-600 text-[13px]">1 like</div>
                   </div>
                 </div>
-                <div className="font-semibold text-zinc-500 ml-2 cursor-pointer hover:text-red-500 transition-all duration-150">
-                  <IoIosHeartEmpty />
+                <div
+                  className={`font-semibold  ml-2 cursor-pointer hover:text-red-500 transition-all flex flex-col  items-center
+                     duration-150 ${c.isLiked ? "text-red-500" : "text-zinc-500"}`}
+                  onClick={async () => {
+                    await postLike(c.id);
+                    await fetchCommentsLogged();
+                  }}
+                >
+                  <div>{c.isLiked ? <IoIosHeart /> : <IoIosHeartEmpty />}</div>
+                  <div
+                    className={`text-zinc-600 text-[13px]    font-semibold ${c.likes > 0 ? "opacity-100" : "opacity-0"}`}
+                  >
+                    {c.likes}
+                  </div>
                 </div>
               </div>
             </div>
@@ -98,7 +133,7 @@ const Comments = ({
             className="font-semibold text-purple-500 ml-2 cursor-pointer"
             onClick={async () => {
               await postComment();
-              await fetchComments();
+              await fetchCommentsLogged();
             }}
           >
             Post

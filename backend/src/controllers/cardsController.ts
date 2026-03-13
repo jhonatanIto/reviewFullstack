@@ -1,6 +1,13 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
-import { cards, comments, follows, likes, users } from "../db/schema.js";
+import {
+  cards,
+  comment_likes,
+  comments,
+  follows,
+  likes,
+  users,
+} from "../db/schema.js";
 import {
   and,
   asc,
@@ -371,10 +378,91 @@ export const getComments = async (req: Request, res: Response) => {
         name: users.name,
         unique_id: users.unique_id,
         picture: users.picture,
+        created_at: comments.created_at,
+        likes: sql<number>`COUNT(comment_likes.comment_id)::int`,
       })
       .from(comments)
       .innerJoin(users, eq(users.id, comments.user_id))
+      .leftJoin(comment_likes, eq(comment_likes.comment_id, comments.id))
       .where(eq(comments.card_id, cardId))
+      .groupBy(comments.id, users.id)
+      .orderBy(asc(comments.id));
+
+    res.status(200).json({ commentSection });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const likeComment = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const commentId = Number(req.params.commId);
+
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (isNaN(commentId))
+      return res.status(400).json({ message: "Invalid comment id" });
+
+    const [isLiked] = await db
+      .select()
+      .from(comment_likes)
+      .where(
+        and(
+          eq(comment_likes.user_id, userId),
+          eq(comment_likes.comment_id, commentId),
+        ),
+      );
+
+    if (isLiked) {
+      await db
+        .delete(comment_likes)
+        .where(
+          and(
+            eq(comment_likes.user_id, userId),
+            eq(comment_likes.comment_id, commentId),
+          ),
+        );
+
+      return res.status(200).json({ message: "Like removed" });
+    }
+
+    await db
+      .insert(comment_likes)
+      .values({ user_id: userId, comment_id: commentId });
+
+    res.status(201).json({ message: "Comment liked" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getCommentsLogged = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const cardId = Number(req.params.cardId);
+
+    if (isNaN(cardId))
+      return res.status(400).json({ message: "Invalid card id" });
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const commentSection = await db
+      .select({
+        id: comments.id,
+        comment: comments.comment,
+        name: users.name,
+        unique_id: users.unique_id,
+        picture: users.picture,
+        likes: sql<number>`COUNT(comment_likes.comment_id)::int`,
+        isLiked: sql<boolean>`COALESCE(BOOL_OR(comment_likes.user_id = ${userId}), false)`,
+        created_at: comments.created_at,
+      })
+      .from(comments)
+      .innerJoin(users, eq(users.id, comments.user_id))
+      .leftJoin(comment_likes, eq(comment_likes.comment_id, comments.id))
+      .where(eq(comments.card_id, cardId))
+      .groupBy(comments.id, users.id)
       .orderBy(asc(comments.id));
 
     res.status(200).json({ commentSection });
