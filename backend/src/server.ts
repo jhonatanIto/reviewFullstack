@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://review-fullstack-4s6s.vercel.app/",
+      "https://review-fullstack-4s6s.vercel.app",
     ],
   }),
 );

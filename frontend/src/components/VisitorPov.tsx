@@ -54,7 +54,7 @@ const VisitorPov = () => {
       setPicture(data.user.picture || userpic);
       setFollowers(data.stats.followers);
       setFollowing(data.stats.following);
-      setCards(data.cards);
+      setCards(data.cards || []);
     } catch (err) {
       console.error(err);
     }
@@ -63,6 +63,7 @@ const VisitorPov = () => {
     if (!unique_id || !token) return;
     try {
       const data = await fetchProfileLogged(unique_id, token);
+
       console.log(data);
 
       setName(data.user.name);
