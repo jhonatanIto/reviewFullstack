@@ -42,7 +42,7 @@ const Friends = () => {
   const [following, setFollowing] = useState<User[]>([]);
   const [followingCards, setFollowingCards] = useState<FollowingCards[]>([]);
   const tab = "friends";
-  const { token, setLoading } = useUser();
+  const { token, setLoading, search } = useUser();
   const navigate = useNavigate();
   const searchBoxRef = useRef<HTMLDivElement>(null);
 
@@ -98,6 +98,10 @@ const Friends = () => {
       setLoading(false);
     }
   };
+
+  const filteredFollowing = following.filter((f) =>
+    f.name.toLowerCase().includes(search?.toLowerCase()),
+  );
 
   useEffect(() => {
     getFollowCards();
@@ -203,7 +207,7 @@ const Friends = () => {
         </div>
       </div>
       <div className="w-full text-white mt-7  flex pl-[3%] pr-[3%]">
-        {following.map((f) => {
+        {filteredFollowing.map((f) => {
           return (
             <div className="name flex flex-col w-fit items-center ml-2 mr-2">
               <img
