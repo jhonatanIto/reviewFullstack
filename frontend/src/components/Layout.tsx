@@ -9,9 +9,8 @@ const Layout = () => {
   const location = useLocation();
 
   return (
-    <div className="w-full min-h-screen relative flex flex-col bg-zinc-900 z-0">
+    <div className="w-full  min-h-screen relative flex flex-col bg-zinc-900 z-0 overflow-x-hidden">
       <Header />
-
       <Outlet />
       <Modal />
       {location.pathname === "/login" && <Login />}

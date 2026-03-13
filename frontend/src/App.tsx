@@ -19,12 +19,12 @@ const App = () => {
   }, []);
 
   return (
-    <>
+    <div>
       <BackgroundImg />
       <Middle feedCards={feedCards} />
       <Carousel />
       <Outlet context={{ cards: feedCards, tab }} />
-    </>
+    </div>
   );
 };
 

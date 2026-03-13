@@ -117,7 +117,7 @@ const Header = () => {
   };
 
   return (
-    <div className="flex w-full justify-between text-white text-[26px] pr-10 pt-10 pl-0">
+    <div className="flex flex-col sm:flex-row w-full justify-between text-white text-[26px] pr-10 pt-10 pl-0 ">
       <div
         className="ml-[7%] w-37 justify-between items-center flex text-purple-500 cursor-pointer select-none"
         onClick={() => navigate("/")}
