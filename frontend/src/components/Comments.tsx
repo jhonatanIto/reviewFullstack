@@ -67,8 +67,8 @@ const Comments = ({
 
   return (
     <div
-      className={`flex flex-col items-center bg-white/90  rounded-2xl overflow-hidden shadow-black shadow-lg absolute -right-95 h-full w-90
-           ${showComments ? " translate-y-0 scale-100 pointer-events-auto" : "translate-y-10 scale-70 opacity-0 pointer-events-none"} transition-all duration-200 ease-in-out
+      className={`flex flex-col items-center bg-white/90  rounded-2xl overflow-hidden shadow-black shadow-lg absolute -right-98 h-full w-95
+           ${showComments ? " translate-y-0 scale-100 pointer-events-auto" : "-translate-x-20 scale-70 opacity-0 pointer-events-none"} transition-all duration-200 ease-in-out
            justify-between`}
     >
       <div className=" w-full h-full overflow-scroll">
@@ -93,7 +93,7 @@ const Comments = ({
                   </div>
                 </div>
                 <div
-                  className={`font-semibold  ml-2 cursor-pointer hover:text-red-500 transition-all flex flex-col  items-center
+                  className={`font-semibold  cursor-pointer hover:text-red-500 transition-all flex flex-col  items-center  mr-2
                      duration-150 ${c.isLiked ? "text-red-500" : "text-zinc-500"}`}
                   onClick={async () => {
                     await postLike(c.id);
