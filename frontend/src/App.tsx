@@ -13,7 +13,7 @@ const App = () => {
   useEffect(() => {
     const getFeed = async () => {
       const data = await homePageCards();
-      setFeedCards(data);
+      setFeedCards(data || []);
     };
     getFeed();
   }, []);

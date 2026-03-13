@@ -183,9 +183,9 @@ const VisitorPov = () => {
       <div className="flex flex-wrap justify-start mt-5  w-[88%] ml-auto mr-auto">
         {sortedCards?.map((c) => {
           return (
-            <Link to={`/profile/${unique_id}/${c.id}`}>
+            <Link to={`/profile/${unique_id}/${c?.id}`}>
               <div
-                key={c.id}
+                key={c?.id}
                 className="w-60 mt-5  ml-5 mr-5 overflow-hidden relative  group cursor-pointer select-none
                   shadow-black/60 shadow-[15px_0_15px_rgba(0,0,0,0.6)] "
                 onClick={() => {}}
@@ -196,16 +196,16 @@ const VisitorPov = () => {
                 >
                   <div className="text-2xl text-center flex items-center justify-center mt-5 text-amber-600">
                     <IoStar />
-                    <div className="ml-1">{c.rate}</div>
+                    <div className="ml-1">{c?.rate}</div>
                   </div>
                   <div className="text-white text-[20px] mt-[7%] text-center">
-                    {c.review}
+                    {c?.review}
                   </div>
                 </div>
                 <div></div>
                 <img
                   className="group-hover:scale-110 transition-transform duration-200 "
-                  src={c.poster}
+                  src={c?.poster}
                 />
               </div>
             </Link>
