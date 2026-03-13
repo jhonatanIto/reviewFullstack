@@ -13,7 +13,10 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: [
+      "http://localhost:5173",
+      "https://review-fullstack-4s6s.vercel.app/",
+    ],
   }),
 );
 
