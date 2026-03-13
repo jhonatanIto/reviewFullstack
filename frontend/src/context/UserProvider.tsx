@@ -48,7 +48,7 @@ const UserProvider = ({ children }: Props) => {
 
     const data = await getCards(token);
     if (data) {
-      setCards(data);
+      setCards(data || []);
       localStorage.setItem("MyReview_cards", JSON.stringify(data));
     }
 
