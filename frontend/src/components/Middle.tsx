@@ -5,7 +5,7 @@ import { useMovie } from "../context/useMovie";
 import { PiTrashLight } from "react-icons/pi";
 import { backend, deleteWatchCard } from "../utils/fetchData";
 import userpic from "../images/user.png";
-
+import noImg from "../images/noImage.png";
 import { IoStar } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import type { Cards } from "../context/UserContext";
@@ -18,6 +18,7 @@ const Middle = ({ feedCards }: Middle) => {
   const { token } = useUser();
   const { errorNotification, successNotification } = useNotification();
   const {
+    movies,
     movieName,
     movieRelease,
     movieDescription,
@@ -91,24 +92,29 @@ const Middle = ({ feedCards }: Middle) => {
   const navigate = useNavigate();
 
   return (
-    <div className="text-white ml-[7%] mt-10 flex justify-between">
-      <div>
-        <div className="text-[65px]">{movieName}</div>
-        <div className="text-2xl opacity-70">{movieRelease}</div>
-        <div className="mt-10 max-h-47.5   overflow-scroll  no-scrollbar text-2xl  w-210">
+    <div className="text-white px-[5%] md:ml-[7%] mt-6 md:mt-10 flex flex-col md:flex-row justify-between ">
+      <div className="w-full md:w-auto ">
+        <div className="text-4xl md:text-[65px] font-bold leading-tight">
+          {movieName}
+        </div>
+        <div className="text-lg md:text-2xl opacity-70">{movieRelease}</div>
+
+        <div className="mt-6 md:mt-10 max-h-40 md:max-h-47.5 overflow-y-auto no-scrollbar text-lg md:text-2xl w-full md:max-w-2xl">
           {movieDescription}
         </div>
-        <div className="flex mt-10  items-center ">
+
+        <div className="flex flex-col sm:flex-row mt-8 md:mt-10 items-start sm:items-center gap-4">
           <button
-            className=" bg-purple-500 p-2 pl-6 cursor-pointer pr-6  duration-200
-              text-[20px] rounded-[10px] text-black font-semibold hover:text-white hover:bg-purple-600 transition-all"
+            className="w-full sm:w-auto bg-purple-500 py-2 px-6 cursor-pointer duration-200 z-10
+            text-[18px] md:text-[20px] rounded-[10px] text-black font-semibold hover:text-white hover:bg-purple-600 transition-all"
             onClick={() => setModal(true)}
           >
             Create Review
           </button>
+
           <button
-            className="flex text-zinc-500 hover:text-zinc-100 items-center border p-2 cursor-pointer pl-6 pr-6
-         rounded-[10px] text-[20px] ml-5 transition-all duration-200"
+            className="w-full sm:w-auto flex justify-center text-zinc-500 hover:text-zinc-100 items-center border p-2 cursor-pointer px-6
+          rounded-[10px] text-[18px] md:text-[20px] transition-all duration-200 z-10"
             onClick={() => {
               if (!inWatchlist) {
                 postWatchlist();
@@ -124,55 +130,88 @@ const Middle = ({ feedCards }: Middle) => {
               <IoAddOutline className="text-2xl" />
             )}
             <span className="ml-3">
-              {" "}
-              {inWatchlist ? "Remove from watchlist" : "Watch list"}{" "}
+              {inWatchlist ? "Remove from watchlist" : "Watch list"}
             </span>
           </button>
         </div>
       </div>
-      <div className=" w-[37%] h-125 mt-4 mr-[1%] rounded-2xl p-1  overflow-scroll no-scrollbar">
+
+      <div className="md:absolute  w-full left-0 bottom-[2%] flex flex-col justify-center select-none z-10  overflow-hidden">
+        <div
+          className="mt-10 flex justify-start  overflow-x-scroll no-scrollbar"
+          onWheel={(e) => {
+            e.currentTarget.scrollLeft += e.deltaY;
+          }}
+        >
+          {movies.map((m, index) => {
+            const imgBaseUrl = "https://image.tmdb.org/t/p";
+            const convPoster = `${imgBaseUrl}/w500${m.poster_path}`;
+            const convBanner = `${imgBaseUrl}/original${m.backdrop_path}`;
+            return (
+              <div
+                key={index}
+                className="w-[20%] md:w-[9.5%] shrink-0 ml-1 mr-1 overflow-hidden rounded-2xl flex items-center"
+              >
+                <img
+                  className="w-full cursor-pointer object-cover hover:scale-110 transition-transform duration-200 text-white"
+                  src={m.poster_path ? convPoster : noImg}
+                  alt={m.original_title}
+                  onClick={() => {
+                    setMovieImage(convBanner);
+                    setMoviePoster(convPoster);
+                    setMovieName(m.original_title);
+                    setMovieRelease(m.release_date);
+                    setMovieDescription(m.overview);
+                    setMovieId(m.id);
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="w-full md:w-[37%] h-100 md:h-128 mt-4 md:mr-[1%] rounded-2xl p-1 overflow-y-auto no-scrollbar">
         {feedCards?.map((c) => {
           return (
             <div
               key={c.id}
-              className="border border-white/20 rounded-2xl   flex p-1 items-center backdrop-blur-[70px] 
-              shadow-[0_4px_20px_rgba(0,0,0,0.25)] mt-3 select-none"
+              className="border border-white/20 rounded-2xl flex p-2 items-center backdrop-blur-[70px] 
+            shadow-[0_4px_20px_rgba(0,0,0,0.25)] mt-3 select-none"
             >
-              <div className=" flex flex-col items-center ml-3 group">
-                <div className="font-semibold group-hover:text-purple-500 transition-all duration-200 cursor-pointer">
+              <div className="flex flex-col items-center ml-2 group shrink-0">
+                <div className="text-xs md:text-sm font-semibold group-hover:text-purple-500 transition-all duration-200 cursor-pointer mb-1">
                   {c.user_name}
                 </div>
                 <div className="overflow-hidden rounded-full">
                   <img
                     src={c.user_picture ?? userpic}
-                    className="w-16 h-16 rounded-full object-cover cursor-pointer group-hover:scale-110 
-                   bg-zinc-600  duration-200 transition-all"
+                    className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover cursor-pointer group-hover:scale-110 
+                  bg-zinc-600 duration-200 transition-all"
                     onClick={() => navigate(`/profile/${c.user_unique_id}`)}
                   />
                 </div>
               </div>
 
-              <div className="ml-3 text-[20px]">
-                <div className="flex">
-                  Rated:{" "}
-                  <span className="text-amber-600 flex items-center ml-2">
-                    {c?.rate} <IoStar className="text-[16px] ml-1" />
+              <div className="ml-3 text-[16px] md:text-[20px]">
+                <div className="flex items-center">
+                  <span className="hidden sm:inline">Rated:</span>
+                  <span className="text-amber-600 flex items-center sm:ml-2">
+                    {c?.rate} <IoStar className="text-[14px] ml-1" />
                   </span>
                 </div>
 
                 <button
-                  className="border rounded-2xl pl-3 pr-3 mt-2 cursor-pointer hover:bg-purple-500 hover:border-white/0 transition-all duration-200
-                 "
-                  onClick={() => {
-                    navigate(`/${c.user_unique_id}/${c.id}`);
-                  }}
+                  className="border rounded-2xl px-3 py-0.5 mt-2 text-sm md:text-base cursor-pointer hover:bg-purple-500 hover:border-white/0 transition-all duration-200"
+                  onClick={() => navigate(`/${c.user_unique_id}/${c.id}`)}
                 >
                   Review
                 </button>
               </div>
+
               <div
-                className="ml-auto flex items-center border border-white/20 rounded-2xl p-1 pl-2 mr-0.5 cursor-pointer
-                duration-200 transition-all hover:border-purple-500 "
+                className="ml-auto flex items-center border border-white/20 rounded-2xl p-1 pl-2 cursor-pointer
+              duration-200 transition-all hover:border-purple-500 max-w-[40%] sm:max-w-none"
                 onClick={() => {
                   setMovieImage(c.banner);
                   setMovieDescription(c.description);
@@ -182,10 +221,13 @@ const Middle = ({ feedCards }: Middle) => {
                   setMovieId(c.id);
                 }}
               >
-                <div className="mr-4  text-[20px]  flex text-center ">
+                <div className="mr-2 md:mr-4 text-[14px] md:text-[20px] text-right line-clamp-2">
                   {c.title}
                 </div>
-                <img src={c.poster} className="h-20  rounded-2xl" />
+                <img
+                  src={c.poster}
+                  className="h-12 md:h-20 rounded-lg md:rounded-2xl shrink-0"
+                />
               </div>
             </div>
           );

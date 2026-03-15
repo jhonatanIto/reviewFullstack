@@ -14,7 +14,7 @@ const Carousel = () => {
   } = useMovie();
 
   return (
-    <div className="absolute w-full bottom-[2%] flex flex-col justify-center select-none mt-10  overflow-hidden">
+    <div className="md:absolute relative  w-full bottom-[2%] flex flex-col justify-center select-none   overflow-hidden">
       <div
         className="mt-10 flex justify-start  overflow-x-scroll no-scrollbar"
         onWheel={(e) => {
@@ -28,7 +28,7 @@ const Carousel = () => {
           return (
             <div
               key={index}
-              className="w-[9.5%] shrink-0 ml-1 mr-1 overflow-hidden rounded-2xl flex items-center"
+              className="w-[20%] md:w-[9.5%] shrink-0 ml-1 mr-1 overflow-hidden rounded-2xl flex items-center"
             >
               <img
                 className="w-full cursor-pointer object-cover hover:scale-110 transition-transform duration-200 text-white"

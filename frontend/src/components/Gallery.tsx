@@ -90,76 +90,75 @@ const Gallery = () => {
   }, [sortBy]);
 
   return (
-    <div className=" w-full ">
-      <div className="ml-[7%] mt-5 select-none  w-fit" ref={filterRef}>
+    <div className="w-full">
+      <div
+        className="ml-[5%] md:ml-[7%] mt-5 select-none w-fit"
+        ref={filterRef}
+      >
         <div
-          className="bg-zinc-200/90 w-fit text-black pl-2 pr-2 font-semibold rounded-[5px]
-        text-[18px] flex justify-center items-center cursor-pointer "
-          onClick={() => {
-            setDisplayFilter((prev) => !prev);
-          }}
+          className="bg-zinc-200/90 w-fit text-black px-4 py-1 font-semibold rounded-[5px]
+        text-[16px] md:text-[18px] flex justify-center items-center cursor-pointer"
+          onClick={() => setDisplayFilter((prev) => !prev)}
         >
-          {sortBy} <IoIosArrowDown className="ml-3 " />
+          {sortBy} <IoIosArrowDown className="ml-3" />
         </div>
         <ul
-          className={`${displayFilter ? "flex" : "hidden"}  flex-col absolute z-50 bg-zinc-100 rounded-[5px] mt-1
-         w-32 text-[18px] [&>li]:p-2 [&>li]:hover:bg-zinc-200 [&>li]:cursor-pointer [&>li]:pl-4 [&>li]:font-semibold [&>li]:hover:text-purple-500`}
+          className={`${displayFilter ? "flex" : "hidden"} flex-col absolute z-50 bg-zinc-100 rounded-[5px] mt-1
+        w-32 text-[16px] md:text-[18px] [&>li]:p-2 [&>li]:hover:bg-zinc-200 [&>li]:cursor-pointer [&>li]:pl-4 [&>li]:font-semibold [&>li]:hover:text-purple-500`}
         >
           <li onClick={() => selectFilter("Newest")}>Newest</li>
           <li onClick={() => selectFilter("Oldest")}>Oldest</li>
           {!showWatch && (
-            <li onClick={() => selectFilter("Highest rate")}>Highest rate</li>
+            <>
+              <li onClick={() => selectFilter("Highest rate")}>Highest rate</li>
+              <li onClick={() => selectFilter("Lowest rate")}>Lowest rate</li>
+            </>
           )}
-          {!showWatch && (
-            <li onClick={() => selectFilter("Lowest rate")}>Lowest rate</li>
-          )}
-
           <li onClick={() => selectFilter("Release date")}>Release date</li>
         </ul>
       </div>
-      <div className="flex flex-wrap mx-auto max-w-[95%] justify-center">
-        {sortedCards?.map((c) => {
-          return (
-            <Link to={linkUrl(c.id)}>
-              <div
-                key={c.id}
-                className="w-60 mt-5  ml-5 mr-5 overflow-hidden relative  group cursor-pointer select-none
-                  shadow-black/60 shadow-[15px_0_15px_rgba(0,0,0,0.6)] "
-                onClick={() => {
-                  if (showWatch) {
-                    setMovieDescription(c.description);
-                    setMovieRelease(c.release);
-                    setMovieName(c.title);
-                    setMoviePoster(c.poster);
-                    setMovieId(c.tmdb_id);
-                    setModal(true);
-                    if (c.banner) setMovieImage(c.banner);
-                  }
-                }}
-              >
-                {!showWatch && (
-                  <div
-                    className="opacity-0 w-full group-hover:opacity-100 transition-opacity 
-               duration-200 absolute inset-0 bg-black/70 z-10 flex items-center flex-col backdrop-blur-[3px] "
-                  >
-                    <div className="text-2xl text-center flex items-center text-amber-600  justify-center mt-5 ">
-                      <IoStar />
-                      <div className="ml-1 ">{c.rate}</div>
-                    </div>
-                    <div className="text-white text-[20px] mt-[1%] text-center">
-                      {c.review}
-                    </div>
-                  </div>
-                )}
 
-                <img
-                  className="group-hover:scale-110 transition-transform duration-200 "
-                  src={c.poster}
-                />
-              </div>
-            </Link>
-          );
-        })}
+      <div className="flex flex-wrap mx-auto w-full justify-center px-2 md:px-0">
+        {sortedCards?.map((c) => (
+          <Link to={linkUrl(c.id)} key={c.id}>
+            <div
+              className="w-40 md:w-60 mt-5 mx-2 md:mx-5 overflow-hidden relative group cursor-pointer select-none
+            shadow-black/60 shadow-[10px_0_15px_rgba(0,0,0,0.4)] md:shadow-[15px_0_15px_rgba(0,0,0,0.6)]"
+              onClick={() => {
+                if (showWatch) {
+                  setMovieDescription(c.description);
+                  setMovieRelease(c.release);
+                  setMovieName(c.title);
+                  setMoviePoster(c.poster);
+                  setMovieId(c.tmdb_id);
+                  setModal(true);
+                  if (c.banner) setMovieImage(c.banner);
+                }
+              }}
+            >
+              {!showWatch && (
+                <div
+                  className="opacity-0 w-full group-hover:opacity-100 transition-opacity duration-200 
+                absolute inset-0 bg-black/80 z-10 flex items-center justify-center flex-col backdrop-blur-[2px] p-2"
+                >
+                  <div className="text-xl md:text-2xl flex items-center text-amber-600 justify-center">
+                    <IoStar />
+                    <span className="ml-1">{c.rate}</span>
+                  </div>
+                  <div className="text-white text-sm md:text-[20px] mt-2 text-center line-clamp-3">
+                    {c.review}
+                  </div>
+                </div>
+              )}
+
+              <img
+                className="w-full h-auto group-hover:scale-105 md:group-hover:scale-110 transition-transform duration-200"
+                src={c.poster}
+                alt={c.title}
+              />
+            </div>
+          </Link>
+        ))}
       </div>
       <Outlet context={{ cards, tab }} />
     </div>

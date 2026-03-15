@@ -2,16 +2,20 @@ import { useMovie } from "../context/useMovie";
 
 const BackgroundImg = () => {
   const { movieImage } = useMovie();
+
   return (
-    <div className="fixed inset-0 flex -z-10">
+    <div className="fixed inset-0 flex -z-10 overflow-hidden">
       <img
-        className="absolute top-0  w-screen h-screen object-cover object-left -scale-x-100"
+        className="absolute top-0 w-full h-full object-cover object-center md:object-left -scale-x-100"
         src={movieImage}
+        alt="Background"
       />
 
-      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-black/0"></div>
+      {/* GRADIENTE LATERAL: No mobile ele fica mais escuro (via-black/80) para dar leitura ao texto centralizado */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 md:via-black/70 to-transparent"></div>
 
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent"></div>
+      {/* GRADIENTE VERTICAL: No mobile (topo e base) ajuda a separar o Header e os itens de baixo da imagem */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60 md:to-transparent"></div>
     </div>
   );
 };
