@@ -139,9 +139,9 @@ const Gallery = () => {
               {!showWatch && (
                 <div
                   className="opacity-0 w-full group-hover:opacity-100 transition-opacity duration-200 
-                absolute inset-0 bg-black/80 z-10 flex items-center justify-center flex-col backdrop-blur-[2px] p-2"
+                absolute inset-0 bg-black/80 z-10 flex items-center  flex-col backdrop-blur-[2px] p-2"
                 >
-                  <div className="text-xl md:text-2xl flex items-center text-amber-600 justify-center">
+                  <div className="text-xl md:text-2xl flex items-center md:mt-3 text-amber-600 justify-center">
                     <IoStar />
                     <span className="ml-1">{c.rate}</span>
                   </div>

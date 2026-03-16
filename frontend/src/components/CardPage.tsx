@@ -278,7 +278,7 @@ const CardPage = () => {
             className="w-[90%] h-40 md:h-90 text-[19px] md:text-[24px] mt-5  outline-none bg-white rounded-2xl p-3 flex text-center shadow-black/30 shadow-lg"
             onChange={(e) => setReview(e.target.value)}
           />
-          <div className="flex justify-center">
+          <div className="flex justify-center  w-[80%]">
             {edit && (
               <button
                 className="text-white bg-zinc-500/0 text-[20px] w-30 justify-center items-center transition-all duration-200 rounded-[10px] 
