@@ -122,7 +122,7 @@ const Modal = () => {
             value={review}
             spellCheck={false}
             placeholder="Write your review"
-            className="w-full h-40 md:h-90 text-[19px] md:text-[24px] mt-15  outline-none bg-white rounded-2xl p-3 flex text-center shadow-black/30 shadow-lg mt-15"
+            className="w-full h-42 md:h-90 text-[19px] md:text-[24px] outline-none bg-white rounded-2xl p-3 flex text-center shadow-black/30 shadow-lg mt-15"
             onChange={(e) => setReview(e.target.value)}
           />
           <button
