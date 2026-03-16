@@ -37,14 +37,13 @@ export interface FollowingCards {
 
 const Friends = () => {
   const [searchType, setSearchType] = useState("name");
-  const [name, setName] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [following, setFollowing] = useState<User[]>([]);
   const [followingCards, setFollowingCards] = useState<FollowingCards[]>([]);
   const tab = "friends";
-  const { token, setLoading, search } = useUser();
+  const { token, setLoading, search, typeRef, displayInput, searchUserRes } =
+    useUser();
   const navigate = useNavigate();
-  const searchBoxRef = useRef<HTMLDivElement>(null);
 
   const searchUsers = () => {
     fetch(
@@ -110,11 +109,10 @@ const Friends = () => {
   useEffect(() => {
     const closeSearch = (e: MouseEvent) => {
       if (
-        searchBoxRef.current &&
-        !searchBoxRef.current.contains(e.target as Node)
+        searchUserRes.current &&
+        !searchUserRes.current.contains(e.target as Node)
       ) {
         setUsers([]);
-        setName("");
       }
     };
     window.addEventListener("mousedown", closeSearch);
@@ -127,56 +125,81 @@ const Friends = () => {
         <div className="text-white text-xl md:text-3xl mb-4 md:mb-0">
           Following :
         </div>
+        <div
+          ref={typeRef}
+          className={`${!displayInput ? "hidden" : ""} flex text-white items-center  md:right-30 right-10 absolute`}
+        >
+          <label className=" flex cursor-pointer items-center">
+            <input
+              type="radio"
+              name="search"
+              value="id"
+              checked={searchType === "id"}
+              className=" cursor-pointer accent-purple-500 w-4 h-4 "
+              onChange={(e) => setSearchType(e.target.value)}
+            />{" "}
+            <span className="ml-1">ID</span>
+          </label>
+          <label className="flex cursor-pointer ml-4 items-center">
+            <input
+              type="radio"
+              name="search"
+              value="name"
+              checked={searchType === "name"}
+              className="cursor-pointer accent-purple-500 w-4 h-4 "
+              onChange={(e) => setSearchType(e.target.value)}
+            />{" "}
+            <span className="ml-1">Name</span>
+          </label>
+        </div>
 
-        <div className="flex flex-col absolute md:right-65 w-full md:top-8  ">
-          <div
-            ref={searchBoxRef}
-            style={{ display: users.length > 0 ? "block" : "none" }}
-            className="absolute top-18 right-0 bg-white p-3 w-full md:w-[400px] z-20 rounded-lg"
-          >
-            {users.map((u) => {
-              return (
-                <div
-                  key={u.unique_id}
-                  className="flex mt-2 border-2 rounded-xl p-2 items-center hover:border-blue-400 border-zinc-400/80 transition-all"
-                >
-                  <img
-                    src={u.picture || userpic}
-                    className="w-12 h-12 md:w-15 md:h-15 rounded-full object-cover cursor-pointer bg-zinc-600"
+        <div
+          ref={searchUserRes}
+          style={{ display: users.length > 0 ? "block" : "none" }}
+          className="absolute md:top-28 md:right-65 bg-white p-3 w-full md:w-100 z-20 rounded-lg "
+        >
+          {users.map((u) => {
+            return (
+              <div
+                key={u.unique_id}
+                className="flex mt-2 border-2 rounded-xl p-2 items-center hover:border-blue-400 border-zinc-400/80 transition-all"
+              >
+                <img
+                  src={u.picture || userpic}
+                  className="w-12 h-12 md:w-15 md:h-15 rounded-full object-cover cursor-pointer bg-zinc-600"
+                  onClick={() => clickUser(u.unique_id)}
+                />
+
+                <div className="flex flex-col justify-center ml-3 text-zinc-800">
+                  <div
+                    className="font-bold text-lg md:text-[20px] cursor-pointer w-fit"
                     onClick={() => clickUser(u.unique_id)}
-                  />
-
-                  <div className="flex flex-col justify-center ml-3 text-zinc-800">
-                    <div
-                      className="font-bold text-lg md:text-[20px] cursor-pointer w-fit"
-                      onClick={() => clickUser(u.unique_id)}
-                    >
-                      {u.name}
-                    </div>
-
-                    <div className="text-sm">ID: {u.unique_id}</div>
+                  >
+                    {u.name}
                   </div>
 
-                  <button
-                    className={`ml-auto text-sm md:text-[17px] font-semibold cursor-pointer text-white px-4 py-1 rounded-lg
+                  <div className="text-sm">ID: {u.unique_id}</div>
+                </div>
+
+                <button
+                  className={`ml-auto text-sm md:text-[17px] font-semibold cursor-pointer text-white px-4 py-1 rounded-lg
                     ${
                       u.isFollowing
                         ? "bg-zinc-200 text-black"
                         : "bg-blue-600 hover:bg-blue-900"
                     }`}
-                    onClick={async () => {
-                      if (!token) return alert("Log in to follow");
+                  onClick={async () => {
+                    if (!token) return alert("Log in to follow");
 
-                      await toggleFollow(u.unique_id, token);
-                      await searchUsers();
-                    }}
-                  >
-                    {u.isFollowing ? "Following" : "Follow"}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
+                    await toggleFollow(u.unique_id, token);
+                    await searchUsers();
+                  }}
+                >
+                  {u.isFollowing ? "Following" : "Follow"}
+                </button>
+              </div>
+            );
+          })}
         </div>
       </div>
 

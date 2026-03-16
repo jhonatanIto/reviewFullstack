@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, type RefObject } from "react";
 
 export interface User {
   id: number;
@@ -25,6 +25,10 @@ interface UserContextType {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   showWatch: boolean;
   setShowWatch: React.Dispatch<React.SetStateAction<boolean>>;
+  typeRef: RefObject<HTMLDivElement | null>;
+  searchUserRes: RefObject<HTMLDivElement | null>;
+  displayInput: boolean;
+  setDisplayInput: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface Cards {

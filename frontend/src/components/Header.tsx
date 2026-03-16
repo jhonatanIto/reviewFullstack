@@ -16,7 +16,6 @@ const routes = {
 };
 
 const Header = () => {
-  const [displayInput, setDisplayInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const location = useLocation().pathname;
@@ -27,12 +26,26 @@ const Header = () => {
     useState<GalleryOption>("Reviews");
   const galleryRef = useRef<HTMLLIElement>(null);
 
-  const { user, setShowWatch, search, setSearch } = useUser();
+  const {
+    user,
+    setShowWatch,
+    search,
+    setSearch,
+    typeRef,
+    setDisplayInput,
+    displayInput,
+    searchUserRes,
+  } = useUser();
   const { setMovies } = useMovie();
 
   useEffect(() => {
     const closeInput = (e: MouseEvent) => {
-      if (inputRef && !inputRef.current?.contains(e.target as Node)) {
+      if (
+        inputRef.current &&
+        !inputRef.current?.contains(e.target as Node) &&
+        !typeRef.current?.contains(e.target as Node) &&
+        !searchUserRes.current?.contains(e.target as Node)
+      ) {
         setDisplayInput(false);
         setSearch("");
       }
@@ -225,7 +238,7 @@ const Header = () => {
                   : "0px",
               }}
               type="text"
-              className="bg-white text-black text-[18px] py-1 outline-none pl-2 transition-all ease-in-out duration-400 rounded-sm"
+              className="bg-white text-black text-[18px] py-1 outline-none pl-2 transition-all ease-in-out duration-400 rounded-sm "
               placeholder="Search..."
             />
 

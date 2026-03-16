@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { UserContext, type Cards, type User } from "./UserContext";
 import { getCards, getWatchCards } from "../utils/fetchData";
 
@@ -14,6 +14,9 @@ const UserProvider = ({ children }: Props) => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
   const [showWatch, setShowWatch] = useState<boolean>(false);
+  const [displayInput, setDisplayInput] = useState<boolean>(false);
+  const typeRef = useRef<HTMLDivElement>(null);
+  const searchUserRes = useRef<HTMLDivElement>(null);
 
   const login = (user: User, token: string) => {
     setUser(user);
@@ -80,6 +83,10 @@ const UserProvider = ({ children }: Props) => {
         setShowWatch,
         setSearch,
         search,
+        typeRef,
+        displayInput,
+        setDisplayInput,
+        searchUserRes,
       }}
     >
       {children}
