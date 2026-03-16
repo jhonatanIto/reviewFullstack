@@ -122,7 +122,7 @@ const Header = () => {
     px-4 md:px-10 pt-6 md:pt-10"
     >
       <div
-        className="md:ml-[7%] w-auto justify-between items-center flex text-purple-500 cursor-pointer select-none mb-6 md:mb-0"
+        className="hidden  md:ml-[7%] w-auto justify-between items-center md:flex text-purple-500 cursor-pointer select-none mb-3 md:mb-0 "
         onClick={() => navigate("/")}
       >
         <span className="bg-purple-500 rounded-[5px] px-2 py-0.5 flex items-center justify-center text-white mr-2">
@@ -131,7 +131,7 @@ const Header = () => {
         REVIEW
       </div>
 
-      <div className="flex justify-center md:justify-end md:mr-[7%] w-full md:w-auto">
+      <div className="flex justify-center md:justify-end md:mr-[7%] w-full md:w-auto ">
         <ul className="flex flex-wrap justify-center items-center gap-4 md:gap-0">
           <div
             className={`flex md:gap-9 gap-4  transition-all  ease-in-out [&>li]:cursor-pointer md:mr-5 [&>li]:pb-2 md:[&>li]:mr-10
@@ -169,8 +169,8 @@ const Header = () => {
                 as
               </div>
               <div
-                className={`absolute top-13.5 border-purple-500 z-50  w-32 flex flex-col items-center
-                 text-white [&>div]:w-full text-center [&>div]:p-2 [&>div]:border-purple-500 [&>div]:text-[20px]
+                className={`absolute top-7 border-purple-500 z-50  w-32 flex flex-col items-center
+                 text-white [&>div]:w-full text-center [&>div]:p-2 [&>div]:border-purple-500 [&>div]:text-[15px]
                   ${galleryList ? "translate-y-0 opacity-100 pointer-events-auto" : "-translate-y-5 opacity-0 pointer-events-none"}
                    transition-all duration-200 ease-in-out [&>div]:hover:bg-purple-500/30`}
               >

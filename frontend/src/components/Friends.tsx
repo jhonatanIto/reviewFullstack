@@ -48,7 +48,7 @@ const Friends = () => {
 
   const searchUsers = () => {
     fetch(
-      `${backend}/api/users/search?q=${encodeURIComponent(name)}&type=${searchType}`,
+      `${backend}/api/users/search?q=${encodeURIComponent(search)}&type=${searchType}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -61,7 +61,7 @@ const Friends = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (!name) {
+      if (!search) {
         setUsers([]);
         return;
       }
@@ -70,7 +70,7 @@ const Friends = () => {
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [name]);
+  }, [search]);
 
   useEffect(() => {
     const followingList = async () => {
@@ -98,10 +98,6 @@ const Friends = () => {
       setLoading(false);
     }
   };
-
-  const filteredFollowing = following.filter((f) =>
-    f.name.toLowerCase().includes(search?.toLowerCase()),
-  );
 
   useEffect(() => {
     getFollowCards();
@@ -132,41 +128,7 @@ const Friends = () => {
           Following :
         </div>
 
-        <div className="flex flex-col relative w-full md:w-auto">
-          <div className="flex text-white items-center text-sm md:text-base">
-            <label className="flex cursor-pointer items-center">
-              <input
-                type="radio"
-                name="search"
-                value="id"
-                checked={searchType === "id"}
-                className="accent-purple-500 w-4 h-4"
-                onChange={(e) => setSearchType(e.target.value)}
-              />
-              <span className="ml-1">ID</span>
-            </label>
-
-            <label className="flex cursor-pointer ml-4 items-center">
-              <input
-                type="radio"
-                name="search"
-                value="name"
-                checked={searchType === "name"}
-                className="accent-purple-500 w-4 h-4"
-                onChange={(e) => setSearchType(e.target.value)}
-              />
-              <span className="ml-1">Name</span>
-            </label>
-          </div>
-
-          <input
-            onChange={(e) => setName(e.target.value)}
-            value={name}
-            type="text"
-            className="bg-white text-lg md:text-[20px] outline-none pl-3 mt-3 h-10"
-            placeholder="Search name"
-          />
-
+        <div className="flex flex-col absolute md:right-65 w-full md:top-8  ">
           <div
             ref={searchBoxRef}
             style={{ display: users.length > 0 ? "block" : "none" }}
@@ -218,13 +180,16 @@ const Friends = () => {
         </div>
       </div>
 
-      <div className="w-full text-white mt-6 flex overflow-x-scroll no-scrollbar flex-wrap justify-center md:justify-start md:pl-[3%] md:pr-[3%] gap-6">
-        {filteredFollowing.map((f) => {
+      <div
+        className="w-full text-white md:mt-10 flex overflow-x-scroll no-scrollbar flex-wrap justify-center md:justify-start
+       md:pl-[3%] md:pr-[3%] gap-6"
+      >
+        {following.map((f) => {
           return (
             <div key={f.unique_id} className="flex flex-col items-center">
               <img
                 src={f.picture || userpic}
-                className="w-24 h-24 md:w-40 md:h-40 rounded-full object-cover cursor-pointer bg-zinc-600"
+                className="w-16 h-16 md:w-32 md:h-32 rounded-full object-cover cursor-pointer bg-zinc-600"
                 onClick={() => {
                   navigate(`/profile/${f.unique_id}`);
                 }}
@@ -237,7 +202,6 @@ const Friends = () => {
         })}
       </div>
 
-      {/* RECENT REVIEWS */}
       {followingCards.length !== 0 && (
         <div className="w-full mt-10 md:absolute md:bottom-[5%] flex flex-col select-none md:pl-[1%]">
           <div className="text-lg md:text-[23px] text-white mb-4">
@@ -254,7 +218,7 @@ const Friends = () => {
               return (
                 <div
                   key={c.id}
-                  className="relative w-[60%] md:w-[14%] shrink-0"
+                  className="relative w-[50%] md:w-[14%] shrink-0"
                 >
                   <Link to={`/friends/${c.id}`}>
                     <img
