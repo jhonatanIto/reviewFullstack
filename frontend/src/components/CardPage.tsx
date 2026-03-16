@@ -7,7 +7,7 @@ import useNotification from "../hooks/useNotification";
 import { useOutletContext } from "react-router-dom";
 import type { Cards } from "../context/UserContext";
 import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
-
+import { IoArrowBackOutline } from "react-icons/io5";
 import { FaRegCommentDots } from "react-icons/fa";
 import { backend, toggleLike } from "../utils/fetchData";
 import type { FollowingCards } from "./Friends";
@@ -231,6 +231,12 @@ const CardPage = () => {
           md:flex-row
            ${open ? " translate-y-0 scale-100" : "translate-y-10 scale-70 opacity-0"} transition-all duration-200 ease-in-out`}
       >
+        <div
+          className="absolute md:opacity-0 md:pointer-events-none text-white top-10 left-3 text-4xl"
+          onClick={() => navigate(`/${profileUrl}`)}
+        >
+          <IoArrowBackOutline />
+        </div>
         <div className="relative md:w-full  w-[48%] md:mt-0 mt-8">
           <div
             className="opacity-0  hover:opacity-100 transition-all duration-400 absolute cursor-default flex-col

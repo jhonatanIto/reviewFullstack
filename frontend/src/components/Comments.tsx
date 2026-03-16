@@ -73,8 +73,8 @@ const Comments = ({
   return (
     <div
       onMouseDown={(e) => e.stopPropagation()}
-      className={`flex flex-col items-center md:absolute md:w-95 md:right-22 md:h-178 md:mb-6 bg-white/90  rounded-2xl overflow-hidden shadow-black shadow-lg 
-          h-fit w-[93%] mt-6  ${showComments ? " translate-y-0 scale-100 pointer-events-auto" : "-translate-y-60 md:-translate-x-20 scale-30 opacity-0 pointer-events-none"}
+      className={`flex flex-col items-center absolute md:w-95 md:right-22 md:h-178 md:mb-6 bg-white  rounded-2xl overflow-y-auto md:overflow-hidden shadow-black shadow-lg 
+          h-fit w-[93%] mt-6  ${showComments ? " translate-y-0 scale-100 pointer-events-auto" : "translate-y-60 md:-translate-x-20 scale-30 opacity-0 pointer-events-none"}
            transition-all duration-200 ease-in-out `}
     >
       <div className=" w-full h-full overflow-scroll">
