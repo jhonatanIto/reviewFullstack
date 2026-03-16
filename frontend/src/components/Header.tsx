@@ -183,7 +183,7 @@ const Header = () => {
               </div>
               <div
                 className={`absolute top-7 md:top-15 border-purple-500 z-50  w-32 flex flex-col items-center
-                 text-white [&>div]:w-full text-center [&>div]:p-2 [&>div]:border-purple-500 [&>div]:text-[15px] md:[&>div]:text-[20px]
+                 text-white [&>div]:w-full text-center [&>div]:p-2 [&>div]:border-purple-500 [&>div]:text-[18px] md:[&>div]:text-[20px]
                   ${galleryList ? "translate-y-0 opacity-100 pointer-events-auto" : "-translate-y-5 opacity-0 pointer-events-none"}
                    transition-all duration-200 ease-in-out [&>div]:hover:bg-purple-500/30`}
               >
