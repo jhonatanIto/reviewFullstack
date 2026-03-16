@@ -94,18 +94,21 @@ const Middle = ({ feedCards }: Middle) => {
   return (
     <div className="text-white px-[5%] md:ml-[7%] mt-6 md:mt-10 flex flex-col md:flex-row justify-between ">
       <div className="w-full md:w-auto ">
-        <div className="text-4xl md:text-[65px] font-bold leading-tight">
+        <div className="text-[clamp(26px,4vw,40px)] xl:text-[clamp(40px,4vw,65px)] font-bold leading-tight">
           {movieName}
         </div>
         <div className="text-lg md:text-2xl opacity-70">{movieRelease}</div>
 
-        <div className="mt-6 md:mt-10 max-h-40 md:max-h-47.5 overflow-y-auto no-scrollbar text-lg md:text-2xl w-full md:max-w-2xl">
+        <div
+          className="mt-6 md:mt-10 max-h-40 md:max-h-[35%] overflow-y-auto no-scrollbar
+  text-[clamp(16px,1.5vw,22px)] w-full md:max-w-2xl"
+        >
           {movieDescription}
         </div>
 
         <div className="flex flex-col sm:flex-row mt-8 md:mt-10 items-start sm:items-center gap-4">
           <button
-            className="w-full sm:w-auto bg-purple-500 py-2 px-6 cursor-pointer duration-200 z-10
+            className="w-full sm:w-auto bg-purple-500 py-2 px-6 cursor-pointer duration-200 z-20
             text-[18px] md:text-[20px] rounded-[10px] text-black font-semibold hover:text-white hover:bg-purple-600 transition-all"
             onClick={() => setModal(true)}
           >
@@ -114,7 +117,7 @@ const Middle = ({ feedCards }: Middle) => {
 
           <button
             className="w-full sm:w-auto flex justify-center text-zinc-500 hover:text-zinc-100 items-center border p-2 cursor-pointer px-6
-          rounded-[10px] text-[18px] md:text-[20px] transition-all duration-200 z-10"
+          rounded-[10px] text-[18px] md:text-[20px] transition-all duration-200 z-20"
             onClick={() => {
               if (!inWatchlist) {
                 postWatchlist();

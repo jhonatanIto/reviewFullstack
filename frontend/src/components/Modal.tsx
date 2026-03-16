@@ -106,14 +106,14 @@ const Modal = () => {
         </div>
 
         <div className="p-5 flex flex-col items-center w-full justify-center">
-          <div className="md:top-20 top-[50%] absolute flex flex-col items-center text-[20px]">
+          <div className="md:top-20 top-[48%] absolute flex flex-col items-center text-[20px]">
             <div
               style={{ color: "oklch(82.8% 0.189 84.429)" }}
               className="text-[20px] "
             >
               Rate: {rate}/10
             </div>
-            <div className="md:mt-7 ">
+            <div className="md:mt-7  mt-2">
               <Stars rate={rate} setRate={setRate} top={100} size={20} />
             </div>
           </div>
@@ -127,7 +127,7 @@ const Modal = () => {
           />
           <button
             className="text-white bg-purple-600 text-2xl pl-9 pr-9 transition-all duration-200 shadow-zinc-800/80 shadow-md
-          rounded-[10px] flex p-1 mt-10 absolute bottom-3 cursor-pointer hover:bg-purple-700"
+          rounded-[10px] flex p-1 md:mb-10 mb-[2%] absolute bottom-3 cursor-pointer hover:bg-purple-700"
             onClick={() => {
               if (user) {
                 postCard();

@@ -216,12 +216,12 @@ const Header = () => {
                 maxWidth: displayInput
                   ? window.innerWidth < 640
                     ? "210px"
-                    : "320px"
+                    : "260px"
                   : "0px",
                 minWidth: displayInput
                   ? window.innerWidth < 640
                     ? "210px"
-                    : "320px"
+                    : "260px"
                   : "0px",
               }}
               type="text"

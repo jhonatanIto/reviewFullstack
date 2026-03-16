@@ -228,18 +228,18 @@ const CardPage = () => {
       <div
         onMouseDown={(e) => e.stopPropagation()}
         className={`flex w-[93%]  md:w-238  justify-around md:mt-0 mt-5  pb-10 md:pb-0 items-center  flex-col bg-white/20 relative rounded-2xl   shadow-black shadow-lg 
-          md:flex-row
+          md:flex-row md:justify-between
            ${open ? " translate-y-0 scale-100" : "translate-y-10 scale-70 opacity-0"} transition-all duration-200 ease-in-out`}
       >
         <div
-          className="absolute md:opacity-0 md:pointer-events-none text-white top-10 left-3 text-4xl"
+          className="absolute  md:hidden md:pointer-events-none text-white top-10 left-3 text-4xl"
           onClick={() => navigate(`/${profileUrl}`)}
         >
           <IoArrowBackOutline />
         </div>
-        <div className="relative md:w-full  w-[48%] md:mt-0 mt-8">
+        <div className="relative md:w-full  w-[48%] md:mt-0 mt-8 ">
           <div
-            className="opacity-0  hover:opacity-100 transition-all duration-400 absolute cursor-default flex-col
+            className="opacity-0   hover:opacity-100 transition-all duration-400 absolute cursor-default flex-col
              p-8 text-center text-white text-[26px] inset-0 bg-black/70 z-10 flex items-center  backdrop-blur-[3px] "
           >
             <div className="max-text-[35px] text-purple-500 font-bold">
@@ -255,7 +255,7 @@ const CardPage = () => {
           <img src={card?.poster} className="rounded-l-2xl " />
         </div>
 
-        <div className=" flex flex-col items-center justify-clenter w-ful">
+        <div className=" flex flex-col items-center  w-full">
           <div
             className={`flex flex-col items-center justify-center ${!edit ? "pointer-events-none" : ""} `}
           >
