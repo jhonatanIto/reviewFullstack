@@ -368,6 +368,14 @@ const CardPage = () => {
             )}
           </div>
         </div>
+        <Comments
+          showComments={showComments}
+          id={id}
+          commentSection={commentSection}
+          fetchCommentsLogged={fetchCommentsLogged}
+          setDelModal={setDelModal}
+          setCommentId={setCommentId}
+        />
       </div>
       <div
         style={{ display: delModal ? "flex" : "none" }}
@@ -390,14 +398,6 @@ const CardPage = () => {
           <button onClick={() => setDelModal(false)}>Cancel</button>
         </div>
       </div>
-      <Comments
-        showComments={showComments}
-        id={id}
-        commentSection={commentSection}
-        fetchCommentsLogged={fetchCommentsLogged}
-        setDelModal={setDelModal}
-        setCommentId={setCommentId}
-      />
     </div>
   );
 };
