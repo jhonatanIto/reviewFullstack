@@ -222,7 +222,7 @@ const CardPage = () => {
         navigate(`/${profileUrl}`);
       }}
       style={{ opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
-      className={` flex flex-col  items-center  md:justify-center  w-full fixed m-0 h-fit md:h-full transition-opacity duration-500 overflow-y-auto md:overflow-y-hidden
+      className={` flex flex-col  items-center  md:justify-center h-full  w-full fixed m-0  md:h-full transition-opacity duration-500 overflow-y-auto md:overflow-y-hidden
      bg-black/60 top-0 left-0 z-40 backdrop-blur-[5px] `}
     >
       <div
