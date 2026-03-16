@@ -72,21 +72,22 @@ const Comments = ({
 
   return (
     <div
-      className={`flex flex-col items-center bg-white/90  rounded-2xl overflow-hidden shadow-black shadow-lg absolute -right-98 h-full w-95
-           ${showComments ? " translate-y-0 scale-100 pointer-events-auto" : "-translate-x-20 scale-70 opacity-0 pointer-events-none"} transition-all duration-200 ease-in-out
-           justify-between`}
+      onMouseDown={(e) => e.stopPropagation()}
+      className={`flex flex-col items-center md:absolute md:w-95 md:right-22 md:h-178 md:mb-6 bg-white/90  rounded-2xl overflow-hidden shadow-black shadow-lg 
+          h-fit w-[93%] mt-6  ${showComments ? " translate-y-0 scale-100 pointer-events-auto" : "-translate-y-60 md:-translate-x-20 scale-30 opacity-0 pointer-events-none"}
+           transition-all duration-200 ease-in-out `}
     >
       <div className=" w-full h-full overflow-scroll">
         {commentSection.map((c) => {
           return (
-            <div className="flex justify-between p-2 mt-1 group">
+            <div className="flex justify-between p-2 mt-1 group ">
               <img
                 src={c.picture ?? userpic}
                 className="w-13 h-13 rounded-full object-cover cursor-pointer bg-zinc-600 "
                 onClick={() => navigate(`/profile/${c.unique_id}`)}
               />
-              <div className="  flex items-center w-full justify-between ml-3 ">
-                <div>
+              <div className="  flex items-center w-full justify-between ml-3  ">
+                <div className=" max-w-[82%] wrap-break-word">
                   <div className="flex  items-center ">
                     <div className="font-bold">{c.name}</div>
                     <div className="text-zinc-600 text-[13px] ml-2">
@@ -104,12 +105,12 @@ const Comments = ({
                       </div>
                     )}
                   </div>
-                  <div className="text-[15px] font-sans">
+                  <div className="text-[15px] font-sans  ">
                     <div>{c.comment}</div>
                   </div>
                 </div>
                 <div
-                  className={`font-semibold  cursor-pointer hover:text-red-500 transition-all flex flex-col  items-center  mr-2
+                  className={`font-semibold  cursor-pointer hover:text-red-500 transition-all flex flex-col  items-center  
                      duration-150 ${c.isLiked ? "text-red-500" : "text-zinc-500"}`}
                   onClick={async () => {
                     await postLike(c.id);

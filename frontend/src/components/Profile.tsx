@@ -10,48 +10,69 @@ const Profile = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex justify-center flex-col items-center">
-      <div className="bg-white w-275 rounded-2xl shadow-white/30 shadow-lg mt-10 p-5">
-        <div className="flex justify-between">
-          <div className="flex items-center">
+    <div className="flex justify-center flex-col items-center px-4">
+      {/* PROFILE CARD */}
+      <div className="bg-white w-full md:w-[1100px] rounded-2xl shadow-white/30 shadow-lg mt-6 md:mt-10 p-5 md:p-8">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+          {/* USER INFO */}
+          <div className="flex flex-col md:flex-row items-center md:items-center text-center md:text-left">
             <img
               src={user?.picture ?? userpic}
-              className="w-50 h-50 rounded-full object-cover bg-zinc-600"
+              className="w-32 h-32 md:w-50 md:h-50 rounded-full object-cover bg-zinc-600"
             />
-            <div className="text-2xl ml-10">
-              <div className="text-[40px]">{user?.name}</div>
-              <div className="text-zinc-500">Email: {user?.email}</div>
-              <div className="text-zinc-500">ID: {user?.unique_id}</div>
+
+            <div className="text-lg md:text-2xl md:ml-10 mt-4 md:mt-0">
+              <div className="text-2xl md:text-[40px] font-semibold">
+                {user?.name}
+              </div>
+
+              <div className="text-zinc-500 text-sm md:text-base">
+                Email: {user?.email}
+              </div>
+
+              <div className="text-zinc-500 text-sm md:text-base">
+                ID: {user?.unique_id}
+              </div>
             </div>
           </div>
-          <div>
+
+          {/* LOGOUT */}
+          <div className="flex justify-center md:block mt-6 md:mt-0">
             <div
-              className="flex justify-between w-35 items-center border text-zinc-500
-             text-[20px] p-1 pl-4 pr-4 rounded-2xl mt-[100%] cursor-pointer hover:text-red-500 transition-all duration-200"
+              className="flex justify-center items-center gap-2 border text-zinc-500
+            text-base md:text-[20px] p-2 px-4 rounded-xl cursor-pointer
+            hover:text-red-500 transition-all duration-200"
               onClick={() => {
                 logout();
                 navigate("/");
               }}
             >
-              <CiLogout className="text-[25px]" />
+              <CiLogout className="text-xl md:text-[25px]" />
               Logout
             </div>
           </div>
         </div>
       </div>
 
-      <div className="w-275 mt-10 select-none flex">
-        <div className="flex text-white/50 text-2xl items-center w-fit">
-          <GrNotes className="text-[50px] text-white/50" />
-          <div className="ml-3"> Reviews: {cards.length}</div>
+      {/* STATS */}
+      <div className="w-full md:w-[1100px] mt-8 select-none grid grid-cols-3 md:flex md:justify-start gap-6 text-center md:text-left">
+        <div className="flex flex-col md:flex-row items-center text-white/70 text-sm md:text-2xl">
+          <GrNotes className="text-3xl md:text-[50px]" />
+          <div className="md:ml-3 mt-1 md:mt-0">Reviews: {cards.length}</div>
         </div>
-        <div className="flex text-white/50 text-2xl items-center ml-10 w-fit">
-          <FaUser className="text-[40px] text-white/50" />
-          <div className="ml-3">Following: {user?.following}</div>
+
+        <div className="flex flex-col md:flex-row items-center text-white/70 text-sm md:text-2xl">
+          <FaUser className="text-3xl md:text-[40px]" />
+          <div className="md:ml-3 mt-1 md:mt-0">
+            Following: {user?.following}
+          </div>
         </div>
-        <div className="flex text-white/50 text-2xl items-center ml-10 w-fit">
-          <FaUser className="text-[40px] text-white/50" />
-          <div className="ml-3">Followers: {user?.followers}</div>
+
+        <div className="flex flex-col md:flex-row items-center text-white/70 text-sm md:text-2xl">
+          <FaUser className="text-3xl md:text-[40px]" />
+          <div className="md:ml-3 mt-1 md:mt-0">
+            Followers: {user?.followers}
+          </div>
         </div>
       </div>
     </div>

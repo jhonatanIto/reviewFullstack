@@ -126,32 +126,35 @@ const Friends = () => {
   }, []);
 
   return (
-    <div className="mt-10 ">
-      <div className="flex  justify-between pl-[8%] pr-[8%]">
-        <div className="text-white text-3xl">Following :</div>
+    <div className="mt-6 md:mt-10 px-4 md:px-0">
+      <div className="flex flex-col md:flex-row md:justify-between md:pl-[8%] md:pr-[8%]">
+        <div className="text-white text-xl md:text-3xl mb-4 md:mb-0">
+          Following :
+        </div>
 
-        <div className="flex flex-col relative ">
-          <div className="flex text-white items-center ">
-            <label className=" flex cursor-pointer items-center">
+        <div className="flex flex-col relative w-full md:w-auto">
+          <div className="flex text-white items-center text-sm md:text-base">
+            <label className="flex cursor-pointer items-center">
               <input
                 type="radio"
                 name="search"
                 value="id"
                 checked={searchType === "id"}
-                className=" cursor-pointer accent-purple-500 w-4 h-4 "
+                className="accent-purple-500 w-4 h-4"
                 onChange={(e) => setSearchType(e.target.value)}
-              />{" "}
+              />
               <span className="ml-1">ID</span>
             </label>
+
             <label className="flex cursor-pointer ml-4 items-center">
               <input
                 type="radio"
                 name="search"
                 value="name"
                 checked={searchType === "name"}
-                className="cursor-pointer accent-purple-500 w-4 h-4 "
+                className="accent-purple-500 w-4 h-4"
                 onChange={(e) => setSearchType(e.target.value)}
-              />{" "}
+              />
               <span className="ml-1">Name</span>
             </label>
           </div>
@@ -160,37 +163,45 @@ const Friends = () => {
             onChange={(e) => setName(e.target.value)}
             value={name}
             type="text"
-            className="bg-white text-[20px] outline-none pl-3 mt-3"
+            className="bg-white text-lg md:text-[20px] outline-none pl-3 mt-3 h-10"
             placeholder="Search name"
           />
+
           <div
             ref={searchBoxRef}
             style={{ display: users.length > 0 ? "block" : "none" }}
-            className="absolute top-18 right-0 bg-white pl-3 pr-3 pb-3 w-100"
+            className="absolute top-18 right-0 bg-white p-3 w-full md:w-[400px] z-20 rounded-lg"
           >
             {users.map((u) => {
               return (
                 <div
-                  className="flex mt-2 border-2 rounded-2xl p-2 items-center hover:border-blue-400 border-zinc-400/80 
-                transition-all duration-200"
+                  key={u.unique_id}
+                  className="flex mt-2 border-2 rounded-xl p-2 items-center hover:border-blue-400 border-zinc-400/80 transition-all"
                 >
                   <img
                     src={u.picture || userpic}
-                    className="w-15 h-15 rounded-full object-cover cursor-pointer bg-zinc-600"
+                    className="w-12 h-12 md:w-15 md:h-15 rounded-full object-cover cursor-pointer bg-zinc-600"
                     onClick={() => clickUser(u.unique_id)}
                   />
-                  <div className="flex flex-col justify-center ml-4 text-zinc-800">
+
+                  <div className="flex flex-col justify-center ml-3 text-zinc-800">
                     <div
-                      className="font-bold text-[20px] cursor-pointer  w-fit"
+                      className="font-bold text-lg md:text-[20px] cursor-pointer w-fit"
                       onClick={() => clickUser(u.unique_id)}
                     >
                       {u.name}
                     </div>
-                    <div>ID: {u.unique_id}</div>
+
+                    <div className="text-sm">ID: {u.unique_id}</div>
                   </div>
+
                   <button
-                    className={`bg-blue-600 text-[17px] hover:bg-blue-900 transition-all duration-200 font-semibold select-none
-                   cursor-pointer text-white pl-6 pr-6 p-1 h-fit rounded-[10px] ml-auto   ${u.isFollowing ? "text-black! bg-zinc-200! " : ""}`}
+                    className={`ml-auto text-sm md:text-[17px] font-semibold cursor-pointer text-white px-4 py-1 rounded-lg
+                    ${
+                      u.isFollowing
+                        ? "bg-zinc-200 text-black"
+                        : "bg-blue-600 hover:bg-blue-900"
+                    }`}
                     onClick={async () => {
                       if (!token) return alert("Log in to follow");
 
@@ -206,62 +217,67 @@ const Friends = () => {
           </div>
         </div>
       </div>
-      <div className="w-full text-white mt-7  flex pl-[3%] pr-[3%]">
+
+      <div className="w-full text-white mt-6 flex overflow-x-scroll no-scrollbar flex-wrap justify-center md:justify-start md:pl-[3%] md:pr-[3%] gap-6">
         {filteredFollowing.map((f) => {
           return (
-            <div className="name flex flex-col w-fit items-center ml-2 mr-2">
+            <div key={f.unique_id} className="flex flex-col items-center">
               <img
                 src={f.picture || userpic}
-                className="w-40 h-40 rounded-full object-cover cursor-pointer bg-zinc-600"
+                className="w-24 h-24 md:w-40 md:h-40 rounded-full object-cover cursor-pointer bg-zinc-600"
                 onClick={() => {
                   navigate(`/profile/${f.unique_id}`);
                 }}
               />
-              <div className="text-2xl">{f.name}</div>
-              <div className="text-[20px]">Review: {f.reviews}</div>
+
+              <div className="text-lg md:text-2xl mt-2">{f.name}</div>
+              <div className="text-sm md:text-[20px]">Review: {f.reviews}</div>
             </div>
           );
         })}
       </div>
+
+      {/* RECENT REVIEWS */}
       {followingCards.length !== 0 && (
-        <div className="absolute w-full bottom-[5%] flex flex-col justify-center select-none mt-10  overflow-hidden pl-[1%]">
-          <div className="text-[23px] text-white">Recent reviews</div>
+        <div className="w-full mt-10 md:absolute md:bottom-[5%] flex flex-col select-none md:pl-[1%]">
+          <div className="text-lg md:text-[23px] text-white mb-4">
+            Recent reviews
+          </div>
+
           <div
-            className="flex mt-10 overflow-x-scroll no-scrollbar"
+            className="flex overflow-x-scroll no-scrollbar gap-4 pb-4"
             onWheel={(e) => {
               e.currentTarget.scrollLeft += e.deltaY;
             }}
           >
             {followingCards.map((c) => {
               return (
-                <div className="relative w-[14%] shrink-0 ">
-                  <Link className="" to={`/friends/${c.id}`}>
+                <div
+                  key={c.id}
+                  className="relative w-[60%] md:w-[14%] shrink-0"
+                >
+                  <Link to={`/friends/${c.id}`}>
                     <img
                       src={c.user_picture || userpic}
-                      className="absolute w-20 h-20 rounded-full z-20 object-cover cursor-pointer  select-none bg-zinc-600"
+                      className="absolute w-12 h-12 md:w-20 md:h-20 rounded-full z-20 object-cover cursor-pointer bg-zinc-600"
                     />
                   </Link>
+
                   <Link to={`/friends/${c.id}`}>
-                    <div
-                      key={c.id}
-                      className="mt-5  ml-5 mr-5 overflow-hidden relative  group cursor-pointer select-none
-                                shadow-black/60 shadow-[15px_0_15px_rgba(0,0,0,0.6)] "
-                    >
-                      <div
-                        className="opacity-0 w-full group-hover:opacity-100 transition-opacity 
-                           p-2  duration-200 absolute inset-0 bg-black/70 z-10 flex items-center flex-col backdrop-blur-[3px] "
-                      >
-                        <div className="text-2xl text-center flex items-center text-amber-600  justify-center mt-5 ">
+                    <div className="mt-4 md:mt-5 ml-3 mr-3 overflow-hidden relative group cursor-pointer shadow-black/60 shadow-[15px_0_15px_rgba(0,0,0,0.6)]">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity p-2 absolute inset-0 bg-black/70 z-10 flex items-center flex-col backdrop-blur-[3px]">
+                        <div className="text-xl md:text-2xl text-amber-600 flex items-center mt-3">
                           <IoStar />
-                          <div className="ml-1 ">{c.rate}</div>
+                          <div className="ml-1">{c.rate}</div>
                         </div>
-                        <div className="text-white text-[20px] mt-[1%] text-center">
+
+                        <div className="text-white text-sm md:text-[20px] mt-2 text-center">
                           {c.review}
                         </div>
                       </div>
 
                       <img
-                        className="group-hover:scale-110 transition-transform duration-200 "
+                        className="group-hover:scale-110 transition-transform duration-200"
                         src={c.poster}
                       />
                     </div>
@@ -272,6 +288,7 @@ const Friends = () => {
           </div>
         </div>
       )}
+
       <Outlet context={{ cards: followingCards, tab, setFollowingCards }} />
     </div>
   );

@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../context/useUser";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import useRate from "../hooks/useRate";
 import Stars from "./Stars";
 import useNotification from "../hooks/useNotification";
@@ -35,7 +35,6 @@ const CardPage = () => {
   const { id, unique } = useParams();
   const [card, setCard] = useState<Cards>();
   const { token, loadCards, setLoading, loading } = useUser();
-  const boxRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const [edit, setEdit] = useState(false);
   const [showComments, setShowComments] = useState(false);
@@ -97,18 +96,6 @@ const CardPage = () => {
 
     fetchCard();
   }, [id]);
-
-  useEffect(() => {
-    const closeModal = (e: MouseEvent) => {
-      if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
-        navigate(`/${profileUrl}`);
-      }
-    };
-
-    window.addEventListener("mousedown", closeModal);
-
-    return () => window.removeEventListener("mousedown", closeModal);
-  }, []);
 
   useEffect(() => {
     if (!card) return;
@@ -231,42 +218,48 @@ const CardPage = () => {
   };
   return (
     <div
+      onMouseDown={() => {
+        navigate(`/${profileUrl}`);
+      }}
       style={{ opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
-      className={` flex justify-center items-center w-full h-screen fixed m-0   transition-opacity duration-500
-     bg-black/60 top-0 left-0 z-30 backdrop-blur-[5px] `}
+      className={` flex flex-col  items-center  md:justify-center  w-full fixed m-0 h-fit md:h-full transition-opacity duration-500 overflow-y-auto md:overflow-y-hidden
+     bg-black/60 top-0 left-0 z-40 backdrop-blur-[5px] `}
     >
       <div
-        ref={boxRef}
-        className={`flex  items-center bg-white/20 relative rounded-2xl   shadow-black shadow-lg 
+        onMouseDown={(e) => e.stopPropagation()}
+        className={`flex w-[93%]  md:w-238  justify-around md:mt-0 mt-5  pb-10 md:pb-0 items-center  flex-col bg-white/20 relative rounded-2xl   shadow-black shadow-lg 
+          md:flex-row
            ${open ? " translate-y-0 scale-100" : "translate-y-10 scale-70 opacity-0"} transition-all duration-200 ease-in-out`}
       >
-        <div className="relative">
+        <div className="relative md:w-full  w-[48%] md:mt-0 mt-8">
           <div
-            className="opacity-0 w-full hover:opacity-100 transition-all duration-400 absolute cursor-default flex-col
+            className="opacity-0  hover:opacity-100 transition-all duration-400 absolute cursor-default flex-col
              p-8 text-center text-white text-[26px] inset-0 bg-black/70 z-10 flex items-center  backdrop-blur-[3px] "
           >
             <div className="max-text-[35px] text-purple-500 font-bold">
               {card?.title}
             </div>
             <div className="mt-15">{card?.description}</div>
-            <div className="absolute bottom-10 flex   text-[20px]">
+            <div className="absolute bottom-10 flex text-[20px]">
               Release date: {card?.release}
             </div>
           </div>
-          <img src={card?.poster} className="rounded-l-2xl" />
+          <img src={card?.poster} className="rounded-l-2xl " />
         </div>
 
-        <div className="p-5 flex flex-col items-center justify-center">
+        <div className=" flex flex-col items-center justify-center w-full">
           <div
-            className={`flex items-center justify-center ${!edit ? "pointer-events-none" : ""} `}
+            className={`flex flex-col items-center justify-center ${!edit ? "pointer-events-none" : ""} `}
           >
             <div
               style={{ color: "oklch(82.8% 0.189 84.429)" }}
-              className="absolute top-10 text-[25px] select-none "
+              className=" text-[18px] md:text-2xl select-none "
             >
               Rate: {rate}/10
             </div>
-            <Stars rate={rate} setRate={setRate} top={90} size={30} />
+            <div className="mt-2">
+              <Stars rate={rate} setRate={setRate} top={100} size={20} />
+            </div>
           </div>
 
           <textarea
@@ -274,7 +267,7 @@ const CardPage = () => {
             value={review}
             spellCheck={false}
             placeholder={`${edit ? "Write your review" : ""}`}
-            className="w-100 h-100 text-2xl mt-15  outline-none bg-white rounded-2xl p-3 flex text-center shadow-black/30 shadow-lg"
+            className="w-[90%] h-40 md:h-90 text-[19px] md:text-[24px] mt-5  outline-none bg-white rounded-2xl p-3 flex text-center shadow-black/30 shadow-lg"
             onChange={(e) => setReview(e.target.value)}
           />
           <div className="flex justify-center">
@@ -350,7 +343,7 @@ const CardPage = () => {
                   </div>
                 </div>
                 <div
-                  className=" flex items-center  justify-around  text-white cursor-pointer select-none"
+                  className=" flex items-center  justify-around  text-white cursor-pointer select-none "
                   onClick={() => {
                     if (token) {
                       fetchCommentsLogged();
@@ -367,14 +360,6 @@ const CardPage = () => {
             )}
           </div>
         </div>
-        <Comments
-          showComments={showComments}
-          id={id}
-          commentSection={commentSection}
-          fetchCommentsLogged={fetchCommentsLogged}
-          setDelModal={setDelModal}
-          setCommentId={setCommentId}
-        />
       </div>
       <div
         style={{ display: delModal ? "flex" : "none" }}
@@ -397,6 +382,14 @@ const CardPage = () => {
           <button onClick={() => setDelModal(false)}>Cancel</button>
         </div>
       </div>
+      <Comments
+        showComments={showComments}
+        id={id}
+        commentSection={commentSection}
+        fetchCommentsLogged={fetchCommentsLogged}
+        setDelModal={setDelModal}
+        setCommentId={setCommentId}
+      />
     </div>
   );
 };
