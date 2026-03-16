@@ -92,7 +92,7 @@ const Modal = () => {
     >
       <div
         ref={boxRef}
-        className={`flex w-[93%]  md:w-238 h-[95%] justify-around md:mt-0  pb-10 md:pb-0 items-center  flex-col bg-white/20 relative rounded-2xl   shadow-black shadow-lg 
+        className={`flex w-[93%] md:h-fit  md:w-238 h-[95%] justify-around md:mt-0  pb-10 md:pb-0 items-center  flex-col bg-white/20 relative rounded-2xl   shadow-black shadow-lg 
           md:flex-row  ${modal ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-24"}`}
       >
         <div
@@ -106,14 +106,16 @@ const Modal = () => {
         </div>
 
         <div className="p-5 flex flex-col items-center w-full justify-center">
-          <div className="md:top-30 top-[50%] absolute flex flex-col items-center text-[20px]">
+          <div className="md:top-20 top-[50%] absolute flex flex-col items-center text-[20px]">
             <div
               style={{ color: "oklch(82.8% 0.189 84.429)" }}
               className="text-[20px] "
             >
               Rate: {rate}/10
             </div>
-            <Stars rate={rate} setRate={setRate} top={100} size={20} />
+            <div className="md:mt-7 ">
+              <Stars rate={rate} setRate={setRate} top={100} size={20} />
+            </div>
           </div>
 
           <textarea

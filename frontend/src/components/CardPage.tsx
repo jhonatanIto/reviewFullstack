@@ -255,7 +255,7 @@ const CardPage = () => {
           <img src={card?.poster} className="rounded-l-2xl " />
         </div>
 
-        <div className=" flex flex-col items-center justify-center w-full">
+        <div className=" flex flex-col items-center justify-clenter w-ful">
           <div
             className={`flex flex-col items-center justify-center ${!edit ? "pointer-events-none" : ""} `}
           >
