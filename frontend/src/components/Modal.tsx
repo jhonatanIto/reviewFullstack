@@ -6,6 +6,7 @@ import useNotification from "../hooks/useNotification";
 import { useMovie } from "../context/useMovie";
 import { useNavigate } from "react-router-dom";
 import { backend } from "../utils/fetchData";
+import { IoArrowBackOutline } from "react-icons/io5";
 
 const Modal = () => {
   const boxRef = useRef<HTMLDivElement>(null);
@@ -91,29 +92,40 @@ const Modal = () => {
     >
       <div
         ref={boxRef}
-        className={`flex  items-center bg-white/20 relative rounded-2xl overflow-hidden shadow-black shadow-lg
-         transition-all duration-300  ease-in-out  ${modal ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-24"}`}
+        className={`flex w-[93%]  md:w-238 h-[95%] justify-around md:mt-0  pb-10 md:pb-0 items-center  flex-col bg-white/20 relative rounded-2xl   shadow-black shadow-lg 
+          md:flex-row  ${modal ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-24"}`}
       >
-        <img src={moviePoster ? moviePoster : ""} />
+        <div
+          className="absolute md:opacity-0 md:pointer-events-none text-white top-10 left-3 text-4xl"
+          onClick={() => setModal(false)}
+        >
+          <IoArrowBackOutline />
+        </div>
+        <div className="md:w-full w-[48%] ">
+          <img src={moviePoster ? moviePoster : ""} />
+        </div>
 
-        <div className="p-5 flex flex-col items-center justify-center">
-          <div
-            style={{ color: "oklch(82.8% 0.189 84.429)" }}
-            className="absolute top-10 text-[25px] "
-          >
-            Rate: {rate}/10
+        <div className="p-5 flex flex-col items-center w-full justify-center">
+          <div className="md:top-30 top-[50%] absolute flex flex-col items-center text-[20px]">
+            <div
+              style={{ color: "oklch(82.8% 0.189 84.429)" }}
+              className="text-[20px] "
+            >
+              Rate: {rate}/10
+            </div>
+            <Stars rate={rate} setRate={setRate} top={100} size={20} />
           </div>
-          <Stars rate={rate} setRate={setRate} top={100} size={30} />
+
           <textarea
             value={review}
             spellCheck={false}
             placeholder="Write your review"
-            className="w-100 h-100 text-2xl  outline-none bg-white rounded-2xl p-3 flex text-center shadow-black/30 shadow-lg"
+            className="w-full h-40 md:h-90 text-[19px] md:text-[24px] mt-15  outline-none bg-white rounded-2xl p-3 flex text-center shadow-black/30 shadow-lg mt-15"
             onChange={(e) => setReview(e.target.value)}
           />
           <button
             className="text-white bg-purple-600 text-2xl pl-9 pr-9 transition-all duration-200 shadow-zinc-800/80 shadow-md
-          rounded-[10px] flex p-1 mt-10 absolute bottom-23 cursor-pointer hover:bg-purple-700"
+          rounded-[10px] flex p-1 mt-10 absolute bottom-3 cursor-pointer hover:bg-purple-700"
             onClick={() => {
               if (user) {
                 postCard();
