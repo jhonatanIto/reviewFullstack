@@ -9,6 +9,7 @@ import noImg from "../images/noImage.png";
 import { IoStar } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import type { Cards } from "../context/UserContext";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 interface Middle {
   feedCards: Cards[];
@@ -92,7 +93,7 @@ const Middle = ({ feedCards }: Middle) => {
   const navigate = useNavigate();
 
   return (
-    <div className="text-white px-[5%] md:ml-[7%] mt-12 md:mt-10 flex flex-col md:flex-row justify-between  ">
+    <div className="text-white px-[5%] md:ml-[3%] mt-12 md:mt-10 flex flex-col md:flex-row justify-between ">
       <div className="w-full md:w-auto ">
         <div className="text-[clamp(26px,4vw,40px)] xl:text-[clamp(40px,4vw,65px)] font-bold leading-tight">
           {movieName}
@@ -101,7 +102,7 @@ const Middle = ({ feedCards }: Middle) => {
 
         <div
           className="mt-6 md:mt-10 max-h-40 md:max-h-[35%] overflow-y-auto no-scrollbar
-  text-[clamp(16px,1.5vw,22px)] w-full md:max-w-2xl"
+      text-[clamp(16px,1.5vw,22px)] w-full md:max-w-2xl"
         >
           {movieDescription}
         </div>
@@ -141,11 +142,17 @@ const Middle = ({ feedCards }: Middle) => {
 
       <div className="md:absolute  w-full left-0 bottom-[2%] flex flex-col justify-center select-none z-10  overflow-hidden">
         <div
-          className="mt-10 flex justify-start  overflow-x-scroll no-scrollbar"
+          className="mt-10 flex justify-start  overflow-x-scroll no-scrollbar    
+         [&>button]:bg-zinc-800/40  [&>button]:h-full [&>button]:text-white [&>button]:z-10 [&>button]:text-[50px]"
           onWheel={(e) => {
             e.currentTarget.scrollLeft += e.deltaY;
           }}
         >
+          <button className=" -left-1.5 absolute items-center  md:flex hidden   ml-1.5 ">
+            <div className="">
+              <IoIosArrowBack />
+            </div>
+          </button>
           {movies.map((m, index) => {
             const imgBaseUrl = "https://image.tmdb.org/t/p";
             const convPoster = `${imgBaseUrl}/w500${m.poster_path}`;
@@ -171,6 +178,11 @@ const Middle = ({ feedCards }: Middle) => {
               </div>
             );
           })}
+          <button className="-right-2 absolute items-center  md:flex hidden mr-1.5">
+            <div className="">
+              <IoIosArrowForward />
+            </div>
+          </button>
         </div>
       </div>
 
