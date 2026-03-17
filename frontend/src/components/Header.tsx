@@ -160,7 +160,7 @@ const Header = () => {
       <div className="flex md:hidden w-full justify-between items-center px-2">
         <div
           className={`text-purple-500 cursor-pointer flex items-center transition-all duration-300
-             ${displayInput ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+             ${displayInput ? "opacity-0! pointer-events-none!" : "opacity-100"}`}
           onClick={() => navigate("/")}
         >
           <span className="bg-purple-500 rounded px-2 py-0.5 text-white mr-2">
