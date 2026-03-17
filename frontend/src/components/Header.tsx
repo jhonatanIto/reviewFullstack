@@ -222,14 +222,14 @@ const Header = () => {
       </div>
       <div
         ref={menuRef}
-        className={`md:hidden fixed top-0 right-0 h-screen w-[65%] max-w-75 bg-white/20 z-50 backdrop-blur-[15px]
+        className={`md:hidden fixed top-0 right-0 h-screen w-[65%] max-w-75 bg-white/20 z-50 backdrop-blur-[25px]
                 flex flex-col justify-between transition-transform duration-300 ease-in-out 
                 ${menuOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        <div className="pl-6 pt-10 [&>div]:p-4 text-2xl">
+        <div className="pl-6 pt-10 [&>div]:p-4 text-2xl select-none  [&>div]:w-fit">
           <RxCross1 className="text-3xl" onClick={() => setMenuOpen(false)} />
           <div
-            className="mt-8"
+            className="mt-8  "
             onClick={() => {
               navigate("/");
               setMenuOpen(false);
