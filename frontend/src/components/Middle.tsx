@@ -93,7 +93,7 @@ const Middle = ({ feedCards }: Middle) => {
   const navigate = useNavigate();
 
   return (
-    <div className="text-white px-[5%] md:ml-[3%] mt-12 md:mt-10 flex flex-col md:flex-row justify-between ">
+    <div className="text-white px-[5%]  mt-12 md:mt-10 flex flex-col md:flex-row justify-between ">
       <div className="w-full md:w-auto ">
         <div className="text-[clamp(26px,4vw,40px)] xl:text-[clamp(40px,4vw,65px)] font-bold leading-tight">
           {movieName}
@@ -149,9 +149,7 @@ const Middle = ({ feedCards }: Middle) => {
           }}
         >
           <button className=" -left-1.5 absolute items-center  md:flex hidden   ml-1.5 ">
-            <div className="">
-              <IoIosArrowBack />
-            </div>
+            <IoIosArrowBack className="mb-8" />
           </button>
           {movies.map((m, index) => {
             const imgBaseUrl = "https://image.tmdb.org/t/p";
@@ -179,9 +177,7 @@ const Middle = ({ feedCards }: Middle) => {
             );
           })}
           <button className="-right-2 absolute items-center  md:flex hidden mr-1.5">
-            <div className="">
-              <IoIosArrowForward />
-            </div>
+            <IoIosArrowForward className="mb-8" />
           </button>
         </div>
       </div>

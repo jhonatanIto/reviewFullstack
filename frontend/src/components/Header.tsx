@@ -7,6 +7,8 @@ import { useUser } from "../context/useUser";
 import { useMovie } from "../context/useMovie";
 import type { Movie } from "../context/MovieContext";
 import userpic from "../images/user.png";
+import { BsLightbulbFill } from "react-icons/bs";
+import { RxCross1 } from "react-icons/rx";
 
 type GalleryOption = "Watch list" | "Reviews";
 
@@ -25,6 +27,10 @@ const Header = () => {
   const [selectedGallery, setSelectedGallery] =
     useState<GalleryOption>("Reviews");
   const galleryRef = useRef<HTMLLIElement>(null);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const humbRef = useRef<HTMLDivElement>(null);
 
   const {
     user,
@@ -64,6 +70,21 @@ const Header = () => {
       document.removeEventListener("mousedown", closeInput);
       document.removeEventListener("mouseover", closeGallery);
     };
+  }, []);
+  useEffect(() => {
+    const mobileMenuHandler = (e: MouseEvent) => {
+      if (
+        menuRef.current &&
+        humbRef.current &&
+        !humbRef.current.contains(e.target as Node) &&
+        !menuRef.current.contains(e.target as Node)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("click", mobileMenuHandler);
+    return () => document.removeEventListener("click", mobileMenuHandler);
   }, []);
 
   useEffect(() => {
@@ -134,8 +155,64 @@ const Header = () => {
       className="flex flex-col md:flex-row w-full justify-between items-center text-white text-[18px] md:text-[26px] 
     px-4 md:px-10 pt-6 md:pt-10"
     >
+      <div className="flex md:hidden w-full justify-between items-center px-2">
+        <div
+          style={{
+            opacity: displayInput ? 0 : 1,
+            pointerEvents: displayInput ? "none" : "auto",
+          }}
+          className="text-purple-500 cursor-pointer flex items-center transition-all duration-300"
+          onClick={() => navigate("/")}
+        >
+          <span className="bg-purple-500 rounded px-2 py-0.5 text-white mr-2">
+            MY
+          </span>
+          REVIEW
+        </div>
+        <div className="flex items-center relative  ">
+          <input
+            onChange={(e) => setSearch(e.target.value)}
+            value={search}
+            ref={inputRef}
+            style={{
+              opacity: displayInput ? 1 : 0,
+              pointerEvents: displayInput ? "auto" : "none",
+              maxWidth: displayInput
+                ? window.innerWidth < 640
+                  ? "210px"
+                  : "260px"
+                : "0px",
+              minWidth: displayInput
+                ? window.innerWidth < 640
+                  ? "210px"
+                  : "260px"
+                : "0px",
+            }}
+            type="text"
+            className="bg-white text-black text-[18px] py-1 outline-none pl-2 transition-all 
+            ease-in-out duration-400 rounded-sm absolute right-21"
+            placeholder="Search..."
+          />
+
+          <IoSearchOutline
+            onClick={() => {
+              setDisplayInput(true);
+              inputRef.current?.focus();
+            }}
+            className="text-[28px] cursor-pointer hover:text-purple-500 transition-all duration-200 mr-4"
+          />
+
+          <div
+            ref={humbRef}
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="cursor-pointer text-4xl"
+          >
+            ☰
+          </div>
+        </div>
+      </div>
       <div
-        className="hidden  md:ml-[7%] w-auto justify-between items-center md:flex text-purple-500 cursor-pointer select-none mb-3 md:mb-0 "
+        className="hidden  md:ml-[3%] w-auto justify-between items-center md:flex text-purple-500 cursor-pointer select-none mb-3 md:mb-0 "
         onClick={() => navigate("/")}
       >
         <span className="bg-purple-500 rounded-[5px] px-2 py-0.5 flex items-center justify-center text-white mr-2">
@@ -143,9 +220,84 @@ const Header = () => {
         </span>{" "}
         REVIEW
       </div>
+      <div
+        ref={menuRef}
+        className={`md:hidden fixed top-0 right-0 h-screen w-[65%] max-w-75 bg-white/20 z-50 backdrop-blur-[15px]
+                flex flex-col justify-between transition-transform duration-300 ease-in-out 
+                ${menuOpen ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <div className="pl-6 pt-10 [&>div]:p-4 text-2xl">
+          <RxCross1 className="text-3xl" onClick={() => setMenuOpen(false)} />
+          <div
+            className="mt-8"
+            onClick={() => {
+              navigate("/");
+              setMenuOpen(false);
+            }}
+          >
+            Home
+          </div>
+          <div
+            onClick={() => {
+              navigate("/reviews");
+              handleGalleryChange("Reviews");
+              setMenuOpen(false);
+            }}
+          >
+            Review
+          </div>
+          <div
+            onClick={() => {
+              navigate("/watchlist");
+              handleGalleryChange("Watch list");
+              setMenuOpen(false);
+            }}
+          >
+            Watch list
+          </div>
+          <div
+            onClick={() => {
+              navigate("/friends");
+              setMenuOpen(false);
+            }}
+          >
+            Friends
+          </div>
+          <div>Notifications</div>
+          <div
+            className={`${user ? "hidden" : ""}`}
+            onClick={() => {
+              navigate("/login");
+              setMenuOpen(false);
+            }}
+          >
+            Login
+          </div>
+        </div>
+        <div
+          className={`ml-6 mb-5 cursor-pointer hover:text-purple-500 transition-all duration-200
+                   ${location === "/login" || location === "/profile" ? "text-purple-500" : ""}`}
+          onClick={() => {
+            navigate(user ? "/profile" : "/login");
+            setMenuOpen(false);
+          }}
+        >
+          {user ? (
+            <img
+              src={user.picture || userpic}
+              className="rounded-full w-13 h-13 object-cover"
+            />
+          ) : (
+            <FaUser className="text-[24px]" />
+          )}
+        </div>
+      </div>
 
-      <div className="flex justify-center md:justify-end md:mr-[7%] w-full md:w-auto ">
-        <ul className="flex flex-wrap justify-center items-center gap-4 md:gap-0">
+      <div
+        className={`hidden md:flex mr-[4%]
+          md:static md:flex-row md:bg-transparent md:w-auto`}
+      >
+        <ul className="flex  md:flex-row items-center md:gap-0  md:py-0">
           <div
             className={`flex md:gap-9 gap-4  transition-all  ease-in-out [&>li]:cursor-pointer md:mr-5 [&>li]:pb-2 md:[&>li]:mr-10
                [&>li]:hover:text-purple-500   [&>li]:transition-all [&>li]:duration-200 [&>li]:select-none  
@@ -212,7 +364,14 @@ const Header = () => {
             <li
               className={`relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-purple-500
                  after:transition-all after:duration-300 ${location === "/friends" ? "after:w-full text-purple-500" : ""}`}
-              onClick={() => (user ? navigate("/friends") : navigate("/login"))}
+              onClick={() => {
+                if (user) {
+                  navigate("/friends");
+                } else {
+                  navigate("/login");
+                }
+                setMenuOpen(false);
+              }}
             >
               <div>Friends</div>
             </li>{" "}
@@ -238,23 +397,28 @@ const Header = () => {
                   : "0px",
               }}
               type="text"
-              className="bg-white text-black text-[18px] py-1 outline-none pl-2 transition-all ease-in-out duration-400 rounded-sm "
+              className="bg-white hidden md:block text-black text-[18px] py-1 outline-none pl-2 transition-all ease-in-out duration-400 rounded-sm "
               placeholder="Search..."
             />
 
             <div className="flex items-center ml-2">
-              {!displayInput && <div className="mr-4 opacity-50">|</div>}
+              {!displayInput && (
+                <div className="mr-4 opacity-50 hidden md:block">|</div>
+              )}
               <IoSearchOutline
                 onClick={() => {
                   setDisplayInput(true);
                   inputRef.current?.focus();
                 }}
-                className="text-[28px] cursor-pointer hover:text-purple-500 transition-all duration-200"
+                className="text-[28px] cursor-pointer hover:text-purple-500 transition-all duration-200 hidden md:block"
               />
               <div
                 className={`ml-4 cursor-pointer hover:text-purple-500 transition-all duration-200
                    ${location === "/login" || location === "/profile" ? "text-purple-500" : ""}`}
-                onClick={() => navigate(user ? "/profile" : "/login")}
+                onClick={() => {
+                  navigate(user ? "/profile" : "/login");
+                  setMenuOpen(false);
+                }}
               >
                 {user ? (
                   <img
@@ -264,6 +428,9 @@ const Header = () => {
                 ) : (
                   <FaUser className="text-[24px]" />
                 )}
+              </div>
+              <div className="md:flex hidden ml-5 cursor-pointer hover:text-yellow-500 transition-all duration-150">
+                <BsLightbulbFill className="" />
               </div>
             </div>
           </div>

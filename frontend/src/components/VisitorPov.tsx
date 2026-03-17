@@ -23,7 +23,7 @@ const VisitorPov = () => {
 
   const [cards, setCards] = useState<Cards[]>([]);
   const unique_id = useParams().unique as string;
-  const { token } = useUser();
+  const { token, user } = useUser();
 
   const [displayFilter, setDisplayFilter] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
@@ -63,8 +63,6 @@ const VisitorPov = () => {
     if (!unique_id || !token) return;
     try {
       const data = await fetchProfileLogged(unique_id, token);
-
-      console.log(data);
 
       setName(data.user.name);
       setPicture(data.user.picture || userpic);
@@ -136,7 +134,9 @@ const VisitorPov = () => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row mt-6 md:justify-between gap-4">
+        <div
+          className={`flex-col md:flex-row mt-6 md:justify-between gap-4 ${user?.unique_id === unique_id ? "hidden" : "flex"}`}
+        >
           <div
             className="[&>button]:text-[14px] [&>button]:bg-blue-600
           [&>button]:hover:bg-blue-900 [&>button]:transition-all
