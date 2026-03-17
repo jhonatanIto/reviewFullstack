@@ -19,6 +19,7 @@ const routes = {
 
 const Header = () => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const mobInput = useRef<HTMLInputElement>(null);
 
   const location = useLocation().pathname;
   const navigate = useNavigate();
@@ -48,7 +49,9 @@ const Header = () => {
     const closeInput = (e: MouseEvent) => {
       if (
         inputRef.current &&
+        mobInput.current &&
         !inputRef.current?.contains(e.target as Node) &&
+        !mobInput.current?.contains(e.target as Node) &&
         !typeRef.current?.contains(e.target as Node) &&
         !searchUserRes.current?.contains(e.target as Node)
       ) {
@@ -173,7 +176,7 @@ const Header = () => {
           <input
             onChange={(e) => setSearch(e.target.value)}
             value={search}
-            ref={inputRef}
+            ref={mobInput}
             style={{
               opacity: displayInput ? 1 : 0,
               pointerEvents: displayInput ? "auto" : "none",
@@ -197,7 +200,7 @@ const Header = () => {
           <IoSearchOutline
             onClick={() => {
               setDisplayInput(true);
-              inputRef.current?.focus();
+              mobInput.current?.focus();
             }}
             className="text-[28px] cursor-pointer hover:text-purple-500 transition-all duration-200 mr-4"
           />
