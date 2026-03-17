@@ -93,7 +93,7 @@ const Middle = ({ feedCards }: Middle) => {
   const navigate = useNavigate();
 
   return (
-    <div className="text-white px-[5%]  mt-12 md:mt-10 flex flex-col md:flex-row justify-between ">
+    <div className="text-white px-[5%]  mt-8 md:mt-10 flex flex-col md:flex-row justify-between ">
       <div className="w-full md:w-auto ">
         <div className="text-[clamp(26px,4vw,40px)] xl:text-[clamp(40px,4vw,65px)] font-bold leading-tight">
           {movieName}

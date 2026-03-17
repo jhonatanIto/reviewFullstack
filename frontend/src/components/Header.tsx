@@ -205,7 +205,7 @@ const Header = () => {
           <div
             ref={humbRef}
             onClick={() => setMenuOpen(!menuOpen)}
-            className="cursor-pointer text-4xl"
+            className="cursor-pointer text-[35px]"
           >
             ☰
           </div>
