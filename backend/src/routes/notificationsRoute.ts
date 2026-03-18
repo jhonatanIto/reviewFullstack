@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getNotification,
+  getUnreadCount,
   markAllRead,
   markAsRead,
 } from "../controllers/notificationController.js";
@@ -13,4 +14,4 @@ notificationRoute.use(authMiddleware);
 notificationRoute.get("/", getNotification);
 notificationRoute.patch("/:id/read", markAsRead);
 notificationRoute.patch("/read-all", markAllRead);
-notificationRoute.get("/unread-count");
+notificationRoute.get("/unread-count", getUnreadCount);
