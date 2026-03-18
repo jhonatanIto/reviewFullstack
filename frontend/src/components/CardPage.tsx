@@ -216,6 +216,7 @@ const CardPage = () => {
       setLoading(false);
     }
   };
+
   return (
     <div
       onMouseDown={() => {

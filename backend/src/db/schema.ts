@@ -8,6 +8,7 @@ import {
   index,
   unique,
 } from "drizzle-orm/pg-core";
+import { read } from "node:fs";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -154,5 +155,40 @@ export const comment_likes = pgTable(
   (table) => [
     primaryKey({ columns: [table.user_id, table.comment_id] }),
     index("comment_likes_comment_idx").on(table.comment_id),
+  ],
+);
+
+export const notifications = pgTable(
+  "notifications",
+  {
+    id: serial("id").primaryKey(),
+
+    user_id: integer("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+
+    from_user_id: integer("from_user_id")
+      .references(() => users.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+
+    type: text("type").notNull(),
+    card_id: integer("card_id").references(() => cards.id, {
+      onDelete: "cascade",
+    }),
+    comment_id: integer("comment_id").references(() => comments.id, {
+      onDelete: "cascade",
+    }),
+
+    is_read: integer("is_read").default(0).notNull(),
+    created_at: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("notifications_user_idx").on(table.user_id),
+
+    index("notifications_user_created_idx").on(table.user_id, table.created_at),
   ],
 );

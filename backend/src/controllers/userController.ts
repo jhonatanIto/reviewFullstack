@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { db } from "../db/db.js";
 import { users, cards, follows, likes, comments } from "../db/schema.js";
 import { and, desc, eq, ilike, sql, count, ne } from "drizzle-orm";
+import { notificationQueue } from "../queues/notificationQueue.js";
 
 export const searchUsers = async (req: Request, res: Response) => {
   try {
@@ -116,10 +117,10 @@ export const getProfile = async (req: Request, res: Response) => {
 };
 
 export const toggleFollow = async (req: Request, res: Response) => {
-  const followerId = Number(req.userId);
+  const userId = Number(req.userId);
   const unique_id = String(req.params.unique_id);
 
-  if (!followerId || !unique_id)
+  if (!userId || !unique_id)
     return res.status(400).json({ message: "Id not provided" });
 
   const [following] = await db
@@ -129,7 +130,7 @@ export const toggleFollow = async (req: Request, res: Response) => {
 
   if (!following) return res.status(404).json({ message: "User not found" });
 
-  if (followerId === following.id)
+  if (userId === following.id)
     return res.status(400).json({ message: "You cannot follow yourself" });
 
   const [existing] = await db
@@ -137,7 +138,7 @@ export const toggleFollow = async (req: Request, res: Response) => {
     .from(follows)
     .where(
       and(
-        eq(follows.follower_id, followerId),
+        eq(follows.follower_id, userId),
         eq(follows.following_id, following.id),
       ),
     );
@@ -147,7 +148,7 @@ export const toggleFollow = async (req: Request, res: Response) => {
       .delete(follows)
       .where(
         and(
-          eq(follows.follower_id, followerId),
+          eq(follows.follower_id, userId),
           eq(follows.following_id, following.id),
         ),
       );
@@ -157,8 +158,14 @@ export const toggleFollow = async (req: Request, res: Response) => {
 
   await db
     .insert(follows)
-    .values({ follower_id: followerId, following_id: following.id })
+    .values({ follower_id: userId, following_id: following.id })
     .onConflictDoNothing();
+
+  await notificationQueue.add("notify", {
+    type: "FOLLOW",
+    userId: following.id,
+    fromUserId: userId,
+  });
 
   res.json({ following: true });
 };

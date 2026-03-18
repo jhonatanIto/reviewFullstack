@@ -17,6 +17,7 @@ import {
   sql,
   type InferInsertModel,
 } from "drizzle-orm";
+import { notificationQueue } from "../queues/notificationQueue.js";
 
 type NewCard = InferInsertModel<typeof cards>;
 
@@ -219,6 +220,18 @@ export const toggleLikeCard = async (req: Request, res: Response) => {
     }
     await db.insert(likes).values({ user_id: userId, card_id: cardId });
 
+    const card = await db.select().from(cards).where(eq(cards.id, cardId));
+    const ownerId = card[0]?.user_id;
+
+    if (ownerId !== userId) {
+      await notificationQueue.add("notify", {
+        type: "LIKE",
+        userId: ownerId,
+        fromUserId: userId,
+        cardId,
+      });
+    }
+
     return res.status(200).json({ liked: true });
   } catch (error) {
     console.log(error);
@@ -353,9 +366,24 @@ export const commentCard = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "No comment to insert" });
     if (!cardId) return res.status(400).json({ message: "Card id missing" });
 
-    await db
+    // insert the comment in the db
+    const newComment = await db
       .insert(comments)
-      .values({ user_id: userId, card_id: cardId, comment });
+      .values({ user_id: userId, card_id: cardId, comment })
+      .returning({ id: comments.id });
+
+    //get the card owner
+    const card = await db.select().from(cards).where(eq(cards.id, cardId));
+    const ownerId = card[0]?.user_id;
+    if (ownerId !== userId) {
+      await notificationQueue.add("notify", {
+        type: "COMMENT",
+        userId: ownerId,
+        fromUserId: userId,
+        cardId,
+        commentId: newComment[0]?.id,
+      });
+    }
 
     res.status(201).json({ message: "Comment posted" });
   } catch (error) {

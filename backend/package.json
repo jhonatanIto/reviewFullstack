@@ -6,18 +6,21 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "start": "tsx src/server.ts"
+    "start": "tsx src/server.ts",
+    "worker": "tsx src/workers/notificationWorker.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bullmq": "^5.71.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
     "express": "^5.2.1",
     "google-auth-library": "^10.6.1",
+    "ioredis": "^5.10.0",
     "jsonwebtoken": "^9.0.3",
     "nanoid": "^5.1.6",
     "pg": "^8.19.0"
