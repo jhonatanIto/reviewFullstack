@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { UserContext, type Cards, type User } from "./UserContext";
 import { getCards, getWatchCards } from "../utils/fetchData";
+import { backend } from "../utils/fetchData";
 
 interface Props {
   children: ReactNode;
@@ -37,7 +38,7 @@ const UserProvider = ({ children }: Props) => {
   const isTokenValid = async () => {
     if (!token) return;
     try {
-      const res = await fetch("http://localhost:3000/api/users/me", {
+      const res = await fetch(`${backend}/api/users/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
