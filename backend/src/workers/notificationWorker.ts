@@ -1,6 +1,7 @@
 import { Worker } from "bullmq";
 import { db } from "../db/db.js";
 import { notifications } from "../db/schema.js";
+import { redisConnection } from "../lib/redis.js";
 
 const worker = new Worker(
   "notifications",
@@ -18,11 +19,7 @@ const worker = new Worker(
     });
   },
   {
-    connection: {
-      host: process.env.REDIS_HOST || "127.0.0.1",
-      port: Number(process.env.REDIS_PORT) || 6379,
-      password: process.env.REDIS_PASSWORD,
-    },
+    connection: redisConnection,
   },
 );
 
