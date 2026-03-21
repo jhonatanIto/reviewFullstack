@@ -50,7 +50,6 @@ const UserProvider = ({ children }: Props) => {
         console.log("response", data);
         logout();
       }
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
