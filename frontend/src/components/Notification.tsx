@@ -40,7 +40,7 @@ const Notification = ({ token, showNoti }: NotificationProps) => {
 
       const data = await res.json();
 
-      if (!res.ok) return console.log(data?.message);
+      if (!res.ok) throw new Error(data?.message);
 
       setNotiData(data);
     } catch (error) {
@@ -81,7 +81,7 @@ const Notification = ({ token, showNoti }: NotificationProps) => {
           {n.type === "FOLLOW" ? (
             <button
               disabled={loadingNoti}
-              className={`${n.isFollowing ? "text-black bg-zinc-100" : "bg-blue-600 text-white"} ml-14  font-semibold
+              className={`${n.isFollowing ? "text-black bg-zinc-200" : "bg-blue-600 text-white"} ml-14  font-semibold
               pl-2 pr-2 p-1 rounded-[5px] w-29 flex items-center justify-center cursor-pointer`}
               onClick={async () => {
                 if (!token) return;
