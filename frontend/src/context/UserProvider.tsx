@@ -35,7 +35,7 @@ const UserProvider = ({ children }: Props) => {
   };
 
   const isTokenValid = async () => {
-    if (!token) return logout();
+    if (!token) return;
     try {
       const res = await fetch("http://localhost:3000/api/users/me", {
         headers: {
