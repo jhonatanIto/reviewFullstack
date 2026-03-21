@@ -66,10 +66,11 @@ const UserProvider = ({ children }: Props) => {
     if (savedUser) setUser(JSON.parse(savedUser));
     if (savedCards) setCards(JSON.parse(savedCards));
     if (savedWatchlist) setWatchlist(JSON.parse(savedWatchlist));
+    isTokenValid();
   }, []);
 
   const loadCards = async () => {
-    if (!token) return logout();
+    if (!token) return;
 
     const data = await getCards(token);
     if (data) {
