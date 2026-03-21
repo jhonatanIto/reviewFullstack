@@ -1,7 +1,7 @@
 import { Worker } from "bullmq";
 import { db } from "../db/db.js";
 import { notifications } from "../db/schema.js";
-import { redisConnection } from "../lib/redis.js";
+import { redisConfig } from "../lib/redis.js";
 
 const worker = new Worker(
   "notifications",
@@ -19,7 +19,7 @@ const worker = new Worker(
     });
   },
   {
-    connection: redisConnection,
+    connection: redisConfig,
   },
 );
 

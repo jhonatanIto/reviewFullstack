@@ -9,6 +9,7 @@ import type { Movie } from "../context/MovieContext";
 import userpic from "../images/user.png";
 import { BsLightbulbFill } from "react-icons/bs";
 import { RxCross1 } from "react-icons/rx";
+import Notification from "./Notification";
 
 type GalleryOption = "Watch list" | "Reviews";
 
@@ -42,6 +43,7 @@ const Header = () => {
     setDisplayInput,
     displayInput,
     searchUserRes,
+    token,
   } = useUser();
   const { setMovies } = useMovie();
 
@@ -435,6 +437,7 @@ const Header = () => {
           </div>
         </ul>
       </div>
+      <Notification token={token} />
     </div>
   );
 };

@@ -27,6 +27,6 @@ app.use("/api/cards", cardsRoute);
 app.use("/api/watchlist", watchlistRouter);
 app.use("/api/users", userRoute);
 app.use("/api/googleAuth", googleRoute);
-app.use("/notification", notificationRoute);
+app.use("/api/notification", notificationRoute);
 
 app.listen(port, () => console.log("Server is running on port", port));
