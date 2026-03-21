@@ -1,15 +1,15 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
-import { notifications, users } from "../db/schema.js";
+import { cards, notifications, users } from "../db/schema.js";
 import { and, desc, eq, sql } from "drizzle-orm";
 
 export const getNotification = async (req: Request, res: Response) => {
   try {
     const user_id = req.userId;
-    if (!user_id) return res.status(401).json({ message: "Unauthorizaded" });
+    if (!user_id) return res.status(401).json({ message: "Unauthorized" });
 
-    const limit = Number(req.query.limit) || 10;
-    const offset = Number(req.query.offset) || 0;
+    const limit = Math.min(Number(req.query.limit) || 10, 50);
+    const offset = Math.max(Number(req.query.offset) || 0, 0);
 
     const result = await db
       .select({
@@ -24,10 +24,12 @@ export const getNotification = async (req: Request, res: Response) => {
           picture: users.picture,
         },
         card_id: notifications.card_id,
+        card_picture: cards.poster,
         comment_id: notifications.comment_id,
       })
       .from(notifications)
       .leftJoin(users, eq(users.id, notifications.from_user_id))
+      .leftJoin(cards, eq(cards.id, notifications.card_id))
       .where(eq(notifications.user_id, user_id))
       .orderBy(desc(notifications.created_at))
       .limit(limit)

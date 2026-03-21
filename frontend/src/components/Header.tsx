@@ -157,7 +157,7 @@ const Header = () => {
   return (
     <div
       className="flex flex-col md:flex-row w-full justify-between items-center text-white text-[18px] md:text-[26px] 
-    px-4 md:px-10 pt-6 md:pt-10"
+    px-4 md:px-10 pt-6 md:pt-10 relative"
     >
       <div className="flex md:hidden w-full justify-between items-center px-2">
         <div
@@ -430,14 +430,14 @@ const Header = () => {
                   <FaUser className="text-[24px]" />
                 )}
               </div>
-              <div className="md:flex hidden ml-5 cursor-pointer hover:text-yellow-500 transition-all duration-150">
-                <BsLightbulbFill className="" />
+              <div className="md:flex hidden ml-5 cursor-pointer hover:text-yellow-500 transition-all duration-150 relative">
+                <BsLightbulbFill />
+                <Notification token={token} />
               </div>
             </div>
           </div>
         </ul>
       </div>
-      <Notification token={token} />
     </div>
   );
 };
