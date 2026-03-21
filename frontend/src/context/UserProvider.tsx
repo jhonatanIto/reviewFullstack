@@ -47,7 +47,8 @@ const UserProvider = ({ children }: Props) => {
       const data = await res.json();
 
       if (!res.ok) {
-        logout();
+        console.log("status", res.status);
+        console.log("response", data);
       }
       console.log(data?.message);
     } catch (error) {
