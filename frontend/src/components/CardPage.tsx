@@ -238,7 +238,7 @@ const CardPage = () => {
         >
           <IoArrowBackOutline />
         </div>
-        <div className="relative md:w-full  w-[48%] md:mt-0 mt-8 ">
+        <div className="relative md:w-full  w-[48%] md:mt-0 mt-3 ">
           <div
             className="opacity-0   hover:opacity-100 transition-all duration-400 absolute cursor-default flex-col
              p-8 text-center text-white text-[26px] inset-0 bg-black/70 z-10 flex items-center  backdrop-blur-[3px] "
@@ -258,16 +258,16 @@ const CardPage = () => {
 
         <div className=" flex flex-col items-center  w-full">
           <div
-            className={`flex flex-col items-center justify-center ${!edit ? "pointer-events-none" : ""} `}
+            className={`flex flex-col items-center justify-center mt-3 ${!edit ? "pointer-events-none" : ""} `}
           >
             <div
               style={{ color: "oklch(82.8% 0.189 84.429)" }}
-              className=" text-[18px] md:text-2xl select-none "
+              className=" text-[22px] md:text-2xl select-none "
             >
               Rate: {rate}/10
             </div>
             <div className="mt-2">
-              <Stars rate={rate} setRate={setRate} top={100} size={20} />
+              <Stars rate={rate} setRate={setRate} top={100} size={24} />
             </div>
           </div>
 

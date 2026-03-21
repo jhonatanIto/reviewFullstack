@@ -33,6 +33,9 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const humbRef = useRef<HTMLDivElement>(null);
+  const notiRef = useRef<HTMLDivElement>(null);
+
+  const [showNoti, setShowNoti] = useState(false);
 
   const {
     user,
@@ -46,6 +49,17 @@ const Header = () => {
     token,
   } = useUser();
   const { setMovies } = useMovie();
+
+  useEffect(() => {
+    const closeNoti = (e: MouseEvent) => {
+      if (notiRef.current && !notiRef.current.contains(e.target as Node)) {
+        setShowNoti(false);
+      }
+    };
+
+    document.addEventListener("mousedown", closeNoti);
+    return () => document.removeEventListener("mousedown", closeNoti);
+  }, []);
 
   useEffect(() => {
     const closeInput = (e: MouseEvent) => {
@@ -430,9 +444,15 @@ const Header = () => {
                   <FaUser className="text-[24px]" />
                 )}
               </div>
-              <div className="md:flex hidden ml-5 cursor-pointer hover:text-yellow-500 transition-all duration-150 relative">
-                <BsLightbulbFill />
-                <Notification token={token} />
+              <div
+                ref={notiRef}
+                className="md:flex hidden ml-5  transition-all duration-150 relative "
+              >
+                <BsLightbulbFill
+                  className="cursor-pointer hover:text-yellow-500"
+                  onClick={() => setShowNoti((prev) => !prev)}
+                />
+                <Notification token={token} showNoti={showNoti} />
               </div>
             </div>
           </div>

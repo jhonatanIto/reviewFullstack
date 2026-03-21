@@ -106,15 +106,15 @@ const Modal = () => {
         </div>
 
         <div className="p-5 flex flex-col items-center w-full justify-center">
-          <div className="md:top-20 top-[48%] absolute flex flex-col items-center text-[20px]">
+          <div className="md:top-20 top-[46%] absolute flex flex-col items-center text-[20px]">
             <div
               style={{ color: "oklch(82.8% 0.189 84.429)" }}
-              className="text-[20px] "
+              className="text-[25px] "
             >
               Rate: {rate}/10
             </div>
-            <div className="md:mt-7  mt-2">
-              <Stars rate={rate} setRate={setRate} top={100} size={20} />
+            <div className="md:mt-5  mt-2">
+              <Stars rate={rate} setRate={setRate} top={100} size={24} />
             </div>
           </div>
 
