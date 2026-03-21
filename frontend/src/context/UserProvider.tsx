@@ -66,8 +66,6 @@ const UserProvider = ({ children }: Props) => {
     if (savedUser) setUser(JSON.parse(savedUser));
     if (savedCards) setCards(JSON.parse(savedCards));
     if (savedWatchlist) setWatchlist(JSON.parse(savedWatchlist));
-
-    isTokenValid();
   }, []);
 
   const loadCards = async () => {
