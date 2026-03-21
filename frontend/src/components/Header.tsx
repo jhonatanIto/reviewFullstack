@@ -1,7 +1,7 @@
 import { IoSearchOutline } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
-import { fetchMovies, searchMovies } from "../utils/fetchData";
+import { backend, fetchMovies, searchMovies } from "../utils/fetchData";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/useUser";
 import { useMovie } from "../context/useMovie";
@@ -36,6 +36,7 @@ const Header = () => {
   const notiRef = useRef<HTMLDivElement>(null);
 
   const [showNoti, setShowNoti] = useState(false);
+  const [notiCount, setNotiCount] = useState(0);
 
   const {
     user,
@@ -166,6 +167,26 @@ const Header = () => {
     setGalleryList(false);
     setSelectedGallery(option);
     navigate(`/${routes[option]}`);
+  };
+
+  const markAllRead = async () => {
+    if (!token) return;
+    try {
+      const res = await fetch(`${backend}/api/notification/read-all`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data?.message);
+
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -449,10 +470,25 @@ const Header = () => {
                 className="md:flex hidden ml-5  transition-all duration-150 relative "
               >
                 <BsLightbulbFill
-                  className="cursor-pointer hover:text-yellow-500"
-                  onClick={() => setShowNoti((prev) => !prev)}
+                  className={`cursor-pointer hover:text-yellow-500  ${showNoti ? "text-yellow-500" : ""}`}
+                  onClick={() => {
+                    if (user) {
+                      setShowNoti((prev) => !prev);
+
+                      markAllRead();
+                    } else {
+                      alert("Login to check notifications");
+                    }
+                  }}
                 />
-                <Notification token={token} showNoti={showNoti} />
+                <div className="absolute text-red-600 pointer-events-none text-[18px] right-2 bottom-0.5 font-bold">
+                  {notiCount > 0 ? notiCount : ""}
+                </div>
+                <Notification
+                  token={token}
+                  showNoti={showNoti}
+                  setNotiCount={setNotiCount}
+                />
               </div>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { backend, toggleFollow } from "../utils/fetchData";
 import { timeAgo } from "../utils/calc";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import userpic from "../images/user.png";
 interface NotificationProps {
   token: string | null;
   showNoti: boolean;
+  setNotiCount: React.Dispatch<React.SetStateAction<number>>;
 }
 interface Notification {
   card_id: number;
@@ -24,7 +25,7 @@ interface Notification {
   isFollowing: boolean;
 }
 
-const Notification = ({ token, showNoti }: NotificationProps) => {
+const Notification = ({ token, showNoti, setNotiCount }: NotificationProps) => {
   const [notiData, setNotiData] = useState<Notification[]>([]);
   const navigate = useNavigate();
   const [loadingNoti, setLoadingNoti] = useState(false);
@@ -52,12 +53,22 @@ const Notification = ({ token, showNoti }: NotificationProps) => {
 
   useEffect(() => {
     getNotification();
-  }, [token]);
+
+    setNotiCount(() => {
+      const count = notiData.filter((n) => n.is_read === 0);
+
+      return count.length;
+    });
+  }, [token, notiData]);
 
   return (
     <div
-      className={`${showNoti ? "block" : "hidden"} absolute right-0 z-30 top-12 bg-white text-black border w-100 rounded-2xl text-[15px] p-2`}
+      className={`${showNoti ? "block" : "hidden"} absolute right-0 z-30 top-12 bg-white text-black border w-100
+       rounded-2xl text-[15px] p-2 max-h-120 overflow-scroll no-scrollbar`}
     >
+      {notiData.length === 0 && (
+        <div className="p-2">Your notifications will appear here.</div>
+      )}
       {notiData.map((n) => (
         <div className="mt-2 flex items-center">
           <img
