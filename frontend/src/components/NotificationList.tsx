@@ -1,70 +1,31 @@
-import React, { useEffect, useState } from "react";
-import { backend, toggleFollow } from "../utils/fetchData";
+import { toggleFollow } from "../utils/fetchData";
 import { timeAgo } from "../utils/calc";
 import { useNavigate } from "react-router-dom";
 import userpic from "../images/user.png";
+import type { Notification } from "./Header";
+import { useUser } from "../context/useUser";
 
 interface NotificationProps {
-  token: string | null;
   showNoti: boolean;
-  setNotiCount: React.Dispatch<React.SetStateAction<number>>;
-}
-interface Notification {
-  card_id: number;
-  comment_id: number | null;
-  created_at: string;
-  from_user: {
-    unique_id: string;
-    name: string;
-    picture: string;
-  };
-  id: number;
-  is_read: number;
-  type: string;
-  card_picture: string;
-  isFollowing: boolean;
+  notiData: Notification[];
+  loadingNoti: boolean;
+  getNotification: () => void;
 }
 
-const Notification = ({ token, showNoti, setNotiCount }: NotificationProps) => {
-  const [notiData, setNotiData] = useState<Notification[]>([]);
+const NotificationList = ({
+  showNoti,
+  notiData,
+  loadingNoti,
+  getNotification,
+}: NotificationProps) => {
   const navigate = useNavigate();
-  const [loadingNoti, setLoadingNoti] = useState(false);
 
-  const getNotification = async () => {
-    try {
-      setLoadingNoti(true);
-      const res = await fetch(`${backend}/api/notification`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data?.message);
-
-      setNotiData(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoadingNoti(false);
-    }
-  };
-
-  useEffect(() => {
-    getNotification();
-
-    setNotiCount(() => {
-      const count = notiData.filter((n) => n.is_read === 0);
-
-      return count.length;
-    });
-  }, [token, notiData]);
+  const { token } = useUser();
 
   return (
     <div
-      className={`${showNoti ? "block" : "hidden"} absolute right-0 z-30 top-12 bg-white text-black border w-100
-       rounded-2xl text-[15px] p-2 max-h-120 overflow-scroll no-scrollbar`}
+      className={`${showNoti ? "block" : "hidden"} absolute right-0 z-30 top-12 bg-white text-black border md:w-100 w-full 
+       rounded-2xl text-[15px] p-2 max-h-120  overflow-scroll no-scrollbar `}
     >
       {notiData.length === 0 && (
         <div className="p-2">Your notifications will appear here.</div>
@@ -105,7 +66,7 @@ const Notification = ({ token, showNoti, setNotiCount }: NotificationProps) => {
           ) : (
             <div>
               <img
-                className="w-12 md:w-12 md:h-12 object-cover cursor-pointer ml-14 "
+                className="w-12 md:w-12 md:h-12 object-cover cursor-pointer md:ml-14 ml-5"
                 src={n.card_picture}
                 onClick={() =>
                   navigate(`/${n.from_user.unique_id}/${n.card_id}`)
@@ -119,4 +80,4 @@ const Notification = ({ token, showNoti, setNotiCount }: NotificationProps) => {
   );
 };
 
-export default Notification;
+export default NotificationList;

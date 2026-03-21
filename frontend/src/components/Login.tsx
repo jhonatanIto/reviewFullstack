@@ -100,7 +100,7 @@ const Login = () => {
         onMouseDown={(e) => e.stopPropagation()}
         onSubmit={submitForm}
         ref={boxRef}
-        className="w-125 h-fit pb-16 mt-40 flex flex-col rounded-2xl items-center bg-white "
+        className="md:w-125 w-[95%] h-fit pb-16 mt-40 flex flex-col rounded-2xl items-center bg-white "
       >
         <div className="text-2xl mt-10">{signUp ? "Register" : "Login"}</div>
         <div className="mt-6">

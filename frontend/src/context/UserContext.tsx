@@ -1,4 +1,5 @@
 import { createContext, type RefObject } from "react";
+import type { Notification } from "../components/Header";
 
 export interface User {
   id: number;
@@ -29,6 +30,8 @@ interface UserContextType {
   searchUserRes: RefObject<HTMLDivElement | null>;
   displayInput: boolean;
   setDisplayInput: React.Dispatch<React.SetStateAction<boolean>>;
+  notiData: Notification[];
+  setNotiData: React.Dispatch<React.SetStateAction<Notification[]>>;
 }
 
 export interface Cards {

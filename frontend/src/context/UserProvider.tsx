@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { UserContext, type Cards, type User } from "./UserContext";
 import { getCards, getWatchCards } from "../utils/fetchData";
 import { backend } from "../utils/fetchData";
+import type { Notification } from "../components/Header";
 
 interface Props {
   children: ReactNode;
@@ -19,6 +20,8 @@ const UserProvider = ({ children }: Props) => {
   const typeRef = useRef<HTMLDivElement>(null);
   const searchUserRes = useRef<HTMLDivElement>(null);
 
+  const [notiData, setNotiData] = useState<Notification[]>([]);
+
   const login = (user: User, token: string) => {
     setUser(user);
     setToken(token);
@@ -30,6 +33,7 @@ const UserProvider = ({ children }: Props) => {
     setUser(null);
     setToken(null);
     setCards([]);
+    setNotiData([]);
     localStorage.removeItem("MyReview_user");
     localStorage.removeItem("MyReview_token");
     localStorage.removeItem("MyReview_cards");
@@ -109,6 +113,8 @@ const UserProvider = ({ children }: Props) => {
         displayInput,
         setDisplayInput,
         searchUserRes,
+        setNotiData,
+        notiData,
       }}
     >
       {children}

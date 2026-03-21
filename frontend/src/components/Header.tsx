@@ -9,9 +9,25 @@ import type { Movie } from "../context/MovieContext";
 import userpic from "../images/user.png";
 import { BsLightbulbFill } from "react-icons/bs";
 import { RxCross1 } from "react-icons/rx";
-import Notification from "./Notification";
+import NotificationList from "./NotificationList";
 
 type GalleryOption = "Watch list" | "Reviews";
+
+export interface Notification {
+  card_id: number;
+  comment_id: number | null;
+  created_at: string;
+  from_user: {
+    unique_id: string;
+    name: string;
+    picture: string;
+  };
+  id: number;
+  is_read: number;
+  type: string;
+  card_picture: string;
+  isFollowing: boolean;
+}
 
 const routes = {
   "Watch list": "watchlist",
@@ -37,6 +53,7 @@ const Header = () => {
 
   const [showNoti, setShowNoti] = useState(false);
   const [notiCount, setNotiCount] = useState(0);
+  const [loadingNoti, setLoadingNoti] = useState(false);
 
   const {
     user,
@@ -48,6 +65,8 @@ const Header = () => {
     displayInput,
     searchUserRes,
     token,
+    notiData,
+    setNotiData,
   } = useUser();
   const { setMovies } = useMovie();
 
@@ -61,6 +80,40 @@ const Header = () => {
     document.addEventListener("mousedown", closeNoti);
     return () => document.removeEventListener("mousedown", closeNoti);
   }, []);
+  const getNotification = async () => {
+    if (!token) return;
+    try {
+      setLoadingNoti(true);
+      const res = await fetch(`${backend}/api/notification`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data?.message);
+
+      setNotiData(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingNoti(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!token) return;
+    getNotification();
+  }, [token]);
+
+  useEffect(() => {
+    setNotiCount(() => {
+      const count = notiData.filter((n) => n.is_read === 0);
+
+      return count.length;
+    });
+  }, [notiData]);
 
   useEffect(() => {
     const closeInput = (e: MouseEvent) => {
@@ -194,7 +247,13 @@ const Header = () => {
       className="flex flex-col md:flex-row w-full justify-between items-center text-white text-[18px] md:text-[26px] 
     px-4 md:px-10 pt-6 md:pt-10 relative"
     >
-      <div className="flex md:hidden w-full justify-between items-center px-2">
+      <div className="flex md:hidden w-full justify-between relative items-center px-2">
+        <NotificationList
+          notiData={notiData}
+          showNoti={showNoti}
+          loadingNoti={loadingNoti}
+          getNotification={getNotification}
+        />
         <div
           className={`text-purple-500 cursor-pointer flex items-center transition-all duration-300
              ${displayInput ? "opacity-0! pointer-events-none!" : "opacity-100"}`}
@@ -299,7 +358,18 @@ const Header = () => {
           >
             Friends
           </div>
-          <div>Notifications</div>
+          <div
+            className="flex  items-center"
+            onClick={() => {
+              setShowNoti(true);
+              setMenuOpen(false);
+            }}
+          >
+            Notifications{" "}
+            <div className="ml-2 mt-1 text-red-600 pointer-events-none text-[22px]  font-semibold">
+              {notiCount > 0 ? notiCount : ""}
+            </div>
+          </div>
           <div
             className={`${user ? "hidden" : ""}`}
             onClick={() => {
@@ -471,11 +541,11 @@ const Header = () => {
               >
                 <BsLightbulbFill
                   className={`cursor-pointer hover:text-yellow-500  ${showNoti ? "text-yellow-500" : ""}`}
-                  onClick={() => {
+                  onClick={async () => {
                     if (user) {
                       setShowNoti((prev) => !prev);
-
-                      markAllRead();
+                      await markAllRead();
+                      await getNotification();
                     } else {
                       alert("Login to check notifications");
                     }
@@ -484,10 +554,11 @@ const Header = () => {
                 <div className="absolute text-red-600 pointer-events-none text-[18px] right-2 bottom-0.5 font-bold">
                   {notiCount > 0 ? notiCount : ""}
                 </div>
-                <Notification
-                  token={token}
+                <NotificationList
+                  notiData={notiData}
                   showNoti={showNoti}
-                  setNotiCount={setNotiCount}
+                  loadingNoti={loadingNoti}
+                  getNotification={getNotification}
                 />
               </div>
             </div>
