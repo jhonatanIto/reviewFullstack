@@ -47,10 +47,10 @@ const UserProvider = ({ children }: Props) => {
       const data = await res.json();
 
       if (!res.ok) {
-        console.log("status", res.status);
         console.log("response", data);
+        logout();
       }
-      console.log(data?.message);
+      console.log(data);
     } catch (error) {
       console.error(error);
     }
@@ -66,7 +66,6 @@ const UserProvider = ({ children }: Props) => {
     if (savedUser) setUser(JSON.parse(savedUser));
     if (savedCards) setCards(JSON.parse(savedCards));
     if (savedWatchlist) setWatchlist(JSON.parse(savedWatchlist));
-    isTokenValid();
   }, []);
 
   const loadCards = async () => {
@@ -87,6 +86,7 @@ const UserProvider = ({ children }: Props) => {
 
   useEffect(() => {
     loadCards();
+    isTokenValid();
   }, [token]);
 
   return (
