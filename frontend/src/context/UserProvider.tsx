@@ -34,6 +34,26 @@ const UserProvider = ({ children }: Props) => {
     localStorage.removeItem("MyReview_cards");
   };
 
+  const isTokenValid = async () => {
+    if (!token) return logout();
+    try {
+      const res = await fetch("http://localhost:3000/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        logout();
+      }
+      console.log(data?.message);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     const savedUser = localStorage.getItem("MyReview_user");
     const savedToken = localStorage.getItem("MyReview_token");
@@ -44,10 +64,12 @@ const UserProvider = ({ children }: Props) => {
     if (savedUser) setUser(JSON.parse(savedUser));
     if (savedCards) setCards(JSON.parse(savedCards));
     if (savedWatchlist) setWatchlist(JSON.parse(savedWatchlist));
+
+    isTokenValid();
   }, []);
 
   const loadCards = async () => {
-    if (!token) return;
+    if (!token) return logout();
 
     const data = await getCards(token);
     if (data) {

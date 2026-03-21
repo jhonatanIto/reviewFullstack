@@ -288,3 +288,16 @@ export const getProfileLogged = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const isTokenValid = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+
+    if (!userId) return res.status(400).json({ message: "Unauthorized" });
+
+    res.status(200).json({ message: "valid token" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
