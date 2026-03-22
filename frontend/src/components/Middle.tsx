@@ -101,7 +101,7 @@ const Middle = ({ feedCards }: Middle) => {
         <div className="text-lg md:text-2xl opacity-70">{movieRelease}</div>
 
         <div
-          className="mt-6 md:mt-10 max-h-40 md:max-h-[35%] overflow-y-auto no-scrollbar
+          className="mt-6 md:mt-10 max-h-40 md:max-h-[35%] overflow-y-auto 
       text-[clamp(16px,1.5vw,22px)] w-full md:max-w-2xl"
         >
           {movieDescription}
@@ -182,7 +182,7 @@ const Middle = ({ feedCards }: Middle) => {
         </div>
       </div>
 
-      <div className="w-full md:w-[37%] h-100 md:h-128 mt-4 md:mr-[1%] rounded-2xl p-1 overflow-y-auto no-scrollbar">
+      <div className="w-full md:w-[37%] h-100 md:h-[53vh] mt-4 md:mr-[1%] rounded-2xl p-1 overflow-y-auto no-scrollbar">
         {feedCards?.map((c) => {
           return (
             <div
