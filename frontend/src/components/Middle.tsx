@@ -10,6 +10,7 @@ import { IoStar } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import type { Cards } from "../context/UserContext";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { useRef } from "react";
 
 interface Middle {
   feedCards: Cards[];
@@ -36,6 +37,11 @@ const Middle = ({ feedCards }: Middle) => {
   } = useMovie();
 
   const { watchlist, loadCards, setLoading } = useUser();
+
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const postWatchlist = async () => {
     if (!token) return errorNotification("Sign in to save movies");
@@ -142,25 +148,45 @@ const Middle = ({ feedCards }: Middle) => {
 
       <div className="md:absolute  w-full left-0 bottom-[2%] flex flex-col justify-center select-none z-10  overflow-hidden">
         <div
-          className="mt-10 flex justify-start  overflow-x-scroll no-scrollbar    
-         [&>button]:bg-zinc-800/40  [&>button]:h-full [&>button]:text-white [&>button]:z-10 [&>button]:text-[50px]"
+          ref={sliderRef}
+          className="mt-10 flex justify-start  overflow-x-scroll no-scrollbar  cursor-grab active:cursor-grabbing select-none   
+         [&>button]:bg-zinc-800/40  [&>button]:h-full [&>button]:text-white [&>button]:z-10 [&>button]:text-[50px] "
           onWheel={(e) => {
             e.currentTarget.scrollLeft += e.deltaY;
+          }}
+          onMouseDown={(e) => {
+            if (!sliderRef.current) return;
+            isDragging.current = true;
+            startX.current = e.pageX - sliderRef.current.offsetLeft;
+            scrollLeft.current = sliderRef.current.scrollLeft;
+          }}
+          onMouseLeave={() => (isDragging.current = false)}
+          onMouseUp={() => (isDragging.current = false)}
+          onMouseMove={(e) => {
+            if (!isDragging.current || !sliderRef.current) return;
+
+            e.preventDefault();
+
+            const x = e.pageX - sliderRef.current.offsetLeft;
+            const walk = (x - startX.current) * 1.5;
+
+            sliderRef.current.scrollLeft = scrollLeft.current - walk;
           }}
         >
           <button className=" -left-1.5 absolute items-center  md:flex hidden   ml-1.5 ">
             <IoIosArrowBack className="mb-8" />
           </button>
-          {movies.map((m, index) => {
+          {movies.map((m) => {
             const imgBaseUrl = "https://image.tmdb.org/t/p";
             const convPoster = `${imgBaseUrl}/w500${m.poster_path}`;
             const convBanner = `${imgBaseUrl}/original${m.backdrop_path}`;
             return (
               <div
-                key={index}
-                className="w-[20%] md:w-[9.5%] shrink-0 ml-1 mr-1 overflow-hidden rounded-2xl flex items-center"
+                key={m.id}
+                className="w-[20%] md:w-[9.5%] shrink-0 ml-1 mr-1 overflow-hidden rounded-2xl flex items-center select-none"
               >
                 <img
+                  draggable={false}
                   className="w-full cursor-pointer object-cover hover:scale-110 transition-transform duration-200 text-white"
                   src={m.poster_path ? convPoster : noImg}
                   alt={m.original_title}
