@@ -8,7 +8,7 @@ import {
   index,
   unique,
 } from "drizzle-orm/pg-core";
-import { read } from "node:fs";
+import { table } from "node:console";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -174,14 +174,17 @@ export const notifications = pgTable(
       .notNull(),
 
     type: text("type").notNull(),
+
     card_id: integer("card_id").references(() => cards.id, {
       onDelete: "cascade",
     }),
+
     comment_id: integer("comment_id").references(() => comments.id, {
       onDelete: "cascade",
     }),
 
     is_read: integer("is_read").default(0).notNull(),
+
     created_at: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -190,5 +193,71 @@ export const notifications = pgTable(
     index("notifications_user_idx").on(table.user_id),
 
     index("notifications_user_created_idx").on(table.user_id, table.created_at),
+  ],
+);
+
+export const chats = pgTable(
+  "chats",
+  {
+    id: serial("id").primaryKey(),
+
+    created_at: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+
+    last_message: text("last_message"),
+
+    last_message_id: integer("last_message_id"),
+
+    last_message_at: timestamp("last_message_at", { withTimezone: true }),
+  },
+  (table) => [index("chats_last_message_idx").on(table.last_message_at)],
+);
+
+export const chatUsers = pgTable(
+  "chat_users",
+  {
+    chat_id: integer("chat_id")
+      .references(() => chats.id, { onDelete: "cascade" })
+      .notNull(),
+
+    user_id: integer("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+
+    unread_count: integer("unread_count").default(0).notNull(),
+    last_read_at: timestamp("last_read_at", { withTimezone: true }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.chat_id, table.user_id] }),
+    index("chat_users_user_idx").on(table.user_id),
+    index("chat_users_chat_idx").on(table.chat_id),
+  ],
+);
+
+export const messages = pgTable(
+  "messages",
+  {
+    id: serial("id").primaryKey(),
+
+    chat_id: integer("chat_id")
+      .references(() => chats.id, { onDelete: "cascade" })
+      .notNull(),
+
+    sender_id: integer("sender_id")
+      .references(() => users.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+
+    content: text("content").notNull(),
+
+    created_at: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("messages_chat_created_idx").on(table.chat_id, table.created_at),
+    index("messages_sender_idx").on(table.sender_id),
   ],
 );

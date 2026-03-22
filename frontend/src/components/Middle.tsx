@@ -208,7 +208,7 @@ const Middle = ({ feedCards }: Middle) => {
         </div>
       </div>
 
-      <div className="w-full md:w-[37%] h-100 md:h-[53vh] mt-4 md:mr-[1%] rounded-2xl p-1 overflow-y-auto no-scrollbar">
+      <div className="w-full md:w-[37%] h-100 md:h-[51vh] mt-4 md:mr-[1%] rounded-2xl p-1 overflow-y-auto ">
         {feedCards?.map((c) => {
           return (
             <div
