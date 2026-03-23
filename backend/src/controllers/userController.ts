@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
 import { users, cards, follows, likes, comments } from "../db/schema.js";
-import { and, desc, eq, ilike, sql, count, ne } from "drizzle-orm";
+import { and, desc, eq, ilike, sql, count, ne, inArray } from "drizzle-orm";
 import { notificationQueue } from "../queues/notificationQueue.js";
 
 export const searchUsers = async (req: Request, res: Response) => {
@@ -173,7 +173,7 @@ export const toggleFollow = async (req: Request, res: Response) => {
 export const getFollowing = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
-    if (!userId) return res.status(400).json({ message: "Unauthorized" });
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
     const following = await db
       .select({
@@ -293,7 +293,7 @@ export const isTokenValid = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
 
-    if (!userId) return res.status(400).json({ message: "Unauthorized" });
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
     res.status(200).json({ message: "valid token" });
   } catch (error) {

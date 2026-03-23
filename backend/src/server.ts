@@ -7,6 +7,7 @@ import { watchlistRouter } from "./routes/watchlistRoute.js";
 import { userRoute } from "./routes/usersRoute.js";
 import googleRoute from "./routes/googleRoute.js";
 import { notificationRoute } from "./routes/notificationsRoute.js";
+import { chatRoute } from "./routes/chatRoute.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -28,5 +29,6 @@ app.use("/api/watchlist", watchlistRouter);
 app.use("/api/users", userRoute);
 app.use("/api/googleAuth", googleRoute);
 app.use("/api/notification", notificationRoute);
+app.use("api/chat", chatRoute);
 
 app.listen(port, () => console.log("Server is running on port", port));

@@ -11,7 +11,6 @@ import { BsLightbulbFill } from "react-icons/bs";
 import { RxCross1 } from "react-icons/rx";
 import NotificationList from "./NotificationList";
 import { BsChatDotsFill } from "react-icons/bs";
-import { DiVim } from "react-icons/di";
 
 type GalleryOption = "Watch list" | "Reviews";
 
@@ -566,13 +565,13 @@ const Header = () => {
                   />
                 </div>
               )}
-              {user && (
+              {/* {user && (
                 <BsChatDotsFill
                   className={`ml-4 transition-all duration-150 cursor-pointer hover:text-red-400
                      ${location === "/chat" ? "text-red-400" : ""}`}
                   onClick={() => navigate("/chat")}
                 />
-              )}
+              )} */}
             </div>
           </div>
         </ul>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, Outlet, useParams } from "react-router-dom";
+import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import {
   fetchProfile,
   fetchProfileLogged,
@@ -30,6 +30,8 @@ const VisitorPov = () => {
   const [sortBy, setSortBy] = useState<SortOption>(
     () => (localStorage.getItem("MyReview_sortBy") as SortOption) || "Newest",
   );
+
+  const navigate = useNavigate();
   const selectFilter = (value: SortOption) => {
     setDisplayFilter(false);
     setSortBy(value);
@@ -160,7 +162,9 @@ const VisitorPov = () => {
               {isFollowing ? "Following" : "Follow"}
             </button>
 
-            <button>Send message</button>
+            <button onClick={() => navigate(`/chat/${unique_id}`)}>
+              Send message
+            </button>
           </div>
 
           <div

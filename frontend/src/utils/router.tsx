@@ -48,6 +48,7 @@ export const router = createBrowserRouter([
       {
         path: "chat",
         element: <ChatPage />,
+        children: [{ path: ":unique", element: <ChatPage /> }],
       },
 
       {

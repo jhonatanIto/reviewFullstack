@@ -145,7 +145,7 @@ const Gallery = () => {
                     <IoStar />
                     <span className="ml-1">{c.rate}</span>
                   </div>
-                  <div className="text-white text-sm md:text-[20px] mt-2 text-center line-clamp-3">
+                  <div className="text-white text-sm md:text-[20px] mt-2 text-center line-clamp-7 ">
                     {c.review}
                   </div>
                 </div>
