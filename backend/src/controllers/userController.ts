@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
 import { users, cards, follows, likes, comments } from "../db/schema.js";
-import { and, desc, eq, ilike, sql, count, ne, inArray } from "drizzle-orm";
+import { and, desc, eq, ilike, sql, count, ne } from "drizzle-orm";
 import { notificationQueue } from "../queues/notificationQueue.js";
 
 export const searchUsers = async (req: Request, res: Response) => {

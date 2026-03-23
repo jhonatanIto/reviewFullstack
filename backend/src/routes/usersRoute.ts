@@ -6,7 +6,6 @@ import {
   isTokenValid,
   searchUsers,
   toggleFollow,
-  userChatInfo,
 } from "../controllers/userController.js";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 
@@ -20,4 +19,3 @@ userRoute.get("/search", searchUsers);
 userRoute.get("/profile/:unique_id/logged", getProfileLogged);
 userRoute.post("/:unique_id/follow", toggleFollow);
 userRoute.get("/following", getFollowing);
-userRoute.get("/userChatInfo/:unique_id", userChatInfo);

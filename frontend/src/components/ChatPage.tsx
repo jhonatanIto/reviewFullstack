@@ -2,19 +2,28 @@ import { useParams } from "react-router-dom";
 import { useUser } from "../context/useUser";
 import { IoIosSend } from "react-icons/io";
 import { backend } from "../utils/fetchData";
+import { useEffect } from "react";
 
 const ChatPage = () => {
   const { user } = useUser();
   const { unique } = useParams();
-  console.log(unique);
 
   const getChatData = async () => {
     try {
       const res = await fetch(`${backend}/api/chat/info/${unique}`);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.message);
+      }
+
+      console.log(data);
     } catch (error) {
       console.error(error);
     }
   };
+  useEffect(() => {
+    getChatData();
+  }, []);
 
   return (
     <div className="w-full flex justify-center items-center">
