@@ -236,8 +236,6 @@ const Header = () => {
       const data = await res.json();
 
       if (!res.ok) throw new Error(data?.message);
-
-      console.log(data);
     } catch (error) {
       console.error(error);
     }

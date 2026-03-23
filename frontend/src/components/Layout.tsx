@@ -11,7 +11,9 @@ const Layout = () => {
   return (
     <div className="w-full  min-h-screen relative flex flex-col bg-zinc-900 z-0 overflow-x-hidden">
       <Header />
-      <Outlet />
+      <div className="flex-1 flex flex-col">
+        <Outlet />
+      </div>
       <Modal />
       {location.pathname === "/login" && <Login />}
       <Loading />

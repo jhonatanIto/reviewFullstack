@@ -1,9 +1,11 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../context/useUser";
 import { IoIosSend } from "react-icons/io";
 import { backend } from "../utils/fetchData";
 import { useEffect, useState } from "react";
 import userpic from "../images/user.png";
+import { timeAgo } from "../utils/calc";
+import { SlArrowLeft } from "react-icons/sl";
 
 interface friend {
   id: number;
@@ -26,14 +28,28 @@ interface Messages {
   id: number;
 }
 
+interface Chatlist {
+  chatId: number;
+  lastMessage: string;
+  lastMessageAt: string;
+  name: string;
+  picture: string;
+  unique_id: string;
+  unreadCount: string;
+  userId: number;
+}
+
 const ChatPage = () => {
   const { user, token } = useUser();
   const { unique } = useParams();
   const [chatData, setChatData] = useState<ChatData>();
+  const [chatList, setChatList] = useState<Chatlist[]>();
   const [friend, setFriend] = useState<friend | undefined>();
   const [messageList, setMessageList] = useState<Messages[]>([]);
   const [message, setMessage] = useState("");
-  console.log(messageList);
+  const [showChat, setShowChat] = useState(false);
+  const navigate = useNavigate();
+
   const getChatData = async () => {
     try {
       if (!token) return;
@@ -83,34 +99,79 @@ const ChatPage = () => {
     }
   };
 
+  const getChatList = async () => {
+    try {
+      if (!token) return;
+      const res = await fetch(`${backend}/api/chat/chatList`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message);
+      }
+
+      setChatList(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getChatList();
+  }, [token]);
+
   useEffect(() => {
     getChatData();
   }, [unique, token, user]);
 
   return (
-    <div className="w-full flex justify-center items-center">
-      <div className="bg-white flex h-[70vh] w-[60%] mt-20 rounded-2xl overflow-hidden">
-        <div className="w-[50%]">
-          <div className="flex hover:bg-zinc-100 p-3 cursor-pointer select-none transition-all duration-100">
-            <img
-              draggable={false}
-              src={user?.picture ?? userpic}
-              className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover cursor-pointer bg-zinc-600"
-            />
-            <div className="ml-3 min-w-0 flex flex-col justify-center">
-              <div className="font-semibold mb-1">{user?.name}</div>
-              <div className="flex">
-                <div className="text-[14px] truncate text-zinc-500">
-                  varias mensagens aqui de uma conversa
+    <div className="w-full md:h-full  flex md:justify-center md:items-center">
+      <div className="bg-white flex h-full  md:h-[70vh] w-full md:w-[60%] md:mt-20 md:rounded-2xl overflow-hidden">
+        <div
+          className={`${showChat ? "hidden md:block" : ""} md:w-[50%] w-full`}
+        >
+          {chatList?.map((c) => {
+            return (
+              <div
+                className="flex hover:bg-zinc-100 p-3 cursor-pointer select-none transition-all duration-100"
+                onClick={() => {
+                  navigate(`/chat/${c.unique_id}`);
+                  setShowChat(true);
+                }}
+              >
+                <img
+                  draggable={false}
+                  src={c?.picture ?? userpic}
+                  className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover cursor-pointer bg-zinc-600"
+                />
+                <div className="ml-3 min-w-0 flex flex-col justify-center">
+                  <div className="font-semibold mb-1">{c?.name}</div>
+                  <div className="flex">
+                    <div className="text-[14px] truncate text-zinc-500">
+                      {c.lastMessage}
+                    </div>
+                    <div className="ml-2 text-[14px] text-zinc-500">
+                      {c.lastMessageAt ? timeAgo(c.lastMessageAt) : ""}
+                    </div>
+                  </div>
                 </div>
-                <div className="ml-2 text-[14px] text-zinc-500">3h</div>
               </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
-        <div className="flex flex-col justify-between w-full  border-l border-zinc-300">
+        <div
+          className={`${!showChat ? "hidden" : ""}  md:flex flex-col justify-between w-full  border-l border-zinc-300`}
+        >
           <div className="border-b border-zinc-300 p-2">
             <div className="flex  items-center">
+              <SlArrowLeft
+                className="md:hidden mr-5 ml-3 text-2xl"
+                onClick={() => setShowChat(false)}
+              />
               <img
                 src={friend?.picture ?? userpic}
                 className="w-11 h-11 rounded-full object-cover cursor-pointer bg-zinc-600"
@@ -118,11 +179,11 @@ const ChatPage = () => {
               <div className="ml-3">{friend?.name}</div>
             </div>
           </div>
-          <div className="flex flex-col justify-between w-full  h-full p-4 border-zinc-300">
+          <div className="flex flex-col justify-between w-full h-[80vh] md:h-full p-4 border-zinc-300">
             <ul className="relative  h-full">
               {messageList.map((m) => (
                 <li
-                  className={`flex ${m.sender_id !== user?.id ? "justify-start" : "justify-end"}  items-center`}
+                  className={`flex ${m.sender_id !== user?.id ? "justify-start" : "justify-end"} mt-1 items-center`}
                 >
                   {m.sender_id !== user?.id && (
                     <img
