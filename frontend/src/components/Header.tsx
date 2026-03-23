@@ -10,7 +10,7 @@ import userpic from "../images/user.png";
 import { BsLightbulbFill } from "react-icons/bs";
 import { RxCross1 } from "react-icons/rx";
 import NotificationList from "./NotificationList";
-import { BsChatDotsFill } from "react-icons/bs";
+// import { BsChatDotsFill } from "react-icons/bs";
 
 type GalleryOption = "Watch list" | "Reviews";
 
