@@ -1,7 +1,8 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
 import { chats, chatUsers, messages, users } from "../db/schema.js";
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, ne, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 
 interface SendMessageBody {
   message: string;
@@ -126,6 +127,60 @@ export const sendMessage = async (req: Request, res: Response) => {
         created_at: postMessage.created_at,
       },
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const chatList = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const chatUsers2 = alias(chatUsers, "chatUsers2");
+
+    const result = await db
+      .select({
+        chatId: chats.id,
+        lastMessage: chats.last_message,
+        lastMessageAt: chats.last_message_at,
+
+        userId: users.id,
+        name: users.name,
+        picture: users.picture,
+        unique_id: users.unique_id,
+
+        unreadCount: sql<number>`
+        count(
+          case 
+            when ${messages.chat_id} = ${chats.id}
+            and ${messages.read_at} IS null
+            and ${messages.sender_id} != ${userId}
+            then 1
+            end
+        )`.as("unreadCount"),
+      })
+      .from(chatUsers)
+      .innerJoin(chats, eq(chatUsers.chat_id, chats.id))
+      .innerJoin(chatUsers2, eq(chatUsers.chat_id, chatUsers2.chat_id))
+      .innerJoin(users, eq(chatUsers2.user_id, users.id))
+
+      .leftJoin(messages, eq(messages.chat_id, chats.id))
+
+      .where(and(eq(chatUsers.user_id, userId), ne(users.id, userId)))
+      .groupBy(
+        chats.id,
+        users.id,
+        users.name,
+        users.picture,
+        users.unique_id,
+        chats.last_message,
+        chats.last_message_at,
+      )
+      .orderBy(desc(chats.last_message_at));
+
+    res.status(200).json(result);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

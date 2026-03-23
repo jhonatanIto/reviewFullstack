@@ -1,3 +1,4 @@
+import { boolean } from "drizzle-orm/gel-core";
 import {
   pgTable,
   serial,
@@ -252,12 +253,23 @@ export const messages = pgTable(
 
     content: text("content").notNull(),
 
+    read_at: timestamp("read_at", { withTimezone: true }),
+
     created_at: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
   (table) => [
-    index("messages_chat_created_idx").on(table.chat_id, table.created_at),
+    index("messages_chat_created_idx").on(
+      table.chat_id,
+      table.created_at.desc(),
+    ),
+
+    index("messages_unread_idx").on(
+      table.chat_id,
+      table.read_at,
+      table.created_at,
+    ),
     index("messages_sender_idx").on(table.sender_id),
   ],
 );

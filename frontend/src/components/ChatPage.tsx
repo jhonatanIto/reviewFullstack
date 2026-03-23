@@ -14,8 +14,16 @@ interface friend {
 
 interface ChatData {
   chatId: number;
-  messages: string[];
+  messages: Messages[];
   users: friend[];
+}
+
+interface Messages {
+  chat_id: number;
+  content: string;
+  created_at: string;
+  sender_id: number;
+  id: number;
 }
 
 const ChatPage = () => {
@@ -23,8 +31,9 @@ const ChatPage = () => {
   const { unique } = useParams();
   const [chatData, setChatData] = useState<ChatData>();
   const [friend, setFriend] = useState<friend | undefined>();
+  const [messageList, setMessageList] = useState<Messages[]>([]);
   const [message, setMessage] = useState("");
-
+  console.log(messageList);
   const getChatData = async () => {
     try {
       if (!token) return;
@@ -45,6 +54,7 @@ const ChatPage = () => {
       setFriend(() => {
         return data.users.find((u) => u.id !== user?.id);
       });
+      setMessageList(() => data.messages);
     } catch (error) {
       console.error(error);
     }
@@ -84,7 +94,7 @@ const ChatPage = () => {
           <div className="flex hover:bg-zinc-100 p-3 cursor-pointer select-none transition-all duration-100">
             <img
               draggable={false}
-              src={user?.picture}
+              src={user?.picture ?? userpic}
               className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover cursor-pointer bg-zinc-600"
             />
             <div className="ml-3 min-w-0 flex flex-col justify-center">
@@ -110,20 +120,24 @@ const ChatPage = () => {
           </div>
           <div className="flex flex-col justify-between w-full  h-full p-4 border-zinc-300">
             <ul className="relative  h-full">
-              <li className="flex justify-start  items-center">
-                <img
-                  src={friend?.picture ?? userpic}
-                  className="w-7 h-7 rounded-full object-cover cursor-pointer bg-zinc-600"
-                />
-                <p className="ml-3 bg-zinc-100 rounded-2xl p-1 pl-3 pr-4 flex items-center max-w-[60%]">
-                  some message here
-                </p>
-              </li>
-              <li className="flex justify-end">
-                <p className="ml-3 w-fit bg-blue-600 text-white rounded-2xl p-1 pl-3 pr-4 flex items-center max-w-[60%]">
-                  some message here
-                </p>
-              </li>
+              {messageList.map((m) => (
+                <li
+                  className={`flex ${m.sender_id !== user?.id ? "justify-start" : "justify-end"}  items-center`}
+                >
+                  {m.sender_id !== user?.id && (
+                    <img
+                      src={friend?.picture ?? userpic}
+                      className="w-7 h-7 rounded-full object-cover cursor-pointer bg-zinc-600"
+                    />
+                  )}
+                  <p
+                    className={`ml-3 ${m.sender_id !== user?.id ? "bg-zinc-100" : "bg-blue-600 text-white"}  rounded-2xl 
+                    p-1 pl-3 pr-4 flex items-center max-w-[60%]`}
+                  >
+                    {m.content}
+                  </p>
+                </li>
+              ))}
             </ul>
             <div className="relative w-full ">
               <input
@@ -132,6 +146,13 @@ const ChatPage = () => {
                 placeholder="Message..."
                 type="text"
                 className="w-full border border-zinc-300 rounded-2xl p-2 pr-13 outline-none h-13"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    sendMessage();
+                    setMessage("");
+                  }
+                }}
               />
               <IoIosSend
                 onClick={() => {
