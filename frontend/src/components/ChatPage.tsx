@@ -2,33 +2,80 @@ import { useParams } from "react-router-dom";
 import { useUser } from "../context/useUser";
 import { IoIosSend } from "react-icons/io";
 import { backend } from "../utils/fetchData";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import userpic from "../images/user.png";
+
+interface friend {
+  id: number;
+  name: string;
+  picture: string | null;
+  unique_id: string;
+}
+
+interface ChatData {
+  chatId: number;
+  messages: string[];
+  users: friend[];
+}
 
 const ChatPage = () => {
   const { user, token } = useUser();
   const { unique } = useParams();
+  const [chatData, setChatData] = useState<ChatData>();
+  const [friend, setFriend] = useState<friend | undefined>();
+  const [message, setMessage] = useState("");
 
   const getChatData = async () => {
     try {
       if (!token) return;
+      if (!unique) return;
       const res = await fetch(`${backend}/api/chat/info/${unique}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const data = await res.json();
       if (!res.ok) {
-        throw new Error(data?.message);
+        const error = await res.json();
+        throw new Error(error.message);
       }
+
+      const data: ChatData = await res.json();
+
+      setChatData(data);
+      setFriend(() => {
+        return data.users.find((u) => u.id !== user?.id);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const sendMessage = async () => {
+    try {
+      if (!token || !unique) return;
+
+      const res = await fetch(`${backend}/api/chat/sendMessage`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ message, chatId: chatData?.chatId }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message);
 
       console.log(data);
     } catch (error) {
       console.error(error);
     }
   };
+
   useEffect(() => {
     getChatData();
-  }, [unique]);
+  }, [unique, token, user]);
 
   return (
     <div className="w-full flex justify-center items-center">
@@ -55,17 +102,17 @@ const ChatPage = () => {
           <div className="border-b border-zinc-300 p-2">
             <div className="flex  items-center">
               <img
-                src={user?.picture}
+                src={friend?.picture ?? userpic}
                 className="w-11 h-11 rounded-full object-cover cursor-pointer bg-zinc-600"
               />
-              <div className="ml-3">{user?.name}</div>
+              <div className="ml-3">{friend?.name}</div>
             </div>
           </div>
           <div className="flex flex-col justify-between w-full  h-full p-4 border-zinc-300">
             <ul className="relative  h-full">
               <li className="flex justify-start  items-center">
                 <img
-                  src={user?.picture}
+                  src={friend?.picture ?? userpic}
                   className="w-7 h-7 rounded-full object-cover cursor-pointer bg-zinc-600"
                 />
                 <p className="ml-3 bg-zinc-100 rounded-2xl p-1 pl-3 pr-4 flex items-center max-w-[60%]">
@@ -80,11 +127,19 @@ const ChatPage = () => {
             </ul>
             <div className="relative w-full ">
               <input
+                onChange={(e) => setMessage(e.target.value)}
+                value={message}
                 placeholder="Message..."
                 type="text"
                 className="w-full border border-zinc-300 rounded-2xl p-2 pr-13 outline-none h-13"
               />
-              <IoIosSend className="absolute right-4 text-[30px] top-4 cursor-pointer hover:text-purple-500 text-purple-600" />
+              <IoIosSend
+                onClick={() => {
+                  sendMessage();
+                  setMessage("");
+                }}
+                className="absolute right-4 text-[30px] top-4 cursor-pointer hover:text-purple-500 text-purple-600"
+              />
             </div>
           </div>
         </div>

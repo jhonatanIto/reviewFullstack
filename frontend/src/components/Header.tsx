@@ -565,13 +565,13 @@ const Header = () => {
                   />
                 </div>
               )}
-              {user && (
+              {/* {user && (
                 <BsChatDotsFill
                   className={`ml-4 transition-all duration-150 cursor-pointer hover:text-red-400
                      ${location === "/chat" ? "text-red-400" : ""}`}
                   onClick={() => navigate("/chat")}
                 />
-              )}
+              )} */}
             </div>
           </div>
         </ul>
