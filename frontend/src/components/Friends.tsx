@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import userpic from "../images/user.png";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import {
@@ -44,6 +44,11 @@ const Friends = () => {
   const { token, setLoading, search, typeRef, displayInput, searchUserRes } =
     useUser();
   const navigate = useNavigate();
+
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const searchUsers = () => {
     fetch(
@@ -232,9 +237,28 @@ const Friends = () => {
           </div>
 
           <div
-            className="flex overflow-x-scroll no-scrollbar gap-4 pb-4"
+            ref={sliderRef}
+            className="flex overflow-x-scroll no-scrollbar gap-4 pb-4 select-none cursor-grab active:cursor-grabbing"
             onWheel={(e) => {
               e.currentTarget.scrollLeft += e.deltaY;
+            }}
+            onMouseDown={(e) => {
+              if (!sliderRef.current) return;
+              isDragging.current = true;
+              startX.current = e.pageX - sliderRef.current.offsetLeft;
+              scrollLeft.current = sliderRef.current.scrollLeft;
+            }}
+            onMouseLeave={() => (isDragging.current = false)}
+            onMouseUp={() => (isDragging.current = false)}
+            onMouseMove={(e) => {
+              if (!isDragging.current || !sliderRef.current) return;
+
+              e.preventDefault();
+
+              const x = e.pageX - sliderRef.current.offsetLeft;
+              const walk = (x - startX.current) * 1.5;
+
+              sliderRef.current.scrollLeft = scrollLeft.current - walk;
             }}
           >
             {followingCards.map((c) => {
@@ -245,12 +269,13 @@ const Friends = () => {
                 >
                   <Link to={`/friends/${c.id}`}>
                     <img
+                      draggable={false}
                       src={c.user_picture || userpic}
                       className="absolute w-12 h-12 md:w-20 md:h-20 rounded-full z-20 object-cover cursor-pointer bg-zinc-600"
                     />
                   </Link>
 
-                  <Link to={`/friends/${c.id}`}>
+                  <Link draggable={false} to={`/friends/${c.id}`}>
                     <div className="mt-4 md:mt-5 ml-3 mr-3 overflow-hidden relative group cursor-pointer shadow-black/60 shadow-[15px_0_15px_rgba(0,0,0,0.6)]">
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity p-2 absolute inset-0 bg-black/70 z-10 flex items-center flex-col backdrop-blur-[3px]">
                         <div className="text-xl md:text-2xl text-amber-600 flex items-center mt-3">
@@ -264,6 +289,7 @@ const Friends = () => {
                       </div>
 
                       <img
+                        draggable={false}
                         className="group-hover:scale-110 transition-transform duration-200"
                         src={c.poster}
                       />
