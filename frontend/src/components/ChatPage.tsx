@@ -5,12 +5,17 @@ import { backend } from "../utils/fetchData";
 import { useEffect } from "react";
 
 const ChatPage = () => {
-  const { user } = useUser();
+  const { user, token } = useUser();
   const { unique } = useParams();
 
   const getChatData = async () => {
     try {
-      const res = await fetch(`${backend}/api/chat/info/${unique}`);
+      if (!token) return;
+      const res = await fetch(`${backend}/api/chat/info/${unique}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data?.message);
@@ -23,7 +28,7 @@ const ChatPage = () => {
   };
   useEffect(() => {
     getChatData();
-  }, []);
+  }, [unique]);
 
   return (
     <div className="w-full flex justify-center items-center">

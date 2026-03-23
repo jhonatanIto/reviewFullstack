@@ -29,6 +29,6 @@ app.use("/api/watchlist", watchlistRouter);
 app.use("/api/users", userRoute);
 app.use("/api/googleAuth", googleRoute);
 app.use("/api/notification", notificationRoute);
-app.use("api/chat", chatRoute);
+app.use("/api/chat", chatRoute);
 
 app.listen(port, () => console.log("Server is running on port", port));
