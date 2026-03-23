@@ -7,6 +7,7 @@ import Login from "../components/Login";
 import Profile from "../components/Profile";
 import CardPage from "../components/CardPage";
 import VisitorPov from "../components/VisitorPov";
+import ChatPage from "../components/ChatPage";
 
 export const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
         path: "profile/:unique",
         element: <VisitorPov />,
         children: [{ path: ":id", element: <CardPage /> }],
+      },
+      {
+        path: "chat",
+        element: <ChatPage />,
       },
 
       {

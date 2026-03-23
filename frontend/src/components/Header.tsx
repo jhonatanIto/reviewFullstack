@@ -10,6 +10,8 @@ import userpic from "../images/user.png";
 import { BsLightbulbFill } from "react-icons/bs";
 import { RxCross1 } from "react-icons/rx";
 import NotificationList from "./NotificationList";
+import { BsChatDotsFill } from "react-icons/bs";
+import { DiVim } from "react-icons/di";
 
 type GalleryOption = "Watch list" | "Reviews";
 
@@ -535,32 +537,42 @@ const Header = () => {
                   <FaUser className="text-[24px]" />
                 )}
               </div>
-              <div
-                ref={notiRef}
-                className="md:flex hidden ml-5  transition-all duration-150 relative "
-              >
-                <BsLightbulbFill
-                  className={`cursor-pointer hover:text-yellow-500  ${showNoti ? "text-yellow-500" : ""}`}
-                  onClick={async () => {
-                    if (user) {
-                      setShowNoti((prev) => !prev);
-                      await markAllRead();
-                      await getNotification();
-                    } else {
-                      alert("Login to check notifications");
-                    }
-                  }}
-                />
-                <div className="absolute text-red-600 pointer-events-none text-[18px] right-2 bottom-0.5 font-bold">
-                  {notiCount > 0 ? notiCount : ""}
+              {user && (
+                <div
+                  ref={notiRef}
+                  className="md:flex hidden ml-5  transition-all duration-150 relative "
+                >
+                  <BsLightbulbFill
+                    className={`cursor-pointer hover:text-yellow-500 transition-all duration-150  
+                      ${showNoti ? "text-yellow-500" : ""}`}
+                    onClick={async () => {
+                      if (user) {
+                        setShowNoti((prev) => !prev);
+                        await markAllRead();
+                        await getNotification();
+                      } else {
+                        alert("Login to check notifications");
+                      }
+                    }}
+                  />
+                  <div className="absolute text-red-600 pointer-events-none text-[18px] right-2 bottom-0.5 font-bold">
+                    {notiCount > 0 ? notiCount : ""}
+                  </div>
+                  <NotificationList
+                    notiData={notiData}
+                    showNoti={showNoti}
+                    loadingNoti={loadingNoti}
+                    getNotification={getNotification}
+                  />
                 </div>
-                <NotificationList
-                  notiData={notiData}
-                  showNoti={showNoti}
-                  loadingNoti={loadingNoti}
-                  getNotification={getNotification}
+              )}
+              {user && (
+                <BsChatDotsFill
+                  className={`ml-4 transition-all duration-150 cursor-pointer hover:text-red-400
+                     ${location === "/chat" ? "text-red-400" : ""}`}
+                  onClick={() => navigate("/chat")}
                 />
-              </div>
+              )}
             </div>
           </div>
         </ul>
