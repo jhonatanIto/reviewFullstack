@@ -8,6 +8,17 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+@media (min-width: 768px) {
+  .no-scrollbar::-webkit-scrollbar {
+    display: block;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: auto;
+    scrollbar-width: auto;
+  }
+}
+
 /* scrollbar width */
 ::-webkit-scrollbar {
   height: 8px;
