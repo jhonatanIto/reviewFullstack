@@ -367,8 +367,12 @@ const Header = () => {
           </div>
           <div
             onClick={() => {
-              navigate("/reviews");
-              handleGalleryChange("Reviews");
+              if (user) {
+                navigate("/reviews");
+                handleGalleryChange("Reviews");
+              } else {
+                navigate("/login");
+              }
               setMenuOpen(false);
             }}
           >
@@ -376,8 +380,13 @@ const Header = () => {
           </div>
           <div
             onClick={() => {
-              navigate("/watchlist");
-              handleGalleryChange("Watch list");
+              if (user) {
+                navigate("/watchlist");
+                handleGalleryChange("Watch list");
+              } else {
+                navigate("/login");
+              }
+
               setMenuOpen(false);
             }}
           >
@@ -385,7 +394,12 @@ const Header = () => {
           </div>
           <div
             onClick={() => {
-              navigate("/friends");
+              if (user) {
+                navigate("/friends");
+              } else {
+                navigate("/login");
+              }
+
               setMenuOpen(false);
             }}
           >
@@ -394,7 +408,12 @@ const Header = () => {
           <div
             className="flex  items-center"
             onClick={() => {
-              setShowNoti(true);
+              if (user) {
+                setShowNoti(true);
+              } else {
+                navigate("/login");
+              }
+
               setMenuOpen(false);
             }}
           >
@@ -406,7 +425,12 @@ const Header = () => {
           <div
             className={`${!user ? "hidden" : ""}`}
             onClick={() => {
-              navigate("/chat");
+              if (user) {
+                navigate("/chat");
+              } else {
+                navigate("/login");
+              }
+
               setMenuOpen(false);
             }}
           >
