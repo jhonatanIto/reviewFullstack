@@ -29,7 +29,7 @@ interface Messages {
   id: number;
 }
 
-interface Chatlist {
+export interface Chatlist {
   chatId: number;
   lastMessage: string;
   lastMessageAt: string;
@@ -116,11 +116,13 @@ const ChatPage = () => {
         },
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
+        const data = await res.json();
         throw new Error(data.message);
       }
+
+      const data: Chatlist[] = await res.json();
+      console.log(data);
       const isUnread = data.some((d) => {
         const count = Number(d.unreadCount);
         return count > 0;

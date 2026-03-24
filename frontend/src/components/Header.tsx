@@ -12,6 +12,7 @@ import { RxCross1 } from "react-icons/rx";
 import NotificationList from "./NotificationList";
 import { BsChatDotsFill } from "react-icons/bs";
 import { GoDotFill } from "react-icons/go";
+import type { Chatlist } from "./ChatPage";
 
 type GalleryOption = "Watch list" | "Reviews";
 
@@ -115,11 +116,13 @@ const Header = () => {
         },
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
+        const data = await res.json();
         throw new Error(data.message);
       }
+
+      const data: Chatlist[] = await res.json();
+
       const isUnread = data.some((d) => {
         const count = Number(d.unreadCount);
         return count > 0;
