@@ -10,7 +10,8 @@ import userpic from "../images/user.png";
 import { BsLightbulbFill } from "react-icons/bs";
 import { RxCross1 } from "react-icons/rx";
 import NotificationList from "./NotificationList";
-// import { BsChatDotsFill } from "react-icons/bs";
+import { BsChatDotsFill } from "react-icons/bs";
+import { GoDotFill } from "react-icons/go";
 
 type GalleryOption = "Watch list" | "Reviews";
 
@@ -68,6 +69,7 @@ const Header = () => {
     token,
     notiData,
     setNotiData,
+    unread,
   } = useUser();
   const { setMovies } = useMovie();
 
@@ -563,13 +565,18 @@ const Header = () => {
                   />
                 </div>
               )}
-              {/* {user && (
-                <BsChatDotsFill
-                  className={`ml-4 transition-all duration-150 cursor-pointer hover:text-red-400
-                     ${location === "/chat" ? "text-red-400" : ""}`}
-                  onClick={() => navigate("/chat")}
-                />
-              )} */}
+              {user && (
+                <div className="relative">
+                  <BsChatDotsFill
+                    className={`ml-4 transition-all duration-150 cursor-pointer hover:text-red-400
+                     ${location.startsWith("/chat") ? "text-red-400" : ""}`}
+                    onClick={() => navigate("/chat")}
+                  />
+                  {unread && !location.startsWith("/chat") && (
+                    <GoDotFill className="absolute -right-3 text-[25px] text-red-500 -top-1" />
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </ul>

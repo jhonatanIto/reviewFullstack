@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { db } from "../db/db.js";
 import { chats, chatUsers, messages, users } from "../db/schema.js";
-import { and, desc, eq, inArray, ne, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, ne, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 interface SendMessageBody {
@@ -74,6 +74,17 @@ export const userChatInfo = async (req: Request, res: Response) => {
       .from(chatUsers)
       .innerJoin(users, eq(chatUsers.user_id, users.id))
       .where(eq(chatUsers.chat_id, chatId));
+
+    await db
+      .update(messages)
+      .set({ read_at: new Date() })
+      .where(
+        and(
+          eq(messages.chat_id, chatId),
+          ne(messages.sender_id, userId),
+          isNull(messages.read_at),
+        ),
+      );
 
     res
       .status(200)

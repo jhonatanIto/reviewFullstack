@@ -1,11 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../context/useUser";
 import { IoIosSend } from "react-icons/io";
-import { backend } from "../utils/fetchData";
+import { backend, getFollowing } from "../utils/fetchData";
 import { useEffect, useState } from "react";
 import userpic from "../images/user.png";
 import { timeAgo } from "../utils/calc";
 import { SlArrowLeft } from "react-icons/sl";
+import { GoDotFill } from "react-icons/go";
 
 interface friend {
   id: number;
@@ -35,12 +36,18 @@ interface Chatlist {
   name: string;
   picture: string;
   unique_id: string;
-  unreadCount: string;
+  unreadCount: number;
   userId: number;
+}
+interface Following {
+  name: string;
+  picture: string | null;
+  reviews: number;
+  unique_id: string;
 }
 
 const ChatPage = () => {
-  const { user, token } = useUser();
+  const { user, token, setUnread } = useUser();
   const { unique } = useParams();
   const [chatData, setChatData] = useState<ChatData>();
   const [chatList, setChatList] = useState<Chatlist[]>();
@@ -48,6 +55,7 @@ const ChatPage = () => {
   const [messageList, setMessageList] = useState<Messages[]>([]);
   const [message, setMessage] = useState("");
   const [showChat, setShowChat] = useState(false);
+  const [following, setFollowing] = useState<Following[]>([]);
   const navigate = useNavigate();
 
   const getChatData = async () => {
@@ -113,7 +121,11 @@ const ChatPage = () => {
       if (!res.ok) {
         throw new Error(data.message);
       }
-
+      const isUnread = data.some((d) => {
+        const count = Number(d.unreadCount);
+        return count > 0;
+      });
+      setUnread(isUnread);
       setChatList(data);
     } catch (error) {
       console.error(error);
@@ -128,16 +140,25 @@ const ChatPage = () => {
     getChatData();
   }, [unique, token, user]);
 
+  useEffect(() => {
+    const fetchFollowing = async () => {
+      if (!token) return;
+      const data = await getFollowing(token);
+      setFollowing(data.following);
+    };
+    fetchFollowing();
+  }, [token]);
+
   return (
     <div className="w-full md:h-full  flex md:justify-center md:items-center">
       <div className="bg-white flex h-full  md:h-[70vh] w-full md:w-[60%] md:mt-20 md:rounded-2xl overflow-hidden">
         <div
-          className={`${showChat ? "hidden md:block" : ""} md:w-[50%] w-full`}
+          className={`${showChat ? "hidden md:block" : ""} md:w-[50%] w-full overflow-y-scroll no-scrollbar `}
         >
           {chatList?.map((c) => {
             return (
               <div
-                className="flex hover:bg-zinc-100 p-3 cursor-pointer select-none transition-all duration-100"
+                className="flex hover:bg-zinc-100 p-3  cursor-pointer select-none transition-all duration-100"
                 onClick={() => {
                   navigate(`/chat/${c.unique_id}`);
                   setShowChat(true);
@@ -151,7 +172,9 @@ const ChatPage = () => {
                 <div className="ml-3 min-w-0 flex flex-col justify-center">
                   <div className="font-semibold mb-1">{c?.name}</div>
                   <div className="flex">
-                    <div className="text-[14px] truncate text-zinc-500">
+                    <div
+                      className={`text-[14px] truncate  ${c.unreadCount > 0 ? "font-semibold text-black" : "text-zinc-500"}`}
+                    >
                       {c.lastMessage}
                     </div>
                     <div className="ml-2 text-[14px] text-zinc-500">
@@ -159,14 +182,47 @@ const ChatPage = () => {
                     </div>
                   </div>
                 </div>
+                {c.unreadCount > 0 && (
+                  <div className=" flex  items-center ml-auto text-red-600 font-semibold">
+                    <GoDotFill />
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
+
         <div
-          className={`${!showChat ? "hidden" : ""}  md:flex flex-col justify-between w-full  border-l border-zinc-300`}
+          className={`${!showChat ? "hidden" : ""} ${!unique ? "items-center " : "justify-between"}   md:flex flex-col  w-full
+            border-l border-zinc-300`}
         >
-          <div className="border-b border-zinc-300 p-2">
+          <div className={`${unique ? "hidden" : ""}`}>
+            <div className="text-2xl mt-20">Send a message to a friend</div>
+            <div className="flex justify-start mt-3">Suggested:</div>
+            <div className="overflow-scroll">
+              {following?.map((f) => {
+                return (
+                  <div
+                    key={f.unique_id}
+                    className="mt-3 flex hover:bg-zinc-100 p-2 cursor-pointer"
+                    onClick={() => navigate(`/chat/${f.unique_id}`)}
+                  >
+                    <img
+                      src={f.picture ?? userpic}
+                      className="w-11 h-11 rounded-full object-cover cursor-pointer bg-zinc-600"
+                    />
+                    <div className="ml-3 flex items-center font-semibold">
+                      {f.name}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div
+            className={`border-b border-zinc-300 p-2 ${!unique ? "hidden" : ""}`}
+          >
             <div className="flex  items-center">
               <SlArrowLeft
                 className="md:hidden mr-5 ml-3 text-2xl"
@@ -175,11 +231,14 @@ const ChatPage = () => {
               <img
                 src={friend?.picture ?? userpic}
                 className="w-11 h-11 rounded-full object-cover cursor-pointer bg-zinc-600"
+                onClick={() => navigate(`/profile/${friend?.unique_id}`)}
               />
               <div className="ml-3">{friend?.name}</div>
             </div>
           </div>
-          <div className="flex flex-col justify-between w-full h-[80vh] md:h-full p-4 border-zinc-300">
+          <div
+            className={`${!unique ? "hidden" : ""} flex flex-col justify-between w-full h-[80vh] md:h-full p-4 border-zinc-300`}
+          >
             <ul className="relative  h-full">
               {messageList.map((m) => (
                 <li
@@ -200,7 +259,7 @@ const ChatPage = () => {
                 </li>
               ))}
             </ul>
-            <div className="relative w-full ">
+            <div className={`relative w-full ${!unique ? "hidden" : ""}`}>
               <input
                 onChange={(e) => setMessage(e.target.value)}
                 value={message}

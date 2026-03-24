@@ -32,6 +32,8 @@ interface UserContextType {
   setDisplayInput: React.Dispatch<React.SetStateAction<boolean>>;
   notiData: Notification[];
   setNotiData: React.Dispatch<React.SetStateAction<Notification[]>>;
+  unread: boolean;
+  setUnread: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface Cards {

@@ -19,6 +19,7 @@ const UserProvider = ({ children }: Props) => {
   const [displayInput, setDisplayInput] = useState<boolean>(false);
   const typeRef = useRef<HTMLDivElement>(null);
   const searchUserRes = useRef<HTMLDivElement>(null);
+  const [unread, setUnread] = useState<boolean>(false);
 
   const [notiData, setNotiData] = useState<Notification[]>([]);
 
@@ -115,6 +116,8 @@ const UserProvider = ({ children }: Props) => {
         searchUserRes,
         setNotiData,
         notiData,
+        unread,
+        setUnread,
       }}
     >
       {children}
