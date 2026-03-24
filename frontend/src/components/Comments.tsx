@@ -136,11 +136,18 @@ const Comments = ({
         />
         <div className="  flex items-center w-full justify-between ml-3 ">
           <input
+            disabled={sending}
             value={comment}
             type="text"
             placeholder="Add a comment"
             className="w-full outline-none"
             onChange={(e) => setComment(e.target.value)}
+            onKeyDown={async (e) => {
+              if (e.key === "Enter") {
+                await postComment();
+                await fetchCommentsLogged();
+              }
+            }}
           />
           <button
             disabled={sending}
