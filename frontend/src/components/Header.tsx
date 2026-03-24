@@ -70,6 +70,7 @@ const Header = () => {
     notiData,
     setNotiData,
     unread,
+    setUnread,
   } = useUser();
   const { setMovies } = useMovie();
 
@@ -104,6 +105,34 @@ const Header = () => {
       setLoadingNoti(false);
     }
   };
+
+  const getChatList = async () => {
+    try {
+      if (!token) return;
+      const res = await fetch(`${backend}/api/chat/chatList`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message);
+      }
+      const isUnread = data.some((d) => {
+        const count = Number(d.unreadCount);
+        return count > 0;
+      });
+      setUnread(isUnread);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getChatList();
+  }, [token]);
 
   useEffect(() => {
     if (!token) return;
@@ -566,11 +595,13 @@ const Header = () => {
                 </div>
               )}
               {user && (
-                <div className="relative">
+                <div
+                  className="relative cursor-pointer group"
+                  onClick={() => navigate("/chat")}
+                >
                   <BsChatDotsFill
-                    className={`ml-4 transition-all duration-150 cursor-pointer hover:text-red-400
+                    className={`ml-4 transition-all duration-150  group-hover:text-red-400
                      ${location.startsWith("/chat") ? "text-red-400" : ""}`}
-                    onClick={() => navigate("/chat")}
                   />
                   {unread && !location.startsWith("/chat") && (
                     <GoDotFill className="absolute -right-3 text-[25px] text-red-500 -top-1" />
