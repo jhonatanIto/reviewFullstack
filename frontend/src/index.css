@@ -8,6 +8,13 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+.no-scrollbarChat {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbarChat::-webkit-scrollbar {
+  display: none;
+}
 @media (min-width: 768px) {
   .no-scrollbar::-webkit-scrollbar {
     display: block;

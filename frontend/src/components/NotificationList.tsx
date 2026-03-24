@@ -28,7 +28,7 @@ const NotificationList = ({
        rounded-2xl text-[15px] p-2 max-h-120  overflow-scroll no-scrollbar `}
     >
       {notiData.length === 0 && (
-        <div className="p-2">Your notifications will appear here.</div>
+        <div className="p-2">No notifications yet.</div>
       )}
       {notiData.map((n) => (
         <div className="mt-2 flex items-center">

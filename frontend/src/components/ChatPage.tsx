@@ -149,12 +149,26 @@ const ChatPage = () => {
     fetchFollowing();
   }, [token]);
 
+  useEffect(() => {
+    if (unique) {
+      setShowChat(true);
+    } else {
+      setShowChat(false);
+    }
+  }, [unique]);
+
   return (
     <div className="w-full md:h-full  flex md:justify-center md:items-center">
       <div className="bg-white flex h-full  md:h-[70vh] w-full md:w-[60%] md:mt-20 md:rounded-2xl overflow-hidden">
         <div
-          className={`${showChat ? "hidden md:block" : ""} md:w-[50%] w-full overflow-y-scroll no-scrollbar `}
+          className={`${showChat ? "hidden md:block" : ""} md:w-[50%] w-full overflow-y-scroll no-scrollbarChat  `}
         >
+          {" "}
+          {chatList?.length === 0 && (
+            <div className="text-2xl text-center bg-zinc-900 text-white md:bg-white md:text-black md:mt-10">
+              Your Chat list will appear here
+            </div>
+          )}
           {chatList?.map((c) => {
             return (
               <div
@@ -197,27 +211,36 @@ const ChatPage = () => {
             border-l border-zinc-300`}
         >
           <div className={`${unique ? "hidden" : ""}`}>
-            <div className="text-2xl mt-20">Send a message to a friend</div>
-            <div className="flex justify-start mt-3">Suggested:</div>
-            <div className="overflow-scroll">
-              {following?.map((f) => {
-                return (
-                  <div
-                    key={f.unique_id}
-                    className="mt-3 flex hover:bg-zinc-100 p-2 cursor-pointer"
-                    onClick={() => navigate(`/chat/${f.unique_id}`)}
-                  >
-                    <img
-                      src={f.picture ?? userpic}
-                      className="w-11 h-11 rounded-full object-cover cursor-pointer bg-zinc-600"
-                    />
-                    <div className="ml-3 flex items-center font-semibold">
-                      {f.name}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            {following?.length === 0 && (
+              <div className="mt-20 text-2xl">
+                Chat will appear here after you send or receive a message
+              </div>
+            )}
+            {following.length > 0 && (
+              <div>
+                <div className="text-2xl mt-20">Send a message to a friend</div>
+                <div className="flex justify-start mt-3">Suggested:</div>
+                <div className="overflow-scroll">
+                  {following?.map((f) => {
+                    return (
+                      <div
+                        key={f.unique_id}
+                        className="mt-3 flex hover:bg-zinc-100 p-2 cursor-pointer"
+                        onClick={() => navigate(`/chat/${f.unique_id}`)}
+                      >
+                        <img
+                          src={f.picture ?? userpic}
+                          className="w-11 h-11 rounded-full object-cover cursor-pointer bg-zinc-600"
+                        />
+                        <div className="ml-3 flex items-center font-semibold">
+                          {f.name}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           <div
@@ -239,7 +262,7 @@ const ChatPage = () => {
           <div
             className={`${!unique ? "hidden" : ""} flex flex-col justify-between w-full h-[80vh] md:h-full p-4 border-zinc-300`}
           >
-            <ul className="relative  h-full">
+            <ul className="relative  h-full overflow-y-scroll no-scrollbarChat">
               {messageList.map((m) => (
                 <li
                   className={`flex ${m.sender_id !== user?.id ? "justify-start" : "justify-end"} mt-1 items-center`}
