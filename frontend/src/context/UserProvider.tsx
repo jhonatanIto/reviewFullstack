@@ -95,20 +95,20 @@ const UserProvider = ({ children }: Props) => {
   }, [token]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
 
-    const handleConnect = () => {
-      socket.emit("join_user", user.id);
+    const registerUser = () => {
+      socket.emit("register", user.id);
     };
 
     if (socket.connected) {
-      socket.emit("join_user", user.id);
+      registerUser();
     }
 
-    socket.on("connect", handleConnect);
+    socket.on("connect", registerUser);
 
     return () => {
-      socket.off("connect", handleConnect);
+      socket.off("connect", registerUser);
     };
   }, [user]);
 
