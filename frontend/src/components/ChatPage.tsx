@@ -373,9 +373,9 @@ const ChatPage = () => {
             </div>
           </div>
           <div
-            className={`${!unique ? "hidden" : ""} flex flex-col justify-between w-full h-[80vh] md:h-full p-4 border-zinc-300`}
+            className={`${!unique ? "hidden" : ""} flex flex-col w-full h-[80vh] md:h-[70vh] p-4 border-zinc-300 min-h-0`}
           >
-            <ul className="relative  h-full overflow-y-scroll no-scrollbarChat">
+            <ul className="flex-1 overflow-y-auto no-scrollbarChat">
               {messageList.map((m) => (
                 <li
                   key={m.id}
@@ -397,7 +397,7 @@ const ChatPage = () => {
               ))}
               <div ref={bottomRef} />
             </ul>
-            <div className={`relative w-full ${!unique ? "hidden" : ""}`}>
+            <div className={`relative w-full  ${!unique ? "hidden" : ""}`}>
               <input
                 onChange={(e) => setMessage(e.target.value)}
                 value={message}

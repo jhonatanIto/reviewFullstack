@@ -101,9 +101,7 @@ const UserProvider = ({ children }: Props) => {
       socket.emit("register", user.id);
     };
 
-    if (socket.connected) {
-      registerUser();
-    }
+    registerUser();
 
     socket.on("connect", registerUser);
 
