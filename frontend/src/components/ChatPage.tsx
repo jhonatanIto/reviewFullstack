@@ -379,7 +379,7 @@ const ChatPage = () => {
               {messageList.map((m) => (
                 <li
                   key={m.id}
-                  className={`flex ${m.sender_id !== user?.id ? "justify-start" : "justify-end"} mt-1 items-center`}
+                  className={`flex ${m.sender_id !== user?.id ? "justify-start" : "justify-end"} mt-1 mb-2 items-center`}
                 >
                   {m.sender_id !== user?.id && (
                     <img
