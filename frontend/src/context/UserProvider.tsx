@@ -3,6 +3,7 @@ import { UserContext, type Cards, type User } from "./UserContext";
 import { getCards, getWatchCards } from "../utils/fetchData";
 import { backend } from "../utils/fetchData";
 import type { Notification } from "../components/Header";
+import { socket } from "../utils/socket";
 
 interface Props {
   children: ReactNode;
@@ -92,6 +93,24 @@ const UserProvider = ({ children }: Props) => {
     loadCards();
     isTokenValid();
   }, [token]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const handleConnect = () => {
+      socket.emit("join_user", user.id);
+    };
+
+    if (socket.connected) {
+      socket.emit("join_user", user.id);
+    }
+
+    socket.on("connect", handleConnect);
+
+    return () => {
+      socket.off("connect", handleConnect);
+    };
+  }, [user]);
 
   return (
     <UserContext.Provider

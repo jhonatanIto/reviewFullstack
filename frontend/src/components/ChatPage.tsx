@@ -2,23 +2,20 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../context/useUser";
 import { IoIosSend } from "react-icons/io";
 import { backend, getFollowing } from "../utils/fetchData";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import userpic from "../images/user.png";
 import { timeAgo } from "../utils/calc";
 import { SlArrowLeft } from "react-icons/sl";
 import { GoDotFill } from "react-icons/go";
+import { socket } from "../utils/socket";
+import useNotification from "../hooks/useNotification";
+//import { BsChatRightDots } from "react-icons/bs";
 
-interface friend {
+interface Friend {
   id: number;
   name: string;
   picture: string | null;
   unique_id: string;
-}
-
-interface ChatData {
-  chatId: number;
-  messages: Messages[];
-  users: friend[];
 }
 
 interface Messages {
@@ -26,7 +23,8 @@ interface Messages {
   content: string;
   created_at: string;
   sender_id: number;
-  id: number;
+  read_at: string;
+  id: number | string;
 }
 
 export interface Chatlist {
@@ -49,61 +47,63 @@ interface Following {
 const ChatPage = () => {
   const { user, token, setUnread } = useUser();
   const { unique } = useParams();
-  const [chatData, setChatData] = useState<ChatData>();
   const [chatList, setChatList] = useState<Chatlist[]>();
-  const [friend, setFriend] = useState<friend | undefined>();
+  const [friend, setFriend] = useState<Friend | undefined>();
   const [messageList, setMessageList] = useState<Messages[]>([]);
   const [message, setMessage] = useState("");
   const [showChat, setShowChat] = useState(false);
   const [following, setFollowing] = useState<Following[]>([]);
+  const [chatId, setChatId] = useState(0);
   const navigate = useNavigate();
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const { errorNotification } = useNotification();
 
-  const getChatData = async () => {
+  const handleSend = async () => {
+    if (!message.trim()) return;
+    if (!user?.id) return;
+
+    const msg = message;
+    const tempId = `temp-${Date.now()}`;
+
+    const tempMessage = {
+      id: tempId,
+      content: msg,
+      sender_id: user.id,
+      chat_id: chatId,
+      created_at: new Date().toISOString(),
+      read_at: "",
+    };
+
+    setMessageList((prev) => [...prev, tempMessage as Messages]);
+    setMessage("");
+
     try {
-      if (!token) return;
-      if (!unique) return;
-      const res = await fetch(`${backend}/api/chat/info/${unique}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message);
-      }
-
-      const data: ChatData = await res.json();
-
-      setChatData(data);
-      setFriend(() => {
-        return data.users.find((u) => u.id !== user?.id);
-      });
-      setMessageList(() => data.messages);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const sendMessage = async () => {
-    try {
-      if (!token || !unique) return;
-
-      const res = await fetch(`${backend}/api/chat/sendMessage`, {
+      await fetch(`${backend}/api/chat/sendMessage`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ message, chatId: chatData?.chatId }),
+        body: JSON.stringify({ message: msg, chatId }),
       });
 
-      const data = await res.json();
+      setChatList((prev) => {
+        if (!prev) return prev;
 
-      if (!res.ok) throw new Error(data.message);
-
-      console.log(data);
+        return prev?.map((chat) =>
+          chat.chatId === chatId
+            ? {
+                ...chat,
+                lastMessage: msg,
+                lastMessageAt: new Date().toISOString(),
+              }
+            : chat,
+        );
+      });
     } catch (error) {
       console.error(error);
+      errorNotification("Couldn't send message");
+      setMessageList((prev) => prev.filter((m) => m.id !== tempId));
     }
   };
 
@@ -122,15 +122,14 @@ const ChatPage = () => {
       }
 
       const data: Chatlist[] = await res.json();
-      console.log(data);
       const isUnread = data.some((d) => {
         const count = Number(d.unreadCount);
         return count > 0;
       });
       setUnread(isUnread);
       setChatList(data);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -139,7 +138,46 @@ const ChatPage = () => {
   }, [token]);
 
   useEffect(() => {
+    let isActive = true;
+
+    const getChatData = async () => {
+      try {
+        if (!token) return;
+        if (!unique) return;
+        const res = await fetch(`${backend}/api/chat/info/${unique}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message);
+        }
+        if (!isActive) return;
+
+        setChatId(data.chatId);
+        setFriend(() => {
+          return data.users.find((u: Friend) => u.id !== user?.id);
+        });
+        setMessageList(() =>
+          data.messages.sort(
+            (a: Messages, b: Messages) =>
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime(),
+          ),
+        );
+      } catch (error) {
+        console.error(error);
+        errorNotification("Failed to load chat");
+      }
+    };
     getChatData();
+
+    return () => {
+      isActive = false;
+    };
   }, [unique, token, user]);
 
   useEffect(() => {
@@ -159,6 +197,78 @@ const ChatPage = () => {
     }
   }, [unique]);
 
+  useEffect(() => {
+    const handleNewMessage = (msg: Messages) => {
+      if (msg.chat_id !== chatId) return;
+
+      setMessageList((prev) => {
+        const filtered = prev.filter(
+          (m) =>
+            !(
+              typeof m.id === "string" &&
+              m.id.startsWith("temp-") &&
+              m.content === msg.content &&
+              m.sender_id === msg.sender_id
+            ),
+        );
+
+        const exists = filtered.some((m) => m.id === msg.id);
+        if (exists) return filtered;
+        return [...filtered, msg];
+      });
+    };
+
+    socket.on("new_message", handleNewMessage);
+
+    return () => {
+      socket.off("new_message", handleNewMessage);
+    };
+  }, [chatId]);
+
+  useEffect(() => {
+    if (!chatId) return;
+
+    socket.emit("join_chat", chatId);
+
+    return () => {
+      socket.emit("leave_chat", chatId);
+    };
+  }, [chatId]);
+
+  useEffect(() => {
+    const handleChatUpdated = (data: {
+      chatId: number;
+      lastMessage: string;
+      lastMessageAt: string;
+    }) => {
+      setChatList((prev) =>
+        prev?.map((chat) =>
+          chat.chatId === data.chatId
+            ? {
+                ...chat,
+                lastMessage: data.lastMessage,
+                lastMessageAt: data.lastMessageAt,
+              }
+            : chat,
+        ),
+      );
+    };
+
+    socket.on("chat_updated", handleChatUpdated);
+
+    return () => {
+      socket.off("chat_updated", handleChatUpdated);
+    };
+  }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
+
+    return () => clearTimeout(timeout);
+  }, [messageList]);
+
   return (
     <div className="w-full md:h-full  flex md:justify-center md:items-center">
       <div className="bg-white flex h-full  md:h-[70vh] w-full md:w-[60%] md:mt-20 md:rounded-2xl overflow-hidden">
@@ -174,6 +284,7 @@ const ChatPage = () => {
           {chatList?.map((c) => {
             return (
               <div
+                key={c.chatId}
                 className="flex hover:bg-zinc-100 p-3  cursor-pointer select-none transition-all duration-100"
                 onClick={() => {
                   navigate(`/chat/${c.unique_id}`);
@@ -267,6 +378,7 @@ const ChatPage = () => {
             <ul className="relative  h-full overflow-y-scroll no-scrollbarChat">
               {messageList.map((m) => (
                 <li
+                  key={m.id}
                   className={`flex ${m.sender_id !== user?.id ? "justify-start" : "justify-end"} mt-1 items-center`}
                 >
                   {m.sender_id !== user?.id && (
@@ -283,6 +395,7 @@ const ChatPage = () => {
                   </p>
                 </li>
               ))}
+              <div ref={bottomRef} />
             </ul>
             <div className={`relative w-full ${!unique ? "hidden" : ""}`}>
               <input
@@ -294,17 +407,15 @@ const ChatPage = () => {
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    sendMessage();
-                    setMessage("");
+                    handleSend();
                   }
                 }}
               />
               <IoIosSend
                 onClick={() => {
-                  sendMessage();
-                  setMessage("");
+                  handleSend();
                 }}
-                className="absolute right-4 text-[30px] top-4 cursor-pointer hover:text-purple-500 text-purple-600"
+                className={`absolute right-4 text-[30px] top-4 cursor-pointer hover:text-purple-500 text-purple-600 ${!message.trim() ? "opacity-50 pointer-events-none" : ""}`}
               />
             </div>
           </div>

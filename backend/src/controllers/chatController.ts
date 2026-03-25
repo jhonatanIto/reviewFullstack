@@ -3,6 +3,7 @@ import { db } from "../db/db.js";
 import { chats, chatUsers, messages, users } from "../db/schema.js";
 import { and, desc, eq, inArray, isNull, ne, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
+import { getIO } from "../socket/index.js";
 
 interface SendMessageBody {
   message: string;
@@ -105,12 +106,16 @@ export const sendMessage = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Message or Chat id missing" });
     }
 
-    const isUserInChat = await db
-      .select({ id: chatUsers.chat_id })
-      .from(chatUsers)
-      .where(and(eq(chatUsers.chat_id, chatId), eq(chatUsers.user_id, userId)));
+    const now = new Date();
 
-    if (!isUserInChat.length) {
+    const usersInChat = await db
+      .select({ user_id: chatUsers.user_id })
+      .from(chatUsers)
+      .where(eq(chatUsers.chat_id, chatId));
+
+    const isUserInChat = usersInChat.some((u) => u.user_id === userId);
+
+    if (!isUserInChat) {
       return res.status(403).json({ message: "Not part of this chat" });
     }
 
@@ -125,8 +130,34 @@ export const sendMessage = async (req: Request, res: Response) => {
 
     await db
       .update(chats)
-      .set({ last_message: message, last_message_at: new Date() })
+      .set({ last_message: message, last_message_at: now })
       .where(eq(chats.id, chatId));
+
+    await db
+      .update(chatUsers)
+      .set({
+        unread_count: sql`${chatUsers.unread_count} + 1`,
+      })
+      .where(and(eq(chatUsers.chat_id, chatId), ne(chatUsers.user_id, userId)));
+
+    const io = getIO();
+
+    io.to(`chat:${chatId}`).emit("new_message", {
+      id: postMessage.id,
+      content: postMessage.content,
+      sender_id: postMessage.sender_id,
+      chat_id: postMessage.chat_id,
+      created_at: postMessage.created_at,
+    });
+
+    usersInChat.forEach((u) => {
+      io.to(`user:${u.user_id}`).emit("chat_updated", {
+        chatId,
+        lastMessage: message,
+        lastMessageAt: now,
+        senderId: userId,
+      });
+    });
 
     res.status(201).json({
       status: "Message sent",
