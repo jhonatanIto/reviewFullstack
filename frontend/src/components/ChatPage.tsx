@@ -250,8 +250,11 @@ const ChatPage = () => {
           const isOpen = data.chatId === chatId;
           const ownMessage = data.senderId === user?.id;
 
-          console.log("userid: ", typeof user?.id);
-          console.log("senderid: ", typeof data.senderId);
+          console.log("userid: ", user?.id);
+          console.log("senderid: ", data.senderId);
+
+          console.log("chatid: ", chatId);
+          console.log("datachat: ", data.chatId);
           return {
             ...chat,
             lastMessage: data.lastMessage,
@@ -270,7 +273,7 @@ const ChatPage = () => {
     return () => {
       socket.off("chat_updated", handleChatUpdated);
     };
-  }, [chatId, user?.id]);
+  }, [user?.id, chatId]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
