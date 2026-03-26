@@ -249,9 +249,9 @@ const ChatPage = () => {
 
           const isOpen = data.chatId === chatId;
           const ownMessage = data.senderId === user?.id;
-          console.log("ownMessage", ownMessage);
-          console.log("same chat", isOpen);
 
+          console.log("userid: ", typeof user?.id);
+          console.log("senderid: ", typeof data.senderId);
           return {
             ...chat,
             lastMessage: data.lastMessage,
@@ -270,7 +270,7 @@ const ChatPage = () => {
     return () => {
       socket.off("chat_updated", handleChatUpdated);
     };
-  }, []);
+  }, [chatId, user?.id]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
