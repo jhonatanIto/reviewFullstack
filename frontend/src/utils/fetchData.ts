@@ -135,7 +135,7 @@ export const toggleFollow = async (unique: string, token: string) => {
       console.log(data?.message);
       return;
     }
-    console.log(data);
+
     return data;
   } catch (error) {
     console.log(error);

@@ -187,7 +187,6 @@ const CardPage = () => {
       if (!res.ok) return console.log(data?.message);
 
       setCommentSection(data.commentSection);
-      console.log(data);
     } catch (error) {
       console.error(error);
     }

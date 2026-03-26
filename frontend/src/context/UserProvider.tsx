@@ -98,7 +98,6 @@ const UserProvider = ({ children }: Props) => {
     if (!user?.id) return;
 
     const handleConnect = () => {
-      console.log("socket connected, registering user:", user.id);
       socket.emit("register", user.id);
     };
 

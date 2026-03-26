@@ -135,7 +135,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     getChatList();
-  }, [token]);
+  }, [token, chatId]);
 
   useEffect(() => {
     let isActive = true;
@@ -240,18 +240,26 @@ const ChatPage = () => {
       chatId: number;
       lastMessage: string;
       lastMessageAt: string;
+      senderId: number;
     }) => {
-      setChatList((prev) =>
-        prev?.map((chat) =>
-          chat.chatId === data.chatId
-            ? {
-                ...chat,
-                lastMessage: data.lastMessage,
-                lastMessageAt: data.lastMessageAt,
-              }
-            : chat,
-        ),
-      );
+      setChatList((prev) => {
+        return prev?.map((chat) => {
+          if (chat.chatId !== data.chatId) return chat;
+
+          const isOpen = data.chatId === chatId;
+          const ownMessage = data.senderId === user?.id;
+
+          return {
+            ...chat,
+            lastMessage: data.lastMessage,
+            lastMessageAt: data.lastMessageAt,
+            unreadCount:
+              !isOpen && !ownMessage
+                ? (chat.unreadCount ?? 0) + 1
+                : chat.unreadCount,
+          };
+        });
+      });
     };
 
     socket.on("chat_updated", handleChatUpdated);
