@@ -3,20 +3,21 @@ import { useUser } from "../context/useUser";
 import useNotification from "../hooks/useNotification";
 import { useMovie } from "../context/useMovie";
 import { PiTrashLight } from "react-icons/pi";
-import { backend, deleteWatchCard } from "../utils/fetchData";
+import { backend, deleteWatchCard, homePageCards } from "../utils/fetchData";
 import userpic from "../images/user.png";
 import noImg from "../images/noImage.png";
 import { IoStar } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import type { Cards } from "../context/UserContext";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface Middle {
   feedCards: Cards[];
+  setFeedCards: React.Dispatch<React.SetStateAction<Cards[]>>;
 }
 
-const Middle = ({ feedCards }: Middle) => {
+const Middle = ({ feedCards, setFeedCards }: Middle) => {
   const { token } = useUser();
   const { errorNotification, successNotification } = useNotification();
   const {
@@ -35,7 +36,7 @@ const Middle = ({ feedCards }: Middle) => {
     setMovieId,
     setModal,
   } = useMovie();
-
+  console.log(movieId);
   const { watchlist, loadCards, setLoading } = useUser();
 
   const isDragging = useRef(false);
@@ -98,6 +99,31 @@ const Middle = ({ feedCards }: Middle) => {
 
   const navigate = useNavigate();
 
+  const getFeed = async () => {
+    const data = await homePageCards();
+    setFeedCards(data || []);
+  };
+
+  useEffect(() => {
+    getFeed();
+  }, []);
+
+  const currentReviews = useRef(0);
+
+  const displayReviews = async () => {
+    if (!movieId) return;
+    try {
+      const res = await fetch(`${backend}/api/cards/movieReviews/${movieId}`);
+      const data = await res.json();
+      if (!res.ok) return console.log(data?.message);
+
+      currentReviews.current = movieId;
+      setFeedCards(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="text-white px-[5%]  mt-8 md:mt-10 flex flex-col md:flex-row justify-between ">
       <div className="w-full md:w-auto ">
@@ -115,11 +141,25 @@ const Middle = ({ feedCards }: Middle) => {
 
         <div className="flex flex-col sm:flex-row mt-8 md:mt-10 items-start sm:items-center gap-4">
           <button
-            className="w-full sm:w-auto bg-purple-500 py-2 px-6 cursor-pointer duration-200 z-20
-            text-[18px] md:text-[20px] rounded-[10px] text-black font-semibold hover:text-white hover:bg-purple-600 transition-all"
+            className="w-full sm:w-auto bg-linear-to-l from-purple-600 to-purple-700 py-2 px-6 cursor-pointer duration-200 z-20
+            text-[18px] md:text-[20px] rounded-[10px] text-white  hover:text-white hover:from-purple-500 transition-all"
             onClick={() => setModal(true)}
           >
             Create Review
+          </button>
+          <button
+            className="w-full sm:w-auto  bg-linear-to-l from-purple-600 to-purple-800 py-2 px-6 cursor-pointer duration-200 z-20 md:min-w-25
+            text-[18px] md:text-[20px] rounded-[10px] text-white  hover:text-white hover:from-purple-500 transition-all"
+            onClick={() => {
+              if (currentReviews.current === movieId) {
+                getFeed();
+                currentReviews.current = 0;
+              } else {
+                displayReviews();
+              }
+            }}
+          >
+            {currentReviews.current === movieId ? "Feed" : "All Reviews"}
           </button>
 
           <button
@@ -258,7 +298,7 @@ const Middle = ({ feedCards }: Middle) => {
                   setMovieName(c.title);
                   setMoviePoster(c.poster);
                   setMovieRelease(c.release);
-                  setMovieId(c.id);
+                  setMovieId(c.tmdb_id);
                 }}
               >
                 <div className="mr-2 md:mr-4 text-[14px] md:text-[20px] text-right line-clamp-2">
