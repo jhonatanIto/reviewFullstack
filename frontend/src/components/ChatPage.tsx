@@ -168,7 +168,6 @@ const ChatPage = () => {
               new Date(b.created_at).getTime(),
           ),
         );
-        getChatList();
       } catch (error) {
         console.error(error);
         errorNotification("Failed to load chat");
@@ -237,24 +236,19 @@ const ChatPage = () => {
   }, [chatId]);
 
   useEffect(() => {
-    const handleChatUpdated = (data: {
+    const handleChatUpdated = async (data: {
       chatId: number;
       lastMessage: string;
       lastMessageAt: string;
       senderId: number;
     }) => {
+      const isOpen = data.chatId === chatId;
+      const ownMessage = data.senderId === user?.id;
+
       setChatList((prev) => {
         return prev?.map((chat) => {
           if (chat.chatId !== data.chatId) return chat;
 
-          const isOpen = data.chatId === chatId;
-          const ownMessage = data.senderId === user?.id;
-
-          console.log("userid: ", user?.id);
-          console.log("senderid: ", data.senderId);
-
-          console.log("chatid: ", chatId);
-          console.log("datachat: ", data.chatId);
           return {
             ...chat,
             lastMessage: data.lastMessage,
@@ -266,6 +260,15 @@ const ChatPage = () => {
           };
         });
       });
+
+      if (isOpen && !ownMessage) {
+        await fetch(`${backend}/api/chat/markAsRead/${chatId}`, {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
     };
 
     socket.on("chat_updated", handleChatUpdated);

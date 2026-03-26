@@ -228,3 +228,34 @@ export const chatList = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const markAsRead = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const chatId = Number(req.params.chatId);
+
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (!chatId) return res.status(400).json({ message: "Chat id missing" });
+
+    await db
+      .update(messages)
+      .set({ read_at: new Date() })
+      .where(
+        and(
+          eq(messages.chat_id, chatId),
+          ne(messages.sender_id, userId),
+          isNull(messages.read_at),
+        ),
+      );
+
+    await db
+      .update(chatUsers)
+      .set({ unread_count: 0 })
+      .where(and(eq(chatUsers.chat_id, chatId), eq(chatUsers.user_id, userId)));
+
+    res.json({ status: "Messages marked as read" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
