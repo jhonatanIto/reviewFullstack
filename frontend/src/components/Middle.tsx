@@ -149,7 +149,7 @@ const Middle = ({ feedCards }: Middle) => {
       <div className="md:absolute  w-full left-0 bottom-[2%] flex flex-col justify-center select-none z-10  overflow-hidden">
         <div
           ref={sliderRef}
-          className="mt-10 flex justify-start  overflow-x-scroll no-scrollbar  cursor-grab active:cursor-grabbing select-none   
+          className="mt-10 flex justify-start  overflow-x-scroll no-scrollbarChat  cursor-grab active:cursor-grabbing select-none   
          [&>button]:bg-zinc-800/40  [&>button]:h-full [&>button]:text-white [&>button]:z-10 [&>button]:text-[50px] "
           onWheel={(e) => {
             e.currentTarget.scrollLeft += e.deltaY;
