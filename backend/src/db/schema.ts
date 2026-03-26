@@ -9,7 +9,6 @@ import {
   index,
   unique,
 } from "drizzle-orm/pg-core";
-import { table } from "node:console";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),

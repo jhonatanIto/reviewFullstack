@@ -298,6 +298,44 @@ export const homePageCards = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const movieReviews = async (req: Request, res: Response) => {
+  const movieId = Number(req.params.movieId);
+
+  if (isNaN(movieId)) {
+    return res.status(400).json({ message: "Invalid tmdb_id" });
+  }
+
+  try {
+    const movieReviews = await db
+      .select({
+        id: cards.id,
+        title: cards.title,
+        poster: cards.poster,
+        banner: cards.banner,
+        release: cards.release,
+        description: cards.description,
+        rate: cards.rate,
+        review: cards.review,
+        created_at: cards.created_at,
+        tmdb_id: cards.tmdb_id,
+
+        user_name: users.name,
+        user_unique_id: users.unique_id,
+        user_picture: users.picture,
+      })
+      .from(cards)
+      .leftJoin(users, eq(users.id, cards.user_id))
+      .where(eq(cards.tmdb_id, movieId))
+      .orderBy(desc(cards.created_at))
+      .limit(20);
+
+    res.status(200).json(movieReviews);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 export const getCardLogged = async (req: Request, res: Response) => {
   try {
     const cardId = Number(req.params.cardId);
