@@ -36,7 +36,7 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
     setMovieId,
     setModal,
   } = useMovie();
-  console.log(movieId);
+
   const { watchlist, loadCards, setLoading } = useUser();
 
   const isDragging = useRef(false);
