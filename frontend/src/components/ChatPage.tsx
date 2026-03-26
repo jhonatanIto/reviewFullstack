@@ -168,6 +168,7 @@ const ChatPage = () => {
               new Date(b.created_at).getTime(),
           ),
         );
+        getChatList();
       } catch (error) {
         console.error(error);
         errorNotification("Failed to load chat");
@@ -248,6 +249,8 @@ const ChatPage = () => {
 
           const isOpen = data.chatId === chatId;
           const ownMessage = data.senderId === user?.id;
+          console.log("ownMessage", ownMessage);
+          console.log("same chat", isOpen);
 
           return {
             ...chat,
