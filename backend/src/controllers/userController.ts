@@ -301,3 +301,26 @@ export const isTokenValid = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const savePicture = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+    const { url } = req.body;
+
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (!url) return res.status(400).json({ message: "url missing" });
+
+    const [updateUser] = await db
+      .update(users)
+      .set({ picture: url })
+      .where(eq(users.id, userId))
+      .returning();
+
+    if (!updateUser) return res.status(400).json({ message: "User not found" });
+
+    res.status(200).json({ message: "Picture updated" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

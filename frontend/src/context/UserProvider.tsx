@@ -116,6 +116,7 @@ const UserProvider = ({ children }: Props) => {
     <UserContext.Provider
       value={{
         user,
+        setUser,
         token,
         login,
         logout,
