@@ -13,7 +13,7 @@ export interface User {
 
 interface UserContextType {
   user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User>>;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
   token: string | null;
   login: (user: User, token: string) => void;
   logout: () => void;
