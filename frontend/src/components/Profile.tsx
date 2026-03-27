@@ -142,7 +142,7 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
         onMouseDown={(e) => e.stopPropagation()}
       >
         <img
-          src={preview.length !== 0 ? preview : user?.picture}
+          src={((preview || user?.picture) ?? undefined) || userpic}
           className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover bg-zinc-600 mt-10"
         />
         <div className="w-full">
