@@ -95,7 +95,7 @@ interface PictureModalProps {
 }
 
 const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
-  const { user, setUser, token } = useUser();
+  const { user, setUser, token, setLoading } = useUser();
   const [url, setUrl] = useState("");
   const [preview, setPreview] = useState("");
 
@@ -103,8 +103,10 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
 
   const savePicture = async () => {
     if (!preview) return;
+    if (!token) return;
 
     try {
+      setLoading(true);
       const res = await fetch(`${backend}/api/users/picture`, {
         method: "PATCH",
         headers: {
@@ -119,10 +121,16 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
 
       setUser((prev) => {
         if (!prev) return prev;
-        return { ...prev, picture: preview };
+        const updateUser = { ...prev, picture: preview };
+        localStorage.setItem("MyReview_user", JSON.stringify(updateUser));
+
+        return updateUser;
       });
+      setPictureModal(false);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 

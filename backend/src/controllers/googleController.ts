@@ -37,14 +37,6 @@ export const googleAuth = async (req: Request, res: Response) => {
       .where(eq(users.email, email));
 
     if (googleUser) {
-      if (picture && googleUser.picture !== picture) {
-        await db
-          .update(users)
-          .set({ picture })
-          .where(eq(users.id, googleUser.id));
-
-        googleUser.picture = picture;
-      }
       if (!googleUser.googleId) {
         await db
           .update(users)
