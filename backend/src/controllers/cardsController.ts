@@ -269,6 +269,9 @@ export const getFollowingCards = async (req: Request, res: Response) => {
 };
 
 export const homePageCards = async (req: Request, res: Response) => {
+  const page = Math.max(1, Number(req.query.page) || 1);
+  const limit = 20;
+  const offset = (page - 1) * limit;
   try {
     const recentCards = await db
       .select({
@@ -290,7 +293,8 @@ export const homePageCards = async (req: Request, res: Response) => {
       .from(cards)
       .innerJoin(users, eq(users.id, cards.user_id))
       .orderBy(desc(cards.created_at))
-      .limit(20);
+      .limit(limit)
+      .offset(offset);
 
     res.status(200).json(recentCards);
   } catch (error) {

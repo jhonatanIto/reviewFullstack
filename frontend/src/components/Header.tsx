@@ -290,9 +290,12 @@ const Header = () => {
         <div
           className={`text-purple-500 cursor-pointer flex items-center transition-all duration-300
              ${displayInput ? "opacity-0! pointer-events-none!" : "opacity-100"}`}
-          onClick={() => navigate("/")}
+          onClick={() => {
+            navigate("/");
+            window.location.reload();
+          }}
         >
-          <span className="bg-purple-500 rounded px-2 py-0.5 text-white mr-2">
+          <span className="bg-purple-500  rounded px-2 py-0.5 text-white mr-2 ">
             MY
           </span>
           REVIEW
@@ -341,7 +344,10 @@ const Header = () => {
       </div>
       <div
         className="hidden  md:ml-[3%] w-auto justify-between items-center md:flex text-purple-500 cursor-pointer select-none mb-3 md:mb-0 "
-        onClick={() => navigate("/")}
+        onClick={() => {
+          navigate("/");
+          window.location.reload();
+        }}
       >
         <span className="bg-purple-500 rounded-[5px] px-2 py-0.5 flex items-center justify-center text-white mr-2">
           MY

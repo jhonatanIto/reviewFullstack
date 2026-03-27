@@ -20,7 +20,7 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 export const cardsRoute = Router();
 
-cardsRoute.get("/homePage", homePageCards);
+cardsRoute.get("/homepage", homePageCards);
 cardsRoute.get("/movieReviews/:movieId", movieReviews);
 cardsRoute.get("/:cardId", getCard);
 cardsRoute.get("/comment/:cardId", getComments);

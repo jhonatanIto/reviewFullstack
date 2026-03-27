@@ -206,9 +206,9 @@ export const getFollowingCards = async (token: string) => {
   }
 };
 
-export const homePageCards = async () => {
+export const homePageCards = async (page: number) => {
   try {
-    const res = await fetch(`${backend}/api/cards/homepage`);
+    const res = await fetch(`${backend}/api/cards/homepage?page=${page}`);
     const data = await res.json();
     if (!res.ok) return console.log(data?.message);
 

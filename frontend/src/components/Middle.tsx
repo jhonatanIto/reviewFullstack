@@ -10,7 +10,7 @@ import { IoStar } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import type { Cards } from "../context/UserContext";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Middle {
   feedCards: Cards[];
@@ -20,6 +20,8 @@ interface Middle {
 const Middle = ({ feedCards, setFeedCards }: Middle) => {
   const { token } = useUser();
   const { errorNotification, successNotification } = useNotification();
+  const [page, setPage] = useState(1);
+  const [loadingPage, setLoadingPage] = useState(false);
   const {
     movies,
     movieName,
@@ -100,8 +102,21 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
   const navigate = useNavigate();
 
   const getFeed = async () => {
-    const data = await homePageCards();
+    const data = await homePageCards(page);
     setFeedCards(data || []);
+  };
+
+  const loadMore = async () => {
+    if (loadingPage) return;
+
+    setLoading(true);
+    const nextPage = page + 1;
+    const data = await homePageCards(nextPage);
+
+    setFeedCards((prev) => [...prev, ...data]);
+    setPage(nextPage);
+
+    setLoadingPage(false);
   };
 
   useEffect(() => {
