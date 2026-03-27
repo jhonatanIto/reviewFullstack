@@ -98,7 +98,7 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
   const [preview, setPreview] = useState("");
 
   const savePicture = async () => {
-    if (!preview) return console.log("uhhhh");
+    if (!preview) return;
 
     try {
       const res = await fetch(`${backend}/api/users/picture`, {
