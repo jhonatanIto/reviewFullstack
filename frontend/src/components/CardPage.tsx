@@ -227,7 +227,7 @@ const CardPage = () => {
     >
       <div
         onMouseDown={(e) => e.stopPropagation()}
-        className={`flex w-[93%]  md:w-[48%]  justify-around md:mt-0 mt-5  pb-10 md:pb-0 items-center  flex-col bg-white/20 relative rounded-2xl   shadow-black shadow-lg 
+        className={`flex w-[93%]  md:w-[48%] md:max-w-255 justify-around md:mt-0 mt-5  pb-10 md:pb-0 items-center  flex-col bg-white/20 relative rounded-2xl   shadow-black shadow-lg 
           md:flex-row md:justify-between
            ${open ? " translate-y-0 scale-100" : "translate-y-10 scale-70 opacity-0"} transition-all duration-200 ease-in-out`}
       >
@@ -275,7 +275,7 @@ const CardPage = () => {
             value={review}
             spellCheck={false}
             placeholder={`${edit ? "Write your review" : ""}`}
-            className="w-[90%] h-40 md:h-90 text-[19px] md:text-[24px] mt-5  outline-none bg-white rounded-2xl p-3 flex text-center shadow-black/30 shadow-lg"
+            className="w-[90%]  h-40 md:h-90 text-[19px] md:text-[24px] mt-5  outline-none bg-white rounded-2xl p-3 flex text-center shadow-black/30 shadow-lg"
             onChange={(e) => setReview(e.target.value)}
           />
           <div className="flex justify-center  w-[80%]">
@@ -377,6 +377,7 @@ const CardPage = () => {
           setCommentId={setCommentId}
         />
       </div>
+
       <div
         style={{ display: delModal ? "flex" : "none" }}
         className=" flex items-center justify-center w-full h-screen fixed bg-black/60 top-0 left-0 z-30"
