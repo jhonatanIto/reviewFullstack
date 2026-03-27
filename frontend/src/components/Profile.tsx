@@ -6,7 +6,7 @@ import { FaUser } from "react-icons/fa";
 import userpic from "../images/user.png";
 import { useState } from "react";
 import { backend } from "../utils/fetchData";
-import { resolve } from "path";
+
 import useNotification from "../hooks/useNotification";
 
 const Profile = () => {
