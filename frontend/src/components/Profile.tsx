@@ -117,7 +117,10 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.message);
 
-      setUser((prev) => ({ ...prev, picture: preview }));
+      setUser((prev) => {
+        if (!prev) return prev;
+        return { ...prev, picture: preview };
+      });
     } catch (error) {
       console.log(error);
     }
