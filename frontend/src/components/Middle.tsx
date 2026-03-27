@@ -10,7 +10,7 @@ import { IoStar } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import type { Cards } from "../context/UserContext";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface Middle {
   feedCards: Cards[];
@@ -22,6 +22,9 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
   const { errorNotification, successNotification } = useNotification();
   const [page, setPage] = useState(1);
   const [loadingPage, setLoadingPage] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const loaderRef = useRef<HTMLDivElement>(null);
+
   const {
     movies,
     movieName,
@@ -102,22 +105,49 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
   const navigate = useNavigate();
 
   const getFeed = async () => {
-    const data = await homePageCards(page);
+    const data = await homePageCards(1);
     setFeedCards(data || []);
   };
 
-  const loadMore = async () => {
-    if (loadingPage) return;
+  const loadMore = useCallback(async () => {
+    if (currentReviews.current !== 0) return;
+    if (loadingPage || !hasMore) return;
 
-    setLoading(true);
+    setLoadingPage(true);
+
     const nextPage = page + 1;
     const data = await homePageCards(nextPage);
 
-    setFeedCards((prev) => [...prev, ...data]);
-    setPage(nextPage);
+    if (data.length === 0) {
+      setHasMore(false);
+    } else {
+      setFeedCards((prev) => [...prev, ...data]);
+      setPage(nextPage);
+    }
 
     setLoadingPage(false);
-  };
+  }, [page, loadingPage, hasMore]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      {
+        rootMargin: "200px",
+      },
+    );
+
+    const current = loaderRef.current;
+
+    if (current) observer.observe(current);
+
+    return () => {
+      if (current) observer.unobserve(current);
+    };
+  }, [loadMore]);
 
   useEffect(() => {
     getFeed();
@@ -167,8 +197,10 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
             text-[18px] md:text-[20px] rounded-[10px] text-white  hover:text-white hover:from-purple-500 transition-all"
             onClick={() => {
               if (currentReviews.current === movieId) {
-                getFeed();
                 currentReviews.current = 0;
+                setPage(1);
+                setHasMore(true);
+                getFeed();
               } else {
                 displayReviews();
               }
@@ -327,6 +359,7 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
             </div>
           );
         })}
+        <div ref={loaderRef}>{loadingPage && <p></p>}</div>
       </div>
     </div>
   );
