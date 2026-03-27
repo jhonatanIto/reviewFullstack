@@ -6,6 +6,8 @@ import { FaUser } from "react-icons/fa";
 import userpic from "../images/user.png";
 import { useState } from "react";
 import { backend } from "../utils/fetchData";
+import { resolve } from "path";
+import useNotification from "../hooks/useNotification";
 
 const Profile = () => {
   const { user, logout, cards } = useUser();
@@ -97,6 +99,8 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
   const [url, setUrl] = useState("");
   const [preview, setPreview] = useState("");
 
+  const { errorNotification } = useNotification();
+
   const savePicture = async () => {
     if (!preview) return;
 
@@ -118,6 +122,16 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
       console.log(error);
     }
   };
+
+  const isValidImage = (url: string) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = url;
+
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+    });
+  };
   return (
     <div
       className={`${!pictureModal ? "hidden" : ""} flex justify-center w-full h-full fixed m-0 bg-black/65 top-0 z-50`}
@@ -137,17 +151,22 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
               onChange={(e) => setUrl(e.target.value)}
               value={url}
               type="text"
-              placeholder="Url Image here"
+              placeholder="Url Image here "
               className="border border-zinc-300 p-1 pr-2 pl-2 mt-4 w-[60%]"
-              onKeyDown={(e) => {
+              onKeyDown={async (e) => {
                 if (e.key === "Enter") {
+                  const valid = await isValidImage(url);
+
+                  if (!valid) return errorNotification("Invalid url");
+
                   setPreview(url);
                   setUrl("");
                 }
               }}
             />
             <button
-              className="border mt-4 w-[60%] p-1 rounded-[5px] text-white bg-blue-500 cursor-pointer"
+              disabled={preview.length === 0}
+              className={`border mt-4 w-[60%] p-1 rounded-[5px] text-white bg-blue-500 cursor-pointer ${!preview ? "opacity-40 pointer-events-none cursor-default" : ""}`}
               onClick={() => {
                 savePicture();
               }}
