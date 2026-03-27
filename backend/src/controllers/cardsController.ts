@@ -35,7 +35,7 @@ export const postCard = async (req: Request, res: Response) => {
       tmdb_id,
     } = req.body;
 
-    if (!title || !rate || !poster || !release || !description || !tmdb_id) {
+    if (!title || !rate || !poster || !release || !tmdb_id) {
       return res.status(400).json({ message: "Missing fields" });
     }
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
@@ -43,7 +43,7 @@ export const postCard = async (req: Request, res: Response) => {
     const movie: NewCard = {
       title,
       release,
-      description,
+      description: description ?? null,
       poster,
       banner: banner ? banner : null,
       rate,

@@ -40,7 +40,7 @@ interface UserContextType {
 export interface Cards {
   banner: string;
   created_at: string;
-  description: string;
+  description: string | null;
   id: number;
   poster: string;
   rate: number;

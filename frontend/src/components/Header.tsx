@@ -295,7 +295,7 @@ const Header = () => {
             window.location.reload();
           }}
         >
-          <span className="bg-purple-500  rounded px-2 py-0.5 text-white mr-2 ">
+          <span className="bg-purple-600  rounded px-2 py-0.5 text-white mr-2 ">
             MY
           </span>
           REVIEW
@@ -349,7 +349,7 @@ const Header = () => {
           window.location.reload();
         }}
       >
-        <span className="bg-purple-500 rounded-[5px] px-2 py-0.5 flex items-center justify-center text-white mr-2">
+        <span className="bg-purple-600 rounded-[5px] px-2 py-0.5 flex items-center justify-center text-white mr-2">
           MY
         </span>{" "}
         REVIEW
