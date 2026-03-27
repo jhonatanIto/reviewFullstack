@@ -37,7 +37,7 @@ const NotificationList = ({
             src={n.from_user.picture || userpic}
             onClick={() => navigate(`/profile/${n.from_user.unique_id}`)}
           />
-          <div className=" flex ml-4  w-50 wrap-break-word">
+          <div className=" flex ml-4  w-50 wrap-break-word ">
             <div>
               <span className="font-bold">{n.from_user.name}</span>{" "}
               {n.type === "FOLLOW"
@@ -53,8 +53,8 @@ const NotificationList = ({
           {n.type === "FOLLOW" ? (
             <button
               disabled={loadingNoti}
-              className={`${n.isFollowing ? "text-black bg-zinc-200" : "bg-blue-600 text-white"} ml-14  font-semibold
-              pl-2 pr-2 p-1 rounded-[5px] w-29 flex items-center justify-center cursor-pointer`}
+              className={`${n.isFollowing ? "text-black bg-zinc-200" : "bg-blue-600 text-white"} ml-14  font-semibold 
+              pl-2 pr-2 p-1 rounded-[5px] w-37 flex items-center justify-center cursor-pointer`}
               onClick={async () => {
                 if (!token) return;
                 await toggleFollow(n.from_user.unique_id, token);

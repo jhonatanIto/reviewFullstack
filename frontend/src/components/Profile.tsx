@@ -36,7 +36,6 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* LOGOUT */}
           <div className="flex justify-center md:block mt-6 md:mt-0">
             <div
               className="flex justify-center items-center gap-2 border text-zinc-500
@@ -54,8 +53,7 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* STATS */}
-      <div className="w-full md:w-[1100px] mt-8 select-none grid grid-cols-3 md:flex md:justify-start gap-6 text-center md:text-left">
+      <div className="w-full md:w-275 mt-8 select-none grid grid-cols-3 md:flex md:justify-start gap-6 text-center md:text-left">
         <div className="flex flex-col md:flex-row items-center text-white/70 text-sm md:text-2xl">
           <GrNotes className="text-3xl md:text-[50px]" />
           <div className="md:ml-3 mt-1 md:mt-0">Reviews: {cards.length}</div>
