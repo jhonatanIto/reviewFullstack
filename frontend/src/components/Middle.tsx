@@ -306,10 +306,7 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
               className="border border-white/20 rounded-2xl flex p-2 items-center backdrop-blur-[70px] 
             shadow-[0_4px_20px_rgba(0,0,0,0.25)] mt-3 select-none"
             >
-              <div className="flex flex-col items-center ml-2 group shrink-0">
-                <div className="text-xs md:text-sm font-semibold group-hover:text-purple-500 transition-all duration-200 cursor-pointer mb-1">
-                  {c.user_name}
-                </div>
+              <div className="flex flex-col items-center ml-2 group shrink-0 relative ">
                 <div className="overflow-hidden rounded-full">
                   <img
                     src={c.user_picture ?? userpic}
@@ -320,7 +317,10 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
                 </div>
               </div>
 
-              <div className="ml-3 text-[16px] md:text-[20px]">
+              <div className="ml-3 text-[16px] md:text-[18px]">
+                <div className="text-xs md:text-sm font-semibold group-hover:text-purple-500 transition-all duration-200 cursor-pointer mb-1">
+                  {c.user_name}
+                </div>
                 <div className="flex items-center">
                   <span className="hidden sm:inline">Rated:</span>
                   <span className="text-amber-600 flex items-center sm:ml-2">
