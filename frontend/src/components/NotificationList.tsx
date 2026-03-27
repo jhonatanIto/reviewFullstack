@@ -25,7 +25,7 @@ const NotificationList = ({
   return (
     <div
       className={`${showNoti ? "block" : "hidden"} absolute right-0 z-30 top-12 bg-white text-black border md:w-100 w-full 
-       rounded-2xl text-[15px] p-2 max-h-120  overflow-scroll no-scrollbar `}
+       rounded-2xl text-[15px] p-2 max-h-120  overflow-scroll no-scrollbarChat  `}
     >
       {notiData.length === 0 && (
         <div className="p-2">No notifications yet.</div>
