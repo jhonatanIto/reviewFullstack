@@ -245,7 +245,7 @@ const CardPage = () => {
             <div className="max-text-[35px] text-purple-500 font-bold">
               {card?.title}
             </div>
-            <div className="mt-[5%] text-[18px] md:text-[25px] max-h-[75%] overflow-scroll no-scrollbar">
+            <div className="mt-[5%] text-[18px] md:text-[25px] max-h-[75%] overflow-scroll no-scrollbarChat">
               {card?.description}
             </div>
             <div className="absolute bottom-10 flex text-[20px]">
