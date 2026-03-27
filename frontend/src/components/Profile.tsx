@@ -146,7 +146,11 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
   return (
     <div
       className={`${!pictureModal ? "hidden" : ""} flex justify-center w-full h-full fixed m-0 bg-black/65 top-0 z-50`}
-      onMouseDown={() => setPictureModal(false)}
+      onMouseDown={() => {
+        setPictureModal(false);
+        setUrl("");
+        setPreview("");
+      }}
     >
       <div
         className="md:w-125 w-[95%] h-fit pb-16 mt-40 flex flex-col rounded-2xl items-center bg-white "
