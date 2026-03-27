@@ -11,7 +11,7 @@ const MovieProvider = ({ children }: Props) => {
   const [movieImage, setMovieImage] = useState<string>("");
   const [moviePoster, setMoviePoster] = useState<string>("");
   const [movieRelease, setMovieRelease] = useState<string>("");
-  const [movieDescription, setMovieDescription] = useState<string>("");
+  const [movieDescription, setMovieDescription] = useState<string | null>("");
   const [movieId, setMovieId] = useState<number>(0);
   const [modal, setModal] = useState<boolean>(false);
 

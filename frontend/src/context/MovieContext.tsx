@@ -15,7 +15,7 @@ interface MovieContextType {
   movieImage: string;
   moviePoster: string;
   movieRelease: string;
-  movieDescription: string;
+  movieDescription: string | null;
   modal: boolean;
   movieId: number;
   setMovieId: React.Dispatch<React.SetStateAction<number>>;
@@ -24,7 +24,7 @@ interface MovieContextType {
   setMovieImage: React.Dispatch<React.SetStateAction<string>>;
   setMoviePoster: React.Dispatch<React.SetStateAction<string>>;
   setMovieRelease: React.Dispatch<React.SetStateAction<string>>;
-  setMovieDescription: React.Dispatch<React.SetStateAction<string>>;
+  setMovieDescription: React.Dispatch<React.SetStateAction<string | null>>;
   setModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
