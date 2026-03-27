@@ -227,7 +227,7 @@ const CardPage = () => {
     >
       <div
         onMouseDown={(e) => e.stopPropagation()}
-        className={`flex w-[93%]  md:w-238  justify-around md:mt-0 mt-5  pb-10 md:pb-0 items-center  flex-col bg-white/20 relative rounded-2xl   shadow-black shadow-lg 
+        className={`flex w-[93%]  md:w-[48%]  justify-around md:mt-0 mt-5  pb-10 md:pb-0 items-center  flex-col bg-white/20 relative rounded-2xl   shadow-black shadow-lg 
           md:flex-row md:justify-between
            ${open ? " translate-y-0 scale-100" : "translate-y-10 scale-70 opacity-0"} transition-all duration-200 ease-in-out`}
       >
