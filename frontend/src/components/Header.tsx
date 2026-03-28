@@ -429,7 +429,7 @@ const Header = () => {
             </div>
           </div>
           <div
-            className={`${!user ? "hidden" : ""}`}
+            className={`${!user ? "hidden" : ""} flex items-center `}
             onClick={() => {
               if (user) {
                 navigate("/chat");
@@ -441,6 +441,9 @@ const Header = () => {
             }}
           >
             Chat
+            {unread && !location.startsWith("/chat") && (
+              <GoDotFill className=" text-[20px] text-red-500  ml-3 mt-1" />
+            )}
           </div>
           <div
             className={`${user ? "hidden" : ""}`}
