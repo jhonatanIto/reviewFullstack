@@ -209,13 +209,20 @@ const Friends = () => {
       </div>
 
       <div
-        className="w-full text-white md:mt-10 flex overflow-x-scroll no-scrollbar flex-wrap justify-center md:justify-start
+        className="w-full text-white md:mt-10 flex overflow-x-scroll no-scrollbarChat  justify-center md:justify-start
        md:pl-[3%] md:pr-[3%] gap-6"
+        onWheel={(e) => {
+          e.currentTarget.scrollLeft += e.deltaY;
+        }}
       >
         {following.map((f) => {
           return (
-            <div key={f.unique_id} className="flex flex-col items-center">
+            <div
+              key={f.unique_id}
+              className="flex shrink-0 flex-col items-center"
+            >
               <img
+                draggable={false}
                 src={f.picture || userpic}
                 className="w-16 h-16 md:w-32 md:h-32 rounded-full object-cover cursor-pointer bg-zinc-600"
                 onClick={() => {
