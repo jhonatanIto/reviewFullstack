@@ -7,8 +7,8 @@ export interface User {
   email: string;
   picture: string | null;
   unique_id: string;
-  followers: string;
-  following: string;
+  followers: number;
+  following: number;
 }
 
 interface UserContextType {

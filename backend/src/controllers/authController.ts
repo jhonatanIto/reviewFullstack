@@ -51,6 +51,8 @@ export const register = async (req: Request, res: Response) => {
         name: newUser?.name,
         email: newUser?.email,
         unique_id: newUser?.unique_id,
+        following: 0,
+        followers: 0,
       },
     });
   } catch (error) {
