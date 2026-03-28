@@ -295,7 +295,10 @@ export const isTokenValid = async (req: Request, res: Response) => {
 
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-    res.status(200).json({ message: "valid token" });
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({ message: "valid token", user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

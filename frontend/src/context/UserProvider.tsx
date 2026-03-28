@@ -52,10 +52,12 @@ const UserProvider = ({ children }: Props) => {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        console.log("response", data);
+      if (!res.ok || !data.user) {
+        console.log("response", data.message);
         logout();
+        return;
       }
+      localStorage.setItem("MyReview_user", JSON.stringify(data.user));
     } catch (error) {
       console.error(error);
     }
