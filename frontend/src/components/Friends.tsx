@@ -50,6 +50,14 @@ const Friends = () => {
   const scrollLeft = useRef(0);
   const sliderRef = useRef<HTMLDivElement>(null);
 
+  const [cursor, setCursor] = useState<{
+    cursor: string;
+    id: number;
+  } | null>(null);
+
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
   const searchUsers = () => {
     fetch(
       `${backend}/api/users/search?q=${encodeURIComponent(search)}&type=${searchType}`,
@@ -87,14 +95,6 @@ const Friends = () => {
 
     followingList();
   }, [token]);
-
-  const [cursor, setCursor] = useState<{
-    cursor: string;
-    id: number;
-  } | null>(null);
-
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
 
   const getFollowCards = async () => {
     if (!token) return;

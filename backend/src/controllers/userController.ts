@@ -298,7 +298,28 @@ export const isTokenValid = async (req: Request, res: Response) => {
     const [user] = await db.select().from(users).where(eq(users.id, userId));
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.status(200).json({ message: "valid token", user });
+    const [followingCount] = await db
+      .select({ total: count() })
+      .from(follows)
+      .where(eq(follows.following_id, userId));
+
+    const [followersCount] = await db
+      .select({ total: count() })
+      .from(follows)
+      .where(eq(follows.following_id, userId));
+
+    res.status(200).json({
+      message: "valid token",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        picture: user.picture,
+        unique_id: user.unique_id,
+        following: followingCount?.total ?? 0,
+        followers: followersCount?.total ?? 0,
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
