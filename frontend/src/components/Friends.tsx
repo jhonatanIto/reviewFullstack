@@ -88,18 +88,50 @@ const Friends = () => {
     followingList();
   }, [token]);
 
+  const [cursor, setCursor] = useState<{
+    cursor: string;
+    id: number;
+  } | null>(null);
+
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
   const getFollowCards = async () => {
     if (!token) return;
     try {
       setLoading(true);
-      const fCards = await getFollowingCards(token);
-      if (!fCards) return;
 
-      setFollowingCards(fCards);
+      const res = await getFollowingCards(token);
+
+      if (!res) return;
+
+      setFollowingCards(res.cards);
+      setCursor(res.nextCursor);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMore = async () => {
+    if (!cursor || loadingMore || !hasMore || !token) return;
+
+    setLoadingMore(true);
+
+    try {
+      const res = await getFollowingCards(token, cursor);
+
+      if (!res.cards.length) {
+        setHasMore(false);
+      } else {
+        setFollowingCards((prev) => [...prev, ...res.cards]);
+        setCursor(res.nextCursor ?? null);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -246,6 +278,13 @@ const Friends = () => {
           <div
             ref={sliderRef}
             className="flex overflow-x-scroll no-scrollbar gap-4 pb-4 select-none cursor-grab active:cursor-grabbing"
+            onScroll={(e) => {
+              const el = e.currentTarget;
+
+              if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 200) {
+                loadMore();
+              }
+            }}
             onWheel={(e) => {
               e.currentTarget.scrollLeft += e.deltaY;
             }}

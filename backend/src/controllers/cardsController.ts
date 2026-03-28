@@ -14,6 +14,8 @@ import {
   count,
   desc,
   eq,
+  lt,
+  or,
   sql,
   type InferInsertModel,
 } from "drizzle-orm";
@@ -240,9 +242,29 @@ export const toggleLikeCard = async (req: Request, res: Response) => {
 };
 
 export const getFollowingCards = async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+  const limit = 30;
+
+  const cursor = req.query.cursor as string | undefined;
+  const cursorId = req.query.id as string | undefined;
+
   try {
-    const userId = req.userId;
-    if (!userId) return res.status(400).json({ message: "Unauthorized" });
+    const cursorCondition =
+      cursor && cursorId
+        ? or(
+            lt(cards.created_at, new Date(cursor)),
+            and(
+              eq(cards.created_at, new Date(cursor)),
+              lt(cards.id, Number(cursorId)),
+            ),
+          )
+        : undefined;
+
+    const whereClause = cursorCondition
+      ? and(eq(follows.follower_id, userId), cursorCondition)
+      : eq(follows.follower_id, userId);
 
     const followingCards = await db
       .select({
@@ -250,18 +272,25 @@ export const getFollowingCards = async (req: Request, res: Response) => {
         poster: cards.poster,
         rate: cards.rate,
         review: cards.review,
-
+        created_at: cards.created_at,
         user_name: users.name,
         user_picture: users.picture,
       })
       .from(follows)
       .innerJoin(cards, eq(cards.user_id, follows.following_id))
       .innerJoin(users, eq(users.id, cards.user_id))
-      .where(eq(follows.follower_id, userId))
-      .orderBy(desc(cards.created_at))
-      .limit(30);
+      .where(whereClause)
+      .orderBy(desc(cards.created_at), desc(cards.id))
+      .limit(limit);
 
-    res.status(200).json(followingCards);
+    const lastItem = followingCards[followingCards.length - 1];
+
+    return res.status(200).json({
+      cards: followingCards,
+      nextCursor: lastItem
+        ? { cursor: lastItem.created_at, id: lastItem.id }
+        : null,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

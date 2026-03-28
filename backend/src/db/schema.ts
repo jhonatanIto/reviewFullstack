@@ -43,8 +43,11 @@ export const cards = pgTable(
       .notNull(),
   },
   (table) => [
-    index("cards_user_idx").on(table.user_id),
-    index("cards_created_idx").on(table.created_at),
+    index("cards_user_created_idx").on(
+      table.user_id,
+      table.created_at,
+      table.id,
+    ),
   ],
 );
 

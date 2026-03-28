@@ -185,13 +185,20 @@ export const toggleLike = async (token: string, cardId: number) => {
   }
 };
 
-export const getFollowingCards = async (token: string) => {
+export const getFollowingCards = async (
+  token: string,
+  cursor?: { cursor: string; id: number },
+) => {
+  const query = cursor ? `?cursor=${cursor.cursor}&id=${cursor.id}` : "";
   try {
-    const res = await fetch(`${backend}/api/cards/protected/following`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const res = await fetch(
+      `${backend}/api/cards/protected/following${query}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
 
     const data = await res.json();
 

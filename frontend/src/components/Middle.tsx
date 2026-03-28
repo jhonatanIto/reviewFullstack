@@ -24,6 +24,7 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
   const [loadingPage, setLoadingPage] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement>(null);
+  const firstLoad = useRef(true);
 
   const {
     movies,
@@ -131,6 +132,10 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
+        if (firstLoad.current) {
+          firstLoad.current = false;
+          return;
+        }
         if (entries[0].isIntersecting) {
           loadMore();
         }
@@ -151,6 +156,7 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
 
   useEffect(() => {
     getFeed();
+    setHasMore(true);
   }, []);
 
   const currentReviews = useRef(0);
