@@ -24,8 +24,6 @@ const UserProvider = ({ children }: Props) => {
 
   const [notiData, setNotiData] = useState<Notification[]>([]);
 
-  console.log(user);
-
   const login = (user: User, token: string) => {
     setUser(user);
     setToken(token);
