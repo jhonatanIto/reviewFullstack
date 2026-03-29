@@ -11,10 +11,8 @@ const BackgroundImg = () => {
         alt="Background"
       />
 
-      {/* GRADIENTE LATERAL: No mobile ele fica mais escuro (via-black/80) para dar leitura ao texto centralizado */}
       <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 md:via-black/70 to-transparent"></div>
 
-      {/* GRADIENTE VERTICAL: No mobile (topo e base) ajuda a separar o Header e os itens de baixo da imagem */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60 md:to-transparent"></div>
     </div>
   );

@@ -84,6 +84,7 @@ const Login = () => {
         alert(data.message);
         return;
       }
+
       login(data.user, data.token);
       navigate("/");
     } catch (error) {

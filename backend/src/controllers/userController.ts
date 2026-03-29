@@ -301,7 +301,7 @@ export const isTokenValid = async (req: Request, res: Response) => {
     const [followingCount] = await db
       .select({ total: count() })
       .from(follows)
-      .where(eq(follows.following_id, userId));
+      .where(eq(follows.follower_id, userId));
 
     const [followersCount] = await db
       .select({ total: count() })
