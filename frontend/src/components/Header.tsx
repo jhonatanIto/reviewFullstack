@@ -53,6 +53,7 @@ const Header = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const humbRef = useRef<HTMLDivElement>(null);
   const notiRef = useRef<HTMLDivElement>(null);
+  const notiMobile = useRef<HTMLDivElement>(null);
 
   const [showNoti, setShowNoti] = useState(false);
   const [notiCount, setNotiCount] = useState(0);
@@ -77,7 +78,12 @@ const Header = () => {
 
   useEffect(() => {
     const closeNoti = (e: MouseEvent) => {
-      if (notiRef.current && !notiRef.current.contains(e.target as Node)) {
+      if (
+        notiRef.current &&
+        !notiRef.current.contains(e.target as Node) &&
+        notiMobile.current &&
+        !notiMobile.current.contains(e.target as Node)
+      ) {
         setShowNoti(false);
       }
     };
@@ -280,15 +286,21 @@ const Header = () => {
       className="flex flex-col md:flex-row w-full justify-between items-center text-white text-[18px] md:text-[26px] 
     px-4 md:px-10 pt-6 md:pt-10 relative"
     >
-      <div className="flex md:hidden w-full justify-between relative items-center px-2">
-        <NotificationList
-          notiData={notiData}
-          showNoti={showNoti}
-          loadingNoti={loadingNoti}
-          getNotification={getNotification}
-        />
+      <div
+        className={`flex md:hidden w-full justify-between relative items-center px-2 `}
+      >
+        <div className={`${showNoti ? "block " : "hidden"}`} ref={notiMobile}>
+          <NotificationList
+            notiData={notiData}
+            showNoti={showNoti}
+            setShowNoti={setShowNoti}
+            loadingNoti={loadingNoti}
+            getNotification={getNotification}
+          />
+        </div>
+
         <div
-          className={`text-purple-500 cursor-pointer flex items-center transition-all duration-300
+          className={`text-purple-500 cursor-pointer flex items-center transition-all duration-300 ${showNoti ? "absolute" : ""}
              ${displayInput ? "opacity-0! pointer-events-none!" : "opacity-100"}`}
           onClick={() => {
             navigate("/");
@@ -413,9 +425,12 @@ const Header = () => {
           </div>
           <div
             className="flex  items-center"
-            onClick={() => {
+            onClick={async () => {
               if (user) {
                 setShowNoti(true);
+                setMenuOpen(false);
+                await markAllRead();
+                await getNotification();
               } else {
                 navigate("/login");
               }
@@ -612,8 +627,8 @@ const Header = () => {
               </div>
               {user && (
                 <div
-                  ref={notiRef}
                   className="md:flex hidden ml-5  transition-all duration-150 relative "
+                  ref={notiRef}
                 >
                   <BsLightbulbFill
                     className={`cursor-pointer hover:text-yellow-500 transition-all duration-150  
@@ -634,6 +649,7 @@ const Header = () => {
                   <NotificationList
                     notiData={notiData}
                     showNoti={showNoti}
+                    setShowNoti={setShowNoti}
                     loadingNoti={loadingNoti}
                     getNotification={getNotification}
                   />

@@ -7,6 +7,7 @@ import { useUser } from "../context/useUser";
 
 interface NotificationProps {
   showNoti: boolean;
+  setShowNoti: React.Dispatch<React.SetStateAction<boolean>>;
   notiData: Notification[];
   loadingNoti: boolean;
   getNotification: () => void;
@@ -16,6 +17,7 @@ const NotificationList = ({
   showNoti,
   notiData,
   loadingNoti,
+  setShowNoti,
   getNotification,
 }: NotificationProps) => {
   const navigate = useNavigate();
@@ -35,7 +37,10 @@ const NotificationList = ({
           <img
             className="w-12 h-12 md:w-12 md:h-12 rounded-full bg-zinc-600 object-cover cursor-pointer group-hover:scale-110 "
             src={n.from_user.picture || userpic}
-            onClick={() => navigate(`/profile/${n.from_user.unique_id}`)}
+            onClick={() => {
+              navigate(`/profile/${n.from_user.unique_id}`);
+              setShowNoti(false);
+            }}
           />
           <div className=" flex ml-4  w-50 wrap-break-word ">
             <div>
@@ -54,7 +59,7 @@ const NotificationList = ({
             <button
               disabled={loadingNoti}
               className={`${n.isFollowing ? "text-black bg-zinc-200" : "bg-blue-600 text-white"} ml-14  font-semibold 
-              pl-2 pr-2 p-1 rounded-[5px] w-37 flex items-center justify-center cursor-pointer`}
+              pl-2 pr-2 p-1 rounded-[5px] w-41 flex items-center justify-center cursor-pointer`}
               onClick={async () => {
                 if (!token) return;
                 await toggleFollow(n.from_user.unique_id, token);
@@ -68,9 +73,10 @@ const NotificationList = ({
               <img
                 className="w-12 md:w-12 md:h-12 object-cover cursor-pointer md:ml-14 ml-5"
                 src={n.card_picture}
-                onClick={() =>
-                  navigate(`/${n.from_user.unique_id}/${n.card_id}`)
-                }
+                onClick={() => {
+                  navigate(`/${n.from_user.unique_id}/${n.card_id}`);
+                  setShowNoti(false);
+                }}
               />
             </div>
           )}
