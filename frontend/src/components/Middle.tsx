@@ -141,7 +141,7 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
         }
       },
       {
-        rootMargin: "400px",
+        rootMargin: "600px",
       },
     );
 

@@ -14,6 +14,7 @@ A fullstack social platform where users can discover movies, write reviews, and 
 - 📰 Personalized feed based on following
 - ⚡ Debounced search for better performance
 - 🔒 Secure API handling (no API keys exposed on frontend)
+- ♾️ Infinite scroll with efficient pagination for smooth user experience
 
 ---
 
