@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { homePageMovies } from "../controllers/tmdbController.js";
+import { homePageMovies, searchMovies } from "../controllers/tmdbController.js";
 
 export const tmdbRouter = Router();
 
 tmdbRouter.get("/", homePageMovies);
+tmdbRouter.get("/search", searchMovies);

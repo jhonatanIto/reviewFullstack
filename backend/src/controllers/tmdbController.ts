@@ -37,3 +37,30 @@ export const homePageMovies = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const searchMovies = async (req: Request, res: Response) => {
+  try {
+    const { query } = req.query;
+
+    if (!query || typeof query !== "string") {
+      return res.status(400).json({ message: "Missing query" });
+    }
+
+    const response = await fetch(
+      `https://api.themoviedb.org/3/search/movie?api_key=${tmdbKey}&query=${encodeURIComponent(query)}`,
+    );
+
+    if (!response.ok) {
+      return res
+        .status(response.status)
+        .json({ message: "Error fetching from TMDB" });
+    }
+
+    const data = await response.json();
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

@@ -1,4 +1,3 @@
-const tmdbKey = import.meta.env.VITE_TMDB_API_KEY;
 export const backend = import.meta.env.VITE_BACKEND_API;
 
 export const fetchMovies = async () => {
@@ -16,7 +15,7 @@ export const fetchMovies = async () => {
 export const searchMovies = async (name: string) => {
   try {
     const res = await fetch(
-      `https://api.themoviedb.org/3/search/movie?api_key=${tmdbKey}&query=${name}`,
+      `${backend}/api/tmdb/search?query=${encodeURIComponent(name)}`,
     );
     const data = await res.json();
 
