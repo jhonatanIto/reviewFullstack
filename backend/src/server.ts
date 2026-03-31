@@ -12,6 +12,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import { initSocket } from "./socket/index.js";
 import { registerSocketHandlers } from "./socket/handlers.js";
+import { tmdbRouter } from "./routes/apiTmdbRoute.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -31,6 +32,7 @@ app.get("/", (req, res) =>
   res.status(200).json({ message: "Welcome to the MyReview API" }),
 );
 
+app.use("/api/tmdb", tmdbRouter);
 app.use("/api/auth", authRoute);
 app.use("/api/cards", cardsRoute);
 app.use("/api/watchlist", watchlistRouter);

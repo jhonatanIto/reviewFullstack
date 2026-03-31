@@ -3,9 +3,7 @@ export const backend = import.meta.env.VITE_BACKEND_API;
 
 export const fetchMovies = async () => {
   try {
-    const res = await fetch(
-      `https://api.themoviedb.org/3/trending/movie/week?api_key=${tmdbKey}`,
-    );
+    const res = await fetch(`${backend}/api/tmdb`);
 
     const data = await res.json();
 

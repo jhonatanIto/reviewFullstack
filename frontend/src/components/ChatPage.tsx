@@ -9,7 +9,6 @@ import { SlArrowLeft } from "react-icons/sl";
 import { GoDotFill } from "react-icons/go";
 import { socket } from "../utils/socket";
 import useNotification from "../hooks/useNotification";
-//import { BsChatRightDots } from "react-icons/bs";
 
 interface Friend {
   id: number;
@@ -184,7 +183,8 @@ const ChatPage = () => {
     const fetchFollowing = async () => {
       if (!token) return;
       const data = await getFollowing(token);
-      setFollowing(data.following);
+      const last10 = data.following.slice(-10).reverse();
+      setFollowing(last10);
     };
     fetchFollowing();
   }, [token]);
