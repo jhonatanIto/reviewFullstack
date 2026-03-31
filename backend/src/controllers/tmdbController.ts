@@ -9,8 +9,10 @@ export const homePageMovies = async (req: Request, res: Response) => {
     if (!tmdbKey) {
       return res.status(500).json({ message: "Missing TMDB API key" });
     }
+    const SIX_HOURS = 6 * 60 * 60 * 1000;
     const now = Date.now();
-    if (cache && now - lastFetch < 60000) {
+
+    if (cache && now - lastFetch < SIX_HOURS) {
       return res.json(cache);
     }
 
