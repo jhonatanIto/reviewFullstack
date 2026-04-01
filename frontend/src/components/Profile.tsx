@@ -98,6 +98,7 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
   const { user, setUser, token, setLoading } = useUser();
   const [url, setUrl] = useState("");
   const [preview, setPreview] = useState("");
+  const [saveChange, setSaveChange] = useState(false);
 
   const { errorNotification } = useNotification();
 
@@ -143,6 +144,7 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
       img.onerror = () => resolve(false);
     });
   };
+  console.log(url);
   return (
     <div
       className={`${!pictureModal ? "hidden" : ""} flex justify-center w-full h-full fixed m-0 bg-black/65 top-0 z-50`}
@@ -150,6 +152,7 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
         setPictureModal(false);
         setUrl("");
         setPreview("");
+        setSaveChange(false);
       }}
     >
       <div
@@ -176,17 +179,27 @@ const PictureModal = ({ pictureModal, setPictureModal }: PictureModalProps) => {
 
                   setPreview(url);
                   setUrl("");
+                  setSaveChange(true);
                 }
               }}
             />
             <button
-              disabled={preview.length === 0}
-              className={`border mt-4 w-[60%] p-1 rounded-[5px] text-white bg-blue-500 cursor-pointer ${!preview ? "opacity-40 pointer-events-none cursor-default" : ""}`}
-              onClick={() => {
-                savePicture();
+              className={`border mt-4 w-[60%] p-1 rounded-[5px] text-white bg-blue-500 cursor-pointer ${!url && !saveChange ? "opacity-40 pointer-events-none cursor-default" : ""}`}
+              onClick={async () => {
+                if (saveChange) {
+                  savePicture();
+                } else {
+                  const valid = await isValidImage(url);
+
+                  if (!valid) return errorNotification("Invalid url");
+
+                  setPreview(url);
+                  setUrl("");
+                  setSaveChange(true);
+                }
               }}
             >
-              Save change
+              {saveChange ? "Save change" : "Confirm Url"}
             </button>
           </div>
         </div>
