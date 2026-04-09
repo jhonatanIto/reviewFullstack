@@ -9,7 +9,7 @@ import googleRoute from "./routes/googleRoute.js";
 import { notificationRoute } from "./routes/notificationsRoute.js";
 import { chatRoute } from "./routes/chatRoute.js";
 import { createServer } from "node:http";
-import { Server } from "socket.io";
+
 import { initSocket } from "./socket/index.js";
 import { registerSocketHandlers } from "./socket/handlers.js";
 import { tmdbRouter } from "./routes/apiTmdbRoute.js";

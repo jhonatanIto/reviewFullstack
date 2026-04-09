@@ -1,4 +1,3 @@
-import { boolean } from "drizzle-orm/gel-core";
 import {
   pgTable,
   serial,

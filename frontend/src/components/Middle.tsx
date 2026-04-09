@@ -62,6 +62,7 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
       tmdb_id: movieId,
     };
     try {
+      setLoadingPage(true);
       const res = await fetch(`${backend}/api/watchlist`, {
         method: "POST",
         headers: {
@@ -82,6 +83,8 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
       console.log(data.message);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoadingPage(false);
     }
   };
 
@@ -226,6 +229,7 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
                 removeWatchlist();
               }
             }}
+            disabled={loadingPage}
           >
             {inWatchlist ? (
               <PiTrashLight />
