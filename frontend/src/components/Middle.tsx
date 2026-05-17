@@ -26,6 +26,31 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
   const loaderRef = useRef<HTMLDivElement>(null);
   const firstLoad = useRef(true);
 
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  const [maxHeight, setMaxHeight] = useState(0);
+
+  useEffect(() => {
+    const updateHeight = () => {
+      if (!descriptionRef.current) return;
+
+      const rect = descriptionRef.current.getBoundingClientRect();
+
+      const middleScreen = window.innerHeight / 2;
+
+      const availableHeight = middleScreen - rect.top;
+
+      setMaxHeight(availableHeight);
+    };
+
+    updateHeight();
+
+    window.addEventListener("resize", updateHeight);
+
+    return () => {
+      window.removeEventListener("resize", updateHeight);
+    };
+  }, []);
+
   const {
     movies,
     movieName,
@@ -179,7 +204,7 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
   };
 
   return (
-    <div className="text-white px-[5%]  mt-8 md:mt-10 flex flex-col md:flex-row justify-between ">
+    <div className="text-white px-[5%]  mt-8 md:mt-10 flex flex-col md:flex-row justify-between   ">
       <div className="w-full md:w-auto ">
         <div className="text-[clamp(26px,4vw,40px)] xl:text-[clamp(40px,4vw,65px)] font-bold leading-tight">
           {movieName}
@@ -187,8 +212,10 @@ const Middle = ({ feedCards, setFeedCards }: Middle) => {
         <div className="text-lg md:text-2xl opacity-70">{movieRelease}</div>
 
         <div
-          className="mt-6 md:mt-10 max-h-40 md:max-h-[35%] overflow-y-auto 
-      text-[clamp(16px,1.5vw,22px)] w-full md:max-w-2xl"
+          ref={descriptionRef}
+          style={{ maxHeight: `${maxHeight}px` }}
+          className="mt-6 md:mt-10  overflow-y-auto 
+      text-[clamp(16px,1.5vw,22px)] w-full md:max-w-2xl "
         >
           {movieDescription}
         </div>
